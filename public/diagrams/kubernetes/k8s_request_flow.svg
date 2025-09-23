@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2c3e50"/>
+    </marker>
+    <marker id="arrowhead-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#7f8c8d"/>
+    </marker>
+    <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#27ae60"/>
+    </marker>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="800" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="600" y="30" text-anchor="middle" font-size="24" font-weight="bold" fill="#2c3e50">
+    Kubernetes Request Lifecycle - Network Flow Diagram
+  </text>
+  
+  <!-- External Client -->
+  <rect x="50" y="100" width="100" height="60" rx="5" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+  <text x="100" y="125" text-anchor="middle" font-size="12" fill="white">External</text>
+  <text x="100" y="140" text-anchor="middle" font-size="12" fill="white">Client</text>
+  <text x="100" y="155" text-anchor="middle" font-size="12" fill="white">(Browser/API)</text>
+  
+  <!-- Load Balancer -->
+  <rect x="250" y="100" width="120" height="60" rx="5" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+  <text x="310" y="125" text-anchor="middle" font-size="12" fill="white">Load Balancer</text>
+  <text x="310" y="140" text-anchor="middle" font-size="12" fill="white">(Cloud LB/</text>
+  <text x="310" y="155" text-anchor="middle" font-size="12" fill="white">MetalLB)</text>
+  
+  <!-- Ingress Controller -->
+  <rect x="450" y="100" width="120" height="60" rx="5" fill="#9b59b6" stroke="#8e44ad" stroke-width="2"/>
+  <text x="510" y="125" text-anchor="middle" font-size="12" fill="white">Ingress</text>
+  <text x="510" y="140" text-anchor="middle" font-size="12" fill="white">Controller</text>
+  <text x="510" y="155" text-anchor="middle" font-size="12" fill="white">(Nginx/Traefik)</text>
+  
+  <!-- Service -->
+  <rect x="650" y="100" width="120" height="60" rx="5" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+  <text x="710" y="125" text-anchor="middle" font-size="12" fill="white">Service</text>
+  <text x="710" y="140" text-anchor="middle" font-size="12" fill="white">(ClusterIP/</text>
+  <text x="710" y="155" text-anchor="middle" font-size="12" fill="white">NodePort)</text>
+  
+  <!-- kube-proxy -->
+  <rect x="850" y="100" width="100" height="60" rx="5" fill="#27ae60" stroke="#229954" stroke-width="2"/>
+  <text x="900" y="125" text-anchor="middle" font-size="12" fill="white">kube-proxy</text>
+  <text x="900" y="140" text-anchor="middle" font-size="12" fill="white">(iptables/</text>
+  <text x="900" y="155" text-anchor="middle" font-size="12" fill="white">IPVS)</text>
+  
+  <!-- Pod Container -->
+  <rect x="1000" y="80" width="150" height="100" rx="5" fill="#34495e" stroke="#2c3e50" stroke-width="2"/>
+  <text x="1075" y="105" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Pod</text>
+  <rect x="1020" y="120" width="110" height="40" rx="3" fill="#95a5a6" stroke="#7f8c8d"/>
+  <text x="1075" y="135" text-anchor="middle" font-size="10" fill="black">Application</text>
+  <text x="1075" y="148" text-anchor="middle" font-size="10" fill="black">Container</text>
+  
+  <!-- Request Flow Arrows -->
+  <path d="M 150 130 L 240 130" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  <circle cx="195" cy="115" r="12" fill="#e74c3c"/>
+  <text x="195" y="120" text-anchor="middle" font-size="10" font-weight="bold" fill="white">1</text>
+  
+  <path d="M 370 130 L 440 130" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  <circle cx="405" cy="115" r="12" fill="#e74c3c"/>
+  <text x="405" y="120" text-anchor="middle" font-size="10" font-weight="bold" fill="white">2</text>
+  
+  <path d="M 570 130 L 640 130" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  <circle cx="605" cy="115" r="12" fill="#e74c3c"/>
+  <text x="605" y="120" text-anchor="middle" font-size="10" font-weight="bold" fill="white">3</text>
+  
+  <path d="M 770 130 L 840 130" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  <circle cx="805" cy="115" r="12" fill="#e74c3c"/>
+  <text x="805" y="120" text-anchor="middle" font-size="10" font-weight="bold" fill="white">4</text>
+  
+  <path d="M 950 130 L 990 130" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  <circle cx="970" cy="115" r="12" fill="#e74c3c"/>
+  <text x="970" y="120" text-anchor="middle" font-size="10" font-weight="bold" fill="white">5</text>
+  
+  <!-- Response Flow Arrows -->
+  <path d="M 990 150 L 950 150" stroke="#27ae60" stroke-width="2" fill="none" marker-end="url(#arrowhead-green)"/>
+  <circle cx="970" cy="165" r="8" fill="#27ae60"/>
+  <text x="970" y="169" text-anchor="middle" font-size="8" font-weight="bold" fill="white">R5</text>
+  
+  <path d="M 840 150 L 770 150" stroke="#27ae60" stroke-width="2" fill="none" marker-end="url(#arrowhead-green)"/>
+  <circle cx="805" cy="165" r="8" fill="#27ae60"/>
+  <text x="805" y="169" text-anchor="middle" font-size="8" font-weight="bold" fill="white">R4</text>
+  
+  <path d="M 640 150 L 570 150" stroke="#27ae60" stroke-width="2" fill="none" marker-end="url(#arrowhead-green)"/>
+  <circle cx="605" cy="165" r="8" fill="#27ae60"/>
+  <text x="605" y="169" text-anchor="middle" font-size="8" font-weight="bold" fill="white">R3</text>
+  
+  <path d="M 440 150 L 370 150" stroke="#27ae60" stroke-width="2" fill="none" marker-end="url(#arrowhead-green)"/>
+  <circle cx="405" cy="165" r="8" fill="#27ae60"/>
+  <text x="405" y="169" text-anchor="middle" font-size="8" font-weight="bold" fill="white">R2</text>
+  
+  <path d="M 240 150 L 150 150" stroke="#27ae60" stroke-width="2" fill="none" marker-end="url(#arrowhead-green)"/>
+  <circle cx="195" cy="165" r="8" fill="#27ae60"/>
+  <text x="195" y="169" text-anchor="middle" font-size="8" font-weight="bold" fill="white">R1</text>
+  
+  <!-- Control Plane Components -->
+  <rect x="400" y="250" width="400" height="150" rx="5" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2"/>
+  <text x="600" y="275" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">Control Plane</text>
+  
+  <rect x="420" y="290" width="80" height="50" rx="3" fill="#3498db" stroke="#2980b9"/>
+  <text x="460" y="310" text-anchor="middle" font-size="10" fill="white">API Server</text>
+  <text x="460" y="325" text-anchor="middle" font-size="10" fill="white">(6443)</text>
+  
+  <rect x="520" y="290" width="60" height="50" rx="3" fill="#e74c3c" stroke="#c0392b"/>
+  <text x="550" y="310" text-anchor="middle" font-size="10" fill="white">etcd</text>
+  <text x="550" y="325" text-anchor="middle" font-size="10" fill="white">(2379)</text>
+  
+  <rect x="600" y="290" width="80" height="50" rx="3" fill="#f39c12" stroke="#e67e22"/>
+  <text x="640" y="310" text-anchor="middle" font-size="10" fill="white">Scheduler</text>
+  
+  <rect x="700" y="290" width="80" height="50" rx="3" fill="#27ae60" stroke="#229954"/>
+  <text x="740" y="305" text-anchor="middle" font-size="9" fill="white">Controller</text>
+  <text x="740" y="320" text-anchor="middle" font-size="9" fill="white">Manager</text>
+  
+  <!-- Control flow arrows -->
+  <path d="M 510 160 L 460 280" stroke="#7f8c8d" stroke-width="2" fill="none" marker-end="url(#arrowhead-gray)" stroke-dasharray="5,5"/>
+  <path d="M 710 160 L 500 280" stroke="#7f8c8d" stroke-width="2" fill="none" marker-end="url(#arrowhead-gray)" stroke-dasharray="5,5"/>
+  <path d="M 910 290 L 500 290" stroke="#7f8c8d" stroke-width="2" fill="none" marker-end="url(#arrowhead-gray)" stroke-dasharray="5,5"/>
+  
+  <!-- Worker Node Components -->
+  <rect x="850" y="250" width="300" height="150" rx="5" fill="#f8f9fa" stroke="#dee2e6" stroke-width="2"/>
+  <text x="1000" y="275" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">Worker Node</text>
+  
+  <rect x="870" y="290" width="80" height="50" rx="3" fill="#9b59b6" stroke="#8e44ad"/>
+  <text x="910" y="310" text-anchor="middle" font-size="10" fill="white">kubelet</text>
+  <text x="910" y="325" text-anchor="middle" font-size="10" fill="white">(10250)</text>
+  
+  <rect x="970" y="290" width="80" height="50" rx="3" fill="#34495e" stroke="#2c3e50"/>
+  <text x="1010" y="305" text-anchor="middle" font-size="9" fill="white">Container</text>
+  <text x="1010" y="320" text-anchor="middle" font-size="9" fill="white">Runtime</text>
+  
+  <rect x="1070" y="290" width="60" height="50" rx="3" fill="#16a085" stroke="#138d75"/>
+  <text x="1100" y="310" text-anchor="middle" font-size="10" fill="white">CNI</text>
+  <text x="1100" y="325" text-anchor="middle" font-size="10" fill="white">Plugin</text>
+  
+  <!-- Information Boxes -->
+  <rect x="50" y="450" width="200" height="120" rx="5" fill="#f1c40f" stroke="#f39c12" stroke-width="2"/>
+  <text x="150" y="475" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">Network Policies</text>
+  <text x="60" y="495" font-size="10" fill="#2c3e50">• Ingress/Egress Rules</text>
+  <text x="60" y="510" font-size="10" fill="#2c3e50">• Pod-to-Pod Communication</text>
+  <text x="60" y="525" font-size="10" fill="#2c3e50">• Namespace Isolation</text>
+  <text x="60" y="540" font-size="10" fill="#2c3e50">• Security Policies</text>
+  <text x="60" y="555" font-size="10" fill="#2c3e50">• Traffic Filtering</text>
+  
+  <rect x="300" y="450" width="200" height="120" rx="5" fill="#1abc9c" stroke="#16a085" stroke-width="2"/>
+  <text x="400" y="475" text-anchor="middle" font-size="14" font-weight="bold" fill="white">DNS Resolution</text>
+  <text x="310" y="495" font-size="10" fill="white">• CoreDNS Service</text>
+  <text x="310" y="510" font-size="10" fill="white">• Service Discovery</text>
+  <text x="310" y="525" font-size="10" fill="white">• FQDN Resolution</text>
+  <text x="310" y="540" font-size="10" fill="white">• Cluster Domain</text>
+  <text x="310" y="555" font-size="10" fill="white">• External DNS</text>
+  
+  <rect x="550" y="450" width="250" height="120" rx="5" fill="#95a5a6" stroke="#7f8c8d" stroke-width="2"/>
+  <text x="675" y="475" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Key Ports &amp; Protocols</text>
+  <text x="560" y="495" font-size="10" fill="white">• API Server: 6443 (HTTPS)</text>
+  <text x="560" y="510" font-size="10" fill="white">• etcd: 2379, 2380</text>
+  <text x="560" y="525" font-size="10" fill="white">• kubelet: 10250 (HTTPS)</text>
+  <text x="560" y="540" font-size="10" fill="white">• kube-proxy: 10256</text>
+  <text x="560" y="555" font-size="10" fill="white">• NodePort: 30000-32767</text>
+  
+  <!-- Request Flow Steps -->
+  <rect x="850" y="450" width="300" height="300" rx="5" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2"/>
+  <text x="1000" y="475" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">Request Flow Steps</text>
+  
+  <text x="860" y="500" font-size="11" font-weight="bold" fill="#e74c3c">1. External Request</text>
+  <text x="870" y="515" font-size="9" fill="#2c3e50">• Client sends HTTP/HTTPS request</text>
+  <text x="870" y="527" font-size="9" fill="#2c3e50">• DNS resolution to cluster IP</text>
+  
+  <text x="860" y="545" font-size="11" font-weight="bold" fill="#e74c3c">2. Load Balancer</text>
+  <text x="870" y="560" font-size="9" fill="#2c3e50">• Traffic distribution</text>
+  <text x="870" y="572" font-size="9" fill="#2c3e50">• SSL termination (optional)</text>
+  
+  <text x="860" y="590" font-size="11" font-weight="bold" fill="#e74c3c">3. Ingress Controller</text>
+  <text x="870" y="605" font-size="9" fill="#2c3e50">• Route based on host/path</text>
+  <text x="870" y="617" font-size="9" fill="#2c3e50">• SSL/TLS handling</text>
+  
+  <text x="860" y="635" font-size="11" font-weight="bold" fill="#e74c3c">4. Service Discovery</text>
+  <text x="870" y="650" font-size="9" fill="#2c3e50">• Service endpoint lookup</text>
+  <text x="870" y="662" font-size="9" fill="#2c3e50">• Load balancing algorithm</text>
+  
+  <text x="860" y="680" font-size="11" font-weight="bold" fill="#e74c3c">5. Pod Routing</text>
+  <text x="870" y="695" font-size="9" fill="#2c3e50">• kube-proxy iptables/IPVS</text>
+  <text x="870" y="707" font-size="9" fill="#2c3e50">• Container port forwarding</text>
+  
+  <text x="860" y="725" font-size="11" font-weight="bold" fill="#27ae60">Response Path (R1-R5)</text>
+  <text x="870" y="740" font-size="9" fill="#2c3e50">• Pod → kube-proxy → Service → Ingress → LB → Client</text>
+  <text x="870" y="752" font-size="9" fill="#2c3e50">• Connection tracking maintained</text>
+  <text x="870" y="764" font-size="9" fill="#2c3e50">• HTTP response headers added</text>
+  <text x="870" y="776" font-size="9" fill="#2c3e50">• Load balancer session affinity</text>
+  
+  <!-- Legend -->
+  <rect x="50" y="600" width="200" height="140" rx="5" fill="#ffffff" stroke="#dee2e6" stroke-width="2"/>
+  <text x="150" y="625" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">Legend</text>
+  
+  <line x1="60" y1="640" x2="90" y2="640" stroke="#2c3e50" stroke-width="3" marker-end="url(#arrowhead)"/>
+  <text x="100" y="645" font-size="10" fill="#2c3e50">Request Flow</text>
+  
+  <line x1="60" y1="655" x2="90" y2="655" stroke="#27ae60" stroke-width="2" marker-end="url(#arrowhead-green)"/>
+  <text x="100" y="660" font-size="10" fill="#2c3e50">Response Flow</text>
+  
+  <line x1="60" y1="670" x2="90" y2="670" stroke="#7f8c8d" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead-gray)"/>
+  <text x="100" y="675" font-size="10" fill="#2c3e50">Control Plane</text>
+  
+  <rect x="60" y="685" width="15" height="10" fill="#3498db"/>
+  <text x="85" y="695" font-size="10" fill="#2c3e50">Network Component</text>
+  
+  <rect x="60" y="705" width="15" height="10" fill="#34495e"/>
+  <text x="85" y="715" font-size="10" fill="#2c3e50">Compute Component</text>
+  
+  <rect x="60" y="725" width="15" height="10" fill="#f39c12"/>
+  <text x="85" y="735" font-size="10" fill="#2c3e50">Service Component</text>
+</svg>

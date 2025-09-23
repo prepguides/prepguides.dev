@@ -1,103 +1,171 @@
-import Image from "next/image";
+import Link from 'next/link'
+import { ArrowRightIcon, ChartBarIcon, CpuChipIcon, ServerIcon, CodeBracketIcon } from '@heroicons/react/24/outline'
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-gray-900">PrepGuides.dev</h1>
+            </div>
+            <nav className="hidden md:flex space-x-8">
+              <Link href="/diagrams" className="text-gray-700 hover:text-blue-600">Diagrams</Link>
+              <Link href="/topics" className="text-gray-700 hover:text-blue-600">Topics</Link>
+              <Link href="/interview-questions" className="text-gray-700 hover:text-blue-600">Questions</Link>
+              <Link href="/about" className="text-gray-700 hover:text-blue-600">About</Link>
+            </nav>
+          </div>
+        </div>
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+      {/* Hero Section */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            Master Technical Interviews with
+            <span className="text-blue-600"> Visual Learning</span>
+          </h1>
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Interactive diagrams and comprehensive guides to help you excel in technical interviews. 
+            Learn complex concepts through visual representations and step-by-step explanations.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link 
+              href="/diagrams" 
+              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors inline-flex items-center"
+            >
+              Explore Diagrams
+              <ArrowRightIcon className="ml-2 h-5 w-5" />
+            </Link>
+            <Link 
+              href="/interview-questions" 
+              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold border-2 border-blue-600 hover:bg-blue-50 transition-colors"
+            >
+              Practice Questions
+            </Link>
+          </div>
+        </div>
+
+        {/* Featured Categories */}
+        <div className="mt-20">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+            Featured Topics
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <CategoryCard
+              title="Kubernetes"
+              description="Container orchestration and microservices"
+              icon={<ServerIcon className="h-8 w-8" />}
+              href="/diagrams/kubernetes"
+              color="bg-blue-500"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <CategoryCard
+              title="Networking"
+              description="OSI model, TCP/IP, and protocols"
+              icon={<ChartBarIcon className="h-8 w-8" />}
+              href="/diagrams/networking"
+              color="bg-green-500"
+            />
+            <CategoryCard
+              title="Algorithms"
+              description="Sorting, searching, and data structures"
+              icon={<CodeBracketIcon className="h-8 w-8" />}
+              href="/diagrams/algorithms"
+              color="bg-purple-500"
+            />
+            <CategoryCard
+              title="System Design"
+              description="Scalability and architecture patterns"
+              icon={<ChartBarIcon className="h-8 w-8" />}
+              href="/diagrams/system-design"
+              color="bg-orange-500"
+            />
+          </div>
+        </div>
+
+        {/* Stats Section */}
+        <div className="mt-20 bg-white rounded-2xl shadow-lg p-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div>
+              <div className="text-3xl font-bold text-blue-600">50+</div>
+              <div className="text-gray-600">Interactive Diagrams</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-blue-600">500+</div>
+              <div className="text-gray-600">Interview Questions</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-blue-600">10+</div>
+              <div className="text-gray-600">Technical Topics</div>
+            </div>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">PrepGuides.dev</h3>
+              <p className="text-gray-400">
+                Visual learning platform for technical interview preparation.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Topics</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/diagrams/kubernetes" className="hover:text-white">Kubernetes</Link></li>
+                <li><Link href="/diagrams/networking" className="hover:text-white">Networking</Link></li>
+                <li><Link href="/diagrams/databases" className="hover:text-white">Databases</Link></li>
+                <li><Link href="/diagrams/system-design" className="hover:text-white">System Design</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Resources</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/interview-questions" className="hover:text-white">Questions</Link></li>
+                <li><Link href="/about" className="hover:text-white">About</Link></li>
+                <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Connect</h4>
+              <p className="text-gray-400">
+                Built for developers, by developers.
+              </p>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2024 PrepGuides.dev. All rights reserved.</p>
+          </div>
+        </div>
       </footer>
     </div>
-  );
+  )
+}
+
+interface CategoryCardProps {
+  title: string
+  description: string
+  icon: React.ReactNode
+  href: string
+  color: string
+}
+
+function CategoryCard({ title, description, icon, href, color }: CategoryCardProps) {
+  return (
+    <Link href={href} className="group">
+      <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+        <div className={`${color} text-white rounded-lg p-3 w-fit mb-4 group-hover:scale-110 transition-transform`}>
+          {icon}
+        </div>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
+        <p className="text-gray-600">{description}</p>
+      </div>
+    </Link>
+  )
 }

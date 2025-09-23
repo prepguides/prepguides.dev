@@ -1,0 +1,150 @@
+<svg viewBox="0 0 1000 800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1000" height="800" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="500" y="30" text-anchor="middle" font-size="24" font-weight="bold" fill="#2c3e50">
+    OSI 7-Layer Model - Network Communication Stack
+  </text>
+  
+  <!-- Layer 7: Application -->
+  <g id="layer7">
+    <rect x="50" y="100" width="900" height="80" rx="5" fill="#e74c3c" stroke="#c0392b" stroke-width="3"/>
+    <text x="70" y="125" font-size="16" font-weight="bold" fill="white">Layer 7: Application</text>
+    <text x="70" y="145" font-size="12" fill="white">• HTTP, HTTPS, FTP, SMTP, DNS, SSH</text>
+    <text x="70" y="160" font-size="12" fill="white">• User interfaces, APIs, web browsers</text>
+    <text x="70" y="175" font-size="12" fill="white">• Data: User data (web pages, emails, files)</text>
+    
+    <!-- Examples -->
+    <text x="400" y="125" font-size="14" font-weight="bold" fill="white">Examples:</text>
+    <text x="400" y="145" font-size="12" fill="white">Web Browser, Email Client, FTP Client</text>
+    <text x="400" y="160" font-size="12" fill="white">REST APIs, GraphQL, gRPC</text>
+    <text x="400" y="175" font-size="12" fill="white">DNS Queries, SSH Connections</text>
+  </g>
+  
+  <!-- Layer 6: Presentation -->
+  <g id="layer6">
+    <rect x="50" y="200" width="900" height="80" rx="5" fill="#e67e22" stroke="#d35400" stroke-width="3"/>
+    <text x="70" y="225" font-size="16" font-weight="bold" fill="white">Layer 6: Presentation</text>
+    <text x="70" y="245" font-size="12" fill="white">• Encryption, Compression, Encoding</text>
+    <text x="70" y="260" font-size="12" fill="white">• Data format conversion (JSON, XML, ASCII)</text>
+    <text x="70" y="275" font-size="12" fill="white">• Data: Encoded/compressed user data</text>
+    
+    <!-- Examples -->
+    <text x="400" y="225" font-size="14" font-weight="bold" fill="white">Examples:</text>
+    <text x="400" y="245" font-size="12" fill="white">SSL/TLS Encryption, JPEG/PNG Compression</text>
+    <text x="400" y="260" font-size="12" fill="white">JSON/XML Parsing, Base64 Encoding</text>
+    <text x="400" y="275" font-size="12" fill="white">Character Encoding (UTF-8, ASCII)</text>
+  </g>
+  
+  <!-- Layer 5: Session -->
+  <g id="layer5">
+    <rect x="50" y="300" width="900" height="80" rx="5" fill="#f39c12" stroke="#e67e22" stroke-width="3"/>
+    <text x="70" y="325" font-size="16" font-weight="bold" fill="white">Layer 5: Session</text>
+    <text x="70" y="345" font-size="12" fill="white">• Session management, authentication</text>
+    <text x="70" y="360" font-size="12" fill="white">• Connection establishment/termination</text>
+    <text x="70" y="375" font-size="12" fill="white">• Data: Session data with control info</text>
+    
+    <!-- Examples -->
+    <text x="400" y="325" font-size="14" font-weight="bold" fill="white">Examples:</text>
+    <text x="400" y="345" font-size="12" fill="white">RPC, SQL Sessions, NetBIOS</text>
+    <text x="400" y="360" font-size="12" fill="white">Authentication Protocols</text>
+    <text x="400" y="375" font-size="12" fill="white">Session Timeouts, Keep-alives</text>
+  </g>
+  
+  <!-- Layer 4: Transport -->
+  <g id="layer4">
+    <rect x="50" y="400" width="900" height="80" rx="5" fill="#f1c40f" stroke="#f39c12" stroke-width="3"/>
+    <text x="70" y="425" font-size="16" font-weight="bold" fill="white">Layer 4: Transport</text>
+    <text x="70" y="445" font-size="12" fill="white">• TCP (reliable), UDP (unreliable)</text>
+    <text x="70" y="460" font-size="12" fill="white">• Flow control, error detection/correction</text>
+    <text x="70" y="475" font-size="12" fill="white">• Data: Segments (TCP) or Datagrams (UDP)</text>
+    
+    <!-- Examples -->
+    <text x="400" y="425" font-size="14" font-weight="bold" fill="white">Examples:</text>
+    <text x="400" y="445" font-size="12" fill="white">TCP (HTTP, HTTPS, SSH), UDP (DNS, DHCP)</text>
+    <text x="400" y="460" font-size="12" fill="white">Port Numbers (80, 443, 22, 53)</text>
+    <text x="400" y="475" font-size="12" fill="white">Connection Multiplexing</text>
+  </g>
+  
+  <!-- Layer 3: Network -->
+  <g id="layer3">
+    <rect x="50" y="500" width="900" height="80" rx="5" fill="#27ae60" stroke="#229954" stroke-width="3"/>
+    <text x="70" y="525" font-size="16" font-weight="bold" fill="white">Layer 3: Network</text>
+    <text x="70" y="545" font-size="12" fill="white">• IP addressing, routing, path determination</text>
+    <text x="70" y="560" font-size="12" fill="white">• Logical addressing (IP addresses)</text>
+    <text x="70" y="575" font-size="12" fill="white">• Data: Packets with IP headers</text>
+    
+    <!-- Examples -->
+    <text x="400" y="525" font-size="14" font-weight="bold" fill="white">Examples:</text>
+    <text x="400" y="545" font-size="12" fill="white">IPv4, IPv6, ICMP, OSPF, BGP</text>
+    <text x="400" y="560" font-size="12" fill="white">Routers, IP Addresses (192.168.1.1)</text>
+    <text x="400" y="575" font-size="12" fill="white">Subnetting, CIDR, NAT</text>
+  </g>
+  
+  <!-- Layer 2: Data Link -->
+  <g id="layer2">
+    <rect x="50" y="600" width="900" height="80" rx="5" fill="#3498db" stroke="#2980b9" stroke-width="3"/>
+    <text x="70" y="625" font-size="16" font-weight="bold" fill="white">Layer 2: Data Link</text>
+    <text x="70" y="645" font-size="12" fill="white">• MAC addressing, frame synchronization</text>
+    <text x="70" y="660" font-size="12" fill="white">• Error detection (CRC), flow control</text>
+    <text x="70" y="675" font-size="12" fill="white">• Data: Frames with MAC headers</text>
+    
+    <!-- Examples -->
+    <text x="400" y="625" font-size="14" font-weight="bold" fill="white">Examples:</text>
+    <text x="400" y="645" font-size="12" fill="white">Ethernet, WiFi (802.11), PPP, HDLC</text>
+    <text x="400" y="660" font-size="12" fill="white">Switches, MAC Addresses (AA:BB:CC:DD:EE:FF)</text>
+    <text x="400" y="675" font-size="12" fill="white">VLANs, STP, ARP</text>
+  </g>
+  
+  <!-- Layer 1: Physical -->
+  <g id="layer1">
+    <rect x="50" y="700" width="900" height="80" rx="5" fill="#9b59b6" stroke="#8e44ad" stroke-width="3"/>
+    <text x="70" y="725" font-size="16" font-weight="bold" fill="white">Layer 1: Physical</text>
+    <text x="70" y="745" font-size="12" fill="white">• Electrical, optical, radio signals</text>
+    <text x="70" y="760" font-size="12" fill="white">• Cables, connectors, transmission media</text>
+    <text x="70" y="775" font-size="12" fill="white">• Data: Raw bits (0s and 1s)</text>
+    
+    <!-- Examples -->
+    <text x="400" y="725" font-size="14" font-weight="bold" fill="white">Examples:</text>
+    <text x="400" y="745" font-size="12" fill="white">Ethernet Cables, Fiber Optic, WiFi Radio</text>
+    <text x="400" y="760" font-size="12" fill="white">Hubs, Repeaters, Network Cards</text>
+    <text x="400" y="775" font-size="12" fill="white">RJ45, SFP, Antennas</text>
+  </g>
+  
+  <!-- Data Flow Arrows -->
+  <!-- Downward flow (Encapsulation) -->
+  <path d="M 950 140 L 950 180" stroke="#2c3e50" stroke-width="4" fill="none" marker-end="url(#arrowdown)"/>
+  <text x="960" y="165" font-size="10" fill="#2c3e50">Encapsulation</text>
+  
+  <path d="M 950 240 L 950 280" stroke="#2c3e50" stroke-width="4" fill="none" marker-end="url(#arrowdown)"/>
+  <path d="M 950 340 L 950 380" stroke="#2c3e50" stroke-width="4" fill="none" marker-end="url(#arrowdown)"/>
+  <path d="M 950 440 L 950 480" stroke="#2c3e50" stroke-width="4" fill="none" marker-end="url(#arrowdown)"/>
+  <path d="M 950 540 L 950 580" stroke="#2c3e50" stroke-width="4" fill="none" marker-end="url(#arrowdown)"/>
+  <path d="M 950 640 L 950 680" stroke="#2c3e50" stroke-width="4" fill="none" marker-end="url(#arrowdown)"/>
+  
+  <!-- Upward flow (Decapsulation) -->
+  <path d="M 970 180 L 970 140" stroke="#27ae60" stroke-width="4" fill="none" marker-end="url(#arrowup)"/>
+  <text x="980" y="165" font-size="10" fill="#27ae60">Decapsulation</text>
+  
+  <path d="M 970 280 L 970 240" stroke="#27ae60" stroke-width="4" fill="none" marker-end="url(#arrowup)"/>
+  <path d="M 970 380 L 970 340" stroke="#27ae60" stroke-width="4" fill="none" marker-end="url(#arrowup)"/>
+  <path d="M 970 480 L 970 440" stroke="#27ae60" stroke-width="4" fill="none" marker-end="url(#arrowup)"/>
+  <path d="M 970 580 L 970 540" stroke="#27ae60" stroke-width="4" fill="none" marker-end="url(#arrowup)"/>
+  <path d="M 970 680 L 970 640" stroke="#27ae60" stroke-width="4" fill="none" marker-end="url(#arrowup)"/>
+  
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrowdown" markerWidth="10" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2c3e50"/>
+    </marker>
+    <marker id="arrowup" markerWidth="10" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <polygon points="0 7, 10 3.5, 0 0" fill="#27ae60"/>
+    </marker>
+  </defs>
+  
+  <!-- Mnemonic Box -->
+  <rect x="50" y="50" width="200" height="40" rx="5" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2"/>
+  <text x="150" y="70" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">Mnemonic:</text>
+  <text x="150" y="85" text-anchor="middle" font-size="12" fill="#2c3e50">"All People Seem To Need Data Processing"</text>
+</svg>
