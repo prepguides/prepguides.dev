@@ -1,62 +1,150 @@
-# PrepGuides.dev - Bare Bones HTML Renderer
+# PrepGuides.dev
 
-A minimal static HTML app that directly renders interactive content without any framework complexity.
+**Master technical interviews with interactive diagrams and comprehensive guides for cloud computing, containerization, and distributed systems.**
 
-## What's Included
+## 🌐 Live Site
 
-- **Pure HTML/CSS/JavaScript** - No frameworks, no build steps
-- **Interactive Sorting Visualizer** - Complete with 6 sorting algorithms
-- **Direct SVG/HTML Rendering** - Perfect for displaying your custom diagrams
-- **Vercel Ready** - Deploy directly to Vercel with zero configuration
+Visit [prepguides.dev](https://prepguides.dev) to explore interactive diagrams and interview resources.
 
-## Files Structure
+## 🚀 What's Included
 
-```
-├── index.html              # Main HTML file with sorting visualizer
-├── vercel.json            # Vercel configuration for static hosting
-├── package.json           # Minimal package.json (no dependencies needed)
-└── public/
-    └── diagrams/          # Your custom HTML/SVG files
-        ├── algorithms/
-        ├── kubernetes/
-        ├── networking/
-        └── system-design/
-```
+### Interactive Learning Tools
+- **Sorting Algorithms Visualizer** - Real-time visualization of 6 sorting algorithms with performance metrics
+- **Kubernetes Request Flow** - Complete bidirectional network flow with step-by-step explanations
+- **OSI 7-Layer Model** - Fundamental networking concepts with detailed layer information
+- **Interview Questions** - Curated questions for each diagram topic
 
-## How to Use
+### Technical Topics Covered
+- **Algorithms** - Sorting, searching, and data structures with live visualizations
+- **Kubernetes** - Container orchestration, microservices, and cluster architecture
+- **Networking** - OSI model, TCP/IP, protocols, and network troubleshooting
+- **System Design** - Scalability patterns, caching strategies, and architecture design
+- **Databases** - Replication, sharding, ACID properties, and CAP theorem
+- **Microservices** - Service mesh, API gateways, and distributed systems
 
-1. **Add your HTML files** to the `public/diagrams/` directory
-2. **Update `index.html`** to point to your specific HTML file
-3. **Deploy to Vercel** - just push to GitHub and connect to Vercel
+## 🎯 Perfect For
 
-## Local Development
+### Technical Interview Preparation
+- **System Design Interviews** - Visual explanations of complex architectures
+- **Coding Interviews** - Interactive algorithm visualizations
+- **DevOps Interviews** - Kubernetes and networking concepts
+- **Architecture Discussions** - Scalability and design patterns
 
+### Learning & Understanding
+- **Visual Learning** - Complex concepts made simple through diagrams
+- **Step-by-Step Explanations** - Break down complex processes
+- **Real-World Examples** - Practical scenarios and use cases
+- **Interview Practice** - Common questions and answers
+
+## 📊 Interactive Features
+
+### Sorting Algorithms Visualizer
+- **6 Algorithms**: Bubble Sort, Selection Sort, Insertion Sort, Merge Sort, Quick Sort, Heap Sort
+- **Real-time Metrics**: Comparisons, swaps, and execution time
+- **Adjustable Parameters**: Array size and animation speed
+- **Performance Analysis**: Time and space complexity for each algorithm
+
+### Kubernetes Request Flow
+- **Complete Flow**: External client → Load balancer → Ingress → Service → Pod
+- **Component Explanations**: What each component does and why it's needed
+- **Troubleshooting Guide**: Common issues and debugging strategies
+- **Interview Questions**: System design and technical deep-dive questions
+
+### OSI 7-Layer Model
+- **Layer-by-Layer Breakdown**: Detailed explanation of each layer
+- **Protocol Examples**: HTTP, TCP, IP, Ethernet, and more
+- **Data Flow Process**: How data moves through the layers
+- **Troubleshooting Approach**: Systematic debugging methodology
+
+## 🛠️ Quick Start
+
+### Local Development
 ```bash
-# Easy one-command local server (recommended)
+# Clone the repository
+git clone https://github.com/prepguides/prepguides.dev.git
+cd prepguides.dev
+
+# Start local server
 ./serve.sh
 
-# Or manually with Python
-python3 -m http.server 8000
-
-# Or use any static file server
-npx serve .
+# Open http://localhost:8000 in your browser
 ```
 
-The `serve.sh` script automatically detects Python and starts a local server on port 8000.
+### Adding Your Own Content
+1. **Add HTML files** to the `public/diagrams/` directory
+2. **Create new pages** following the existing structure
+3. **Update navigation** in `index.html`
+4. **Deploy to Vercel** - automatic deployment on push
 
-## Adding Your Own Content
+## 🎨 Content Structure
 
-To render a different HTML file, simply:
+```
+├── index.html              # Main navigation hub
+├── algorithms.html         # Sorting algorithms visualizer
+├── kubernetes.html         # K8s request flow diagram
+├── networking.html         # OSI model diagram
+├── databases.html          # Database concepts (coming soon)
+├── microservices.html      # Service architecture (coming soon)
+├── system-design.html      # Scalability patterns (coming soon)
+└── public/diagrams/        # Your custom HTML/SVG files
+    ├── algorithms/
+    ├── kubernetes/
+    ├── networking/
+    └── ...
+```
 
-1. Place your HTML file in `public/diagrams/`
-2. Update the file path in `index.html` if needed
-3. Or create multiple HTML files and link between them
+## 🚀 Deployment
 
-## Deploy to Vercel
+### Vercel (Recommended)
+1. Push code to GitHub
+2. Connect repository to Vercel
+3. Automatic deployment on every push
+4. Custom domain support
 
-1. Push this code to GitHub
-2. Connect your GitHub repo to Vercel
-3. Vercel will automatically detect it's a static site
-4. Your app will be live at `your-app.vercel.app`
+### Other Platforms
+- **Netlify**: Drag and drop the folder
+- **GitHub Pages**: Enable in repository settings
+- **Any Static Host**: Upload the files directly
 
-That's it! No build process, no dependencies, just pure HTML rendering.
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+1. **Add New Diagrams** - Create interactive visualizations
+2. **Improve Explanations** - Make concepts clearer
+3. **Add Interview Questions** - Expand question banks
+4. **Fix Issues** - Report bugs or submit fixes
+5. **Suggest Topics** - What would you like to see?
+
+## 📈 Roadmap
+
+### Coming Soon
+- **Database Diagrams** - Replication, sharding, and indexing
+- **Microservices Architecture** - Service mesh and API gateways
+- **System Design Patterns** - Caching, load balancing, and scaling
+- **More Algorithms** - Graph algorithms and data structures
+- **Interactive Quizzes** - Test your knowledge
+
+### Future Features
+- **Dark Mode** - Toggle between light and dark themes
+- **Search Functionality** - Find content quickly
+- **User Progress** - Track learning progress
+- **Mobile App** - Native mobile experience
+
+## 💡 Usage Tips
+
+1. **Study the Complete Flow** - Don't just memorize individual components
+2. **Practice Explaining** - Use the diagrams to practice verbal explanations
+3. **Understand Failures** - Know what happens when each component fails
+4. **Scale Considerations** - Think about how systems behave under load
+5. **Security Implications** - Understand security at each layer
+
+## 📄 License
+
+This project is open source and available under the MIT License.
+
+---
+
+**Built with ❤️ for the developer community**
+
+*Helping developers excel in technical interviews through visual learning and comprehensive guides.*
