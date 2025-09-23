@@ -32,12 +32,17 @@ A minimal static HTML app that directly renders interactive content without any 
 ## Local Development
 
 ```bash
-# Simple Python server (no Node.js needed)
-python3 -m http.server 3000
+# Easy one-command local server (recommended)
+./serve.sh
+
+# Or manually with Python
+python3 -m http.server 8000
 
 # Or use any static file server
 npx serve .
 ```
+
+The `serve.sh` script automatically detects Python and starts a local server on port 8000.
 
 ## Adding Your Own Content
 
