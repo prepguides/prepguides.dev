@@ -82,84 +82,84 @@ export default function SortingAlgorithmsPage() {
         </div>
 
         {/* Algorithm Information */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Algorithm Complexities</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Algorithm Complexities</h3>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-xs">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="px-4 py-2 text-left">Algorithm</th>
-                    <th className="px-4 py-2 text-center">Best</th>
-                    <th className="px-4 py-2 text-center">Average</th>
-                    <th className="px-4 py-2 text-center">Worst</th>
-                    <th className="px-4 py-2 text-center">Space</th>
+                    <th className="px-2 py-1 text-left text-xs">Algorithm</th>
+                    <th className="px-2 py-1 text-center text-xs">Best</th>
+                    <th className="px-2 py-1 text-center text-xs">Average</th>
+                    <th className="px-2 py-1 text-center text-xs">Worst</th>
+                    <th className="px-2 py-1 text-center text-xs">Space</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   <tr>
-                    <td className="px-4 py-2 font-medium">Bubble Sort</td>
-                    <td className="px-4 py-2 text-center text-green-600">O(n)</td>
-                    <td className="px-4 py-2 text-center text-yellow-600">O(n²)</td>
-                    <td className="px-4 py-2 text-center text-red-600">O(n²)</td>
-                    <td className="px-4 py-2 text-center text-blue-600">O(1)</td>
+                    <td className="px-2 py-1 text-xs font-medium">Bubble Sort</td>
+                    <td className="px-2 py-1 text-center text-xs text-green-600">O(n)</td>
+                    <td className="px-2 py-1 text-center text-xs text-yellow-600">O(n²)</td>
+                    <td className="px-2 py-1 text-center text-xs text-red-600">O(n²)</td>
+                    <td className="px-2 py-1 text-center text-xs text-blue-600">O(1)</td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-2 font-medium">Selection Sort</td>
-                    <td className="px-4 py-2 text-center text-yellow-600">O(n²)</td>
-                    <td className="px-4 py-2 text-center text-yellow-600">O(n²)</td>
-                    <td className="px-4 py-2 text-center text-red-600">O(n²)</td>
-                    <td className="px-4 py-2 text-center text-blue-600">O(1)</td>
+                    <td className="px-2 py-1 text-xs font-medium">Selection Sort</td>
+                    <td className="px-2 py-1 text-center text-xs text-yellow-600">O(n²)</td>
+                    <td className="px-2 py-1 text-center text-xs text-yellow-600">O(n²)</td>
+                    <td className="px-2 py-1 text-center text-xs text-red-600">O(n²)</td>
+                    <td className="px-2 py-1 text-center text-xs text-blue-600">O(1)</td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-2 font-medium">Insertion Sort</td>
-                    <td className="px-4 py-2 text-center text-green-600">O(n)</td>
-                    <td className="px-4 py-2 text-center text-yellow-600">O(n²)</td>
-                    <td className="px-4 py-2 text-center text-red-600">O(n²)</td>
-                    <td className="px-4 py-2 text-center text-blue-600">O(1)</td>
+                    <td className="px-2 py-1 text-xs font-medium">Insertion Sort</td>
+                    <td className="px-2 py-1 text-center text-xs text-green-600">O(n)</td>
+                    <td className="px-2 py-1 text-center text-xs text-yellow-600">O(n²)</td>
+                    <td className="px-2 py-1 text-center text-xs text-red-600">O(n²)</td>
+                    <td className="px-2 py-1 text-center text-xs text-blue-600">O(1)</td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-2 font-medium">Merge Sort</td>
-                    <td className="px-4 py-2 text-center text-green-600">O(n log n)</td>
-                    <td className="px-4 py-2 text-center text-green-600">O(n log n)</td>
-                    <td className="px-4 py-2 text-center text-green-600">O(n log n)</td>
-                    <td className="px-4 py-2 text-center text-yellow-600">O(n)</td>
+                    <td className="px-2 py-1 text-xs font-medium">Merge Sort</td>
+                    <td className="px-2 py-1 text-center text-xs text-green-600">O(n log n)</td>
+                    <td className="px-2 py-1 text-center text-xs text-green-600">O(n log n)</td>
+                    <td className="px-2 py-1 text-center text-xs text-green-600">O(n log n)</td>
+                    <td className="px-2 py-1 text-center text-xs text-yellow-600">O(n)</td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-2 font-medium">Quick Sort</td>
-                    <td className="px-4 py-2 text-center text-green-600">O(n log n)</td>
-                    <td className="px-4 py-2 text-center text-green-600">O(n log n)</td>
-                    <td className="px-4 py-2 text-center text-red-600">O(n²)</td>
-                    <td className="px-4 py-2 text-center text-yellow-600">O(log n)</td>
+                    <td className="px-2 py-1 text-xs font-medium">Quick Sort</td>
+                    <td className="px-2 py-1 text-center text-xs text-green-600">O(n log n)</td>
+                    <td className="px-2 py-1 text-center text-xs text-green-600">O(n log n)</td>
+                    <td className="px-2 py-1 text-center text-xs text-red-600">O(n²)</td>
+                    <td className="px-2 py-1 text-center text-xs text-yellow-600">O(log n)</td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-2 font-medium">Heap Sort</td>
-                    <td className="px-4 py-2 text-center text-green-600">O(n log n)</td>
-                    <td className="px-4 py-2 text-center text-green-600">O(n log n)</td>
-                    <td className="px-4 py-2 text-center text-green-600">O(n log n)</td>
-                    <td className="px-4 py-2 text-center text-blue-600">O(1)</td>
+                    <td className="px-2 py-1 text-xs font-medium">Heap Sort</td>
+                    <td className="px-2 py-1 text-center text-xs text-green-600">O(n log n)</td>
+                    <td className="px-2 py-1 text-center text-xs text-green-600">O(n log n)</td>
+                    <td className="px-2 py-1 text-center text-xs text-green-600">O(n log n)</td>
+                    <td className="px-2 py-1 text-center text-xs text-blue-600">O(1)</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Interview Questions</h3>
-            <div className="space-y-3">
-              <div className="p-3 bg-gray-50 rounded-lg text-sm">
+          <div className="bg-white rounded-lg shadow-sm p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Interview Questions</h3>
+            <div className="space-y-2">
+              <div className="p-2 bg-gray-50 rounded text-xs">
                 &ldquo;Explain the difference between stable and unstable sorting algorithms&rdquo;
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg text-sm">
+              <div className="p-2 bg-gray-50 rounded text-xs">
                 &ldquo;When would you choose Quick Sort over Merge Sort?&rdquo;
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg text-sm">
+              <div className="p-2 bg-gray-50 rounded text-xs">
                 &ldquo;What is the time complexity of Bubble Sort and why is it rarely used?&rdquo;
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg text-sm">
+              <div className="p-2 bg-gray-50 rounded text-xs">
                 &ldquo;How does Heap Sort work and what are its advantages?&rdquo;
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg text-sm">
+              <div className="p-2 bg-gray-50 rounded text-xs">
                 &ldquo;Implement Quick Sort with a custom partition function&rdquo;
               </div>
             </div>
@@ -183,20 +183,20 @@ export default function SortingAlgorithmsPage() {
         </div>
 
         {/* Related Topics */}
-        <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Related Topics</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Link href="/diagrams/algorithms/searching" className="p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-              <h4 className="font-semibold text-blue-900">Searching Algorithms</h4>
-              <p className="text-blue-700 text-sm">Binary Search, Linear Search, and more</p>
+        <div className="mt-6 bg-white rounded-lg shadow-sm p-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">Related Topics</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <Link href="/diagrams/algorithms/searching" className="p-3 bg-blue-50 rounded hover:bg-blue-100 transition-colors">
+              <h4 className="font-medium text-blue-900 text-sm">Searching Algorithms</h4>
+              <p className="text-blue-700 text-xs">Binary Search, Linear Search, and more</p>
             </Link>
-            <Link href="/diagrams/algorithms/graph" className="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
-              <h4 className="font-semibold text-green-900">Graph Algorithms</h4>
-              <p className="text-green-700 text-sm">BFS, DFS, Dijkstra&apos;s Algorithm</p>
+            <Link href="/diagrams/algorithms/graph" className="p-3 bg-green-50 rounded hover:bg-green-100 transition-colors">
+              <h4 className="font-medium text-green-900 text-sm">Graph Algorithms</h4>
+              <p className="text-green-700 text-xs">BFS, DFS, Dijkstra&apos;s Algorithm</p>
             </Link>
-            <Link href="/diagrams/algorithms/dynamic-programming" className="p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
-              <h4 className="font-semibold text-purple-900">Dynamic Programming</h4>
-              <p className="text-purple-700 text-sm">Memoization, Tabulation, and optimization</p>
+            <Link href="/diagrams/algorithms/dynamic-programming" className="p-3 bg-purple-50 rounded hover:bg-purple-100 transition-colors">
+              <h4 className="font-medium text-purple-900 text-sm">Dynamic Programming</h4>
+              <p className="text-purple-700 text-xs">Memoization, Tabulation, and optimization</p>
             </Link>
           </div>
         </div>

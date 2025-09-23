@@ -6,7 +6,7 @@ const algorithms = [
     title: 'Sorting Algorithms',
     description: 'Interactive visualization of 6 sorting algorithms with real-time statistics',
     href: '/diagrams/algorithms/sorting',
-    icon: <ChartBarIcon className="h-8 w-8" />,
+    icon: <ChartBarIcon className="h-5 w-5" />,
     color: 'bg-blue-500',
     algorithms: ['Bubble Sort', 'Selection Sort', 'Insertion Sort', 'Merge Sort', 'Quick Sort', 'Heap Sort'],
     complexity: 'O(n log n) to O(n²)',
@@ -16,7 +16,7 @@ const algorithms = [
     title: 'Searching Algorithms',
     description: 'Binary search, linear search, and advanced searching techniques',
     href: '/diagrams/algorithms/searching',
-    icon: <CodeBracketIcon className="h-8 w-8" />,
+    icon: <CodeBracketIcon className="h-5 w-5" />,
     color: 'bg-green-500',
     algorithms: ['Linear Search', 'Binary Search', 'Jump Search', 'Interpolation Search'],
     complexity: 'O(log n) to O(n)',
@@ -26,7 +26,7 @@ const algorithms = [
     title: 'Graph Algorithms',
     description: 'BFS, DFS, shortest path, and minimum spanning tree algorithms',
     href: '/diagrams/algorithms/graph',
-    icon: <ChartBarIcon className="h-8 w-8" />,
+    icon: <ChartBarIcon className="h-5 w-5" />,
     color: 'bg-purple-500',
     algorithms: ['BFS', 'DFS', "Dijkstra's", "Kruskal's", "Prim's"],
     complexity: 'O(V + E) to O(V²)',
@@ -36,7 +36,7 @@ const algorithms = [
     title: 'Dynamic Programming',
     description: 'Memoization, tabulation, and optimization techniques',
     href: '/diagrams/algorithms/dynamic-programming',
-    icon: <ClockIcon className="h-8 w-8" />,
+    icon: <ClockIcon className="h-5 w-5" />,
     color: 'bg-orange-500',
     algorithms: ['Fibonacci', 'Knapsack', 'LCS', 'Edit Distance', 'Coin Change'],
     complexity: 'O(n²) to O(n³)',
@@ -47,27 +47,27 @@ const algorithms = [
 function AlgorithmCard({ algorithm }: { algorithm: typeof algorithms[0] }) {
   return (
     <Link href={algorithm.href} className="group">
-      <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-        <div className="flex items-start space-x-4">
-          <div className={`${algorithm.color} p-3 rounded-lg text-white`}>
+      <div className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-all duration-200">
+        <div className="flex items-start space-x-3">
+          <div className={`${algorithm.color} p-2 rounded text-white`}>
             {algorithm.icon}
           </div>
           <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">{algorithm.title}</h3>
-            <p className="text-gray-600 mb-4">{algorithm.description}</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{algorithm.title}</h3>
+            <p className="text-gray-600 text-sm mb-3">{algorithm.description}</p>
             
-            <div className="space-y-2 mb-4">
+            <div className="space-y-1 mb-3">
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-500">Algorithms:</span>
-                <span className="text-sm text-gray-700">{algorithm.algorithms.join(', ')}</span>
+                <span className="text-xs font-medium text-gray-500">Algorithms:</span>
+                <span className="text-xs text-gray-700">{algorithm.algorithms.join(', ')}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-500">Complexity:</span>
-                <span className="text-sm text-gray-700">{algorithm.complexity}</span>
+                <span className="text-xs font-medium text-gray-500">Complexity:</span>
+                <span className="text-xs text-gray-700">{algorithm.complexity}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-500">Difficulty:</span>
-                <span className={`text-sm px-2 py-1 rounded-full ${
+                <span className="text-xs font-medium text-gray-500">Difficulty:</span>
+                <span className={`text-xs px-2 py-1 rounded-full ${
                   algorithm.difficulty === 'Beginner' ? 'bg-green-100 text-green-800' :
                   algorithm.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
                   'bg-red-100 text-red-800'
@@ -78,8 +78,8 @@ function AlgorithmCard({ algorithm }: { algorithm: typeof algorithms[0] }) {
             </div>
             
             <div className="flex items-center text-blue-600 group-hover:text-blue-700">
-              <span className="text-sm font-medium">Explore Visualizations</span>
-              <ArrowRightIcon className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              <span className="text-xs font-medium">Explore Visualizations</span>
+              <ArrowRightIcon className="h-3 w-3 ml-1 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
         </div>
