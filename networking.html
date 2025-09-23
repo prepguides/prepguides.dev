@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSI 7-Layer Model - PrepGuides.dev</title>
+    <meta name="description" content="Interactive OSI 7-layer model diagram with detailed explanations of each layer and protocols">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #10b981;
+            --secondary: #059669;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .diagram-container {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+
+        .diagram-container svg {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .description {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+
+        .description h3 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .description p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .layers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .layer-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            border-left: 4px solid var(--primary);
+        }
+
+        .layer-card h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .layer-card .layer-number {
+            background: var(--primary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .layer-card p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .layer-card .protocols {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .interview-questions {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .interview-questions h3 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .question-category {
+            margin-bottom: 25px;
+        }
+
+        .question-category h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .question-category ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .question-category li {
+            background: white;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            color: #6b7280;
+        }
+
+        .data-flow {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+
+        .data-flow h3 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .flow-step .step-number {
+            background: var(--primary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .flow-step .step-content {
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .layers {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header>
+            <a href="index.html" class="back-button">← Back to Home</a>
+            <h1>OSI 7-Layer Model</h1>
+            <p class="subtitle">Understanding network communication through the Open Systems Interconnection model</p>
+        </header>
+
+        <div class="content">
+            <div class="diagram-container">
+                <object data="public/diagrams/networking/osi_layers.svg" type="image/svg+xml" width="100%" height="600">
+                    <img src="public/diagrams/networking/osi_layers.svg" alt="OSI 7-Layer Model Diagram" style="max-width: 100%; height: auto;">
+                </object>
+            </div>
+
+            <div class="description">
+                <h3>OSI Model Overview</h3>
+                <p>The OSI (Open Systems Interconnection) model is a conceptual framework that standardizes the functions of a telecommunication or computing system into seven abstraction layers. Each layer serves the layer above it and is served by the layer below it.</p>
+                
+                <p>This model helps in understanding how data flows through a network, from the application layer where users interact, down to the physical layer where electrical signals are transmitted, and back up through the layers on the receiving end.</p>
+            </div>
+
+            <div class="layers">
+                <div class="layer-card">
+                    <div class="layer-number">7</div>
+                    <h4>Application Layer</h4>
+                    <p>Provides network services directly to user applications. This is where users interact with network services.</p>
+                    <div class="protocols">Protocols: HTTP, HTTPS, FTP, SMTP, DNS</div>
+                </div>
+
+                <div class="layer-card">
+                    <div class="layer-number">6</div>
+                    <h4>Presentation Layer</h4>
+                    <p>Handles data translation, encryption, and compression. Ensures data is in a format the application can understand.</p>
+                    <div class="protocols">Protocols: SSL/TLS, JPEG, MPEG, ASCII</div>
+                </div>
+
+                <div class="layer-card">
+                    <div class="layer-number">5</div>
+                    <h4>Session Layer</h4>
+                    <p>Manages sessions between applications. Establishes, maintains, and terminates connections.</p>
+                    <div class="protocols">Protocols: NetBIOS, RPC, SQL</div>
+                </div>
+
+                <div class="layer-card">
+                    <div class="layer-number">4</div>
+                    <h4>Transport Layer</h4>
+                    <p>Provides reliable data transfer between hosts. Handles error detection, flow control, and segmentation.</p>
+                    <div class="protocols">Protocols: TCP, UDP</div>
+                </div>
+
+                <div class="layer-card">
+                    <div class="layer-number">3</div>
+                    <h4>Network Layer</h4>
+                    <p>Routes data packets between different networks. Handles logical addressing and routing decisions.</p>
+                    <div class="protocols">Protocols: IP, ICMP, ARP, OSPF</div>
+                </div>
+
+                <div class="layer-card">
+                    <div class="layer-number">2</div>
+                    <h4>Data Link Layer</h4>
+                    <p>Provides error-free transfer of data frames between nodes on the same network segment.</p>
+                    <div class="protocols">Protocols: Ethernet, Wi-Fi, PPP</div>
+                </div>
+
+                <div class="layer-card">
+                    <div class="layer-number">1</div>
+                    <h4>Physical Layer</h4>
+                    <p>Transmits raw bits over a physical medium. Defines electrical, mechanical, and procedural specifications.</p>
+                    <div class="protocols">Protocols: Ethernet cables, Wi-Fi radio waves</div>
+                </div>
+            </div>
+
+            <div class="data-flow">
+                <h3>Data Flow Process</h3>
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">Data starts at the Application Layer (Layer 7) when a user sends a request</div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">Each layer adds its own header (encapsulation) as data moves down</div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">Data reaches the Physical Layer (Layer 1) and is transmitted as electrical signals</div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">On the receiving end, data moves up through the layers (decapsulation)</div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">Each layer removes its header and processes the data accordingly</div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">Data reaches the Application Layer on the receiving end</div>
+                </div>
+            </div>
+
+            <div class="interview-questions">
+                <h3>Interview Questions</h3>
+                
+                <div class="question-category">
+                    <h4>Fundamental Concepts</h4>
+                    <ul>
+                        <li>Explain the difference between TCP and UDP</li>
+                        <li>What's the purpose of port numbers?</li>
+                        <li>How does ARP work?</li>
+                        <li>What's the difference between a switch and a router?</li>
+                    </ul>
+                </div>
+
+                <div class="question-category">
+                    <h4>Layer-Specific Questions</h4>
+                    <ul>
+                        <li>What happens at the Transport Layer?</li>
+                        <li>How does the Network Layer handle routing?</li>
+                        <li>What's the role of the Data Link Layer?</li>
+                        <li>Explain the difference between HTTP and HTTPS</li>
+                    </ul>
+                </div>
+
+                <div class="question-category">
+                    <h4>Troubleshooting Scenarios</h4>
+                    <ul>
+                        <li>A user can't connect to the server, which layers would you check?</li>
+                        <li>How do you debug network connectivity issues?</li>
+                        <li>What happens when a packet is lost at the Network Layer?</li>
+                        <li>How would you troubleshoot slow network performance?</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
