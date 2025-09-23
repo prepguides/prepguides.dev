@@ -73,7 +73,7 @@ export default function SortingAlgorithmsPage() {
             <h4 className="font-semibold text-yellow-800 mb-2">💡 How to Use</h4>
             <ul className="text-yellow-700 text-sm space-y-1">
               <li>• Select an algorithm from the top buttons</li>
-              <li>• Click "Start Sorting" to begin the visualization</li>
+              <li>• Click &ldquo;Start Sorting&rdquo; to begin the visualization</li>
               <li>• Use the speed slider to control animation speed</li>
               <li>• Try different array sizes to see performance differences</li>
               <li>• Watch the code execution and statistics in real-time</li>
@@ -148,19 +148,19 @@ export default function SortingAlgorithmsPage() {
             <h3 className="text-xl font-bold text-gray-900 mb-4">Interview Questions</h3>
             <div className="space-y-3">
               <div className="p-3 bg-gray-50 rounded-lg text-sm">
-                "Explain the difference between stable and unstable sorting algorithms"
+                &ldquo;Explain the difference between stable and unstable sorting algorithms&rdquo;
               </div>
               <div className="p-3 bg-gray-50 rounded-lg text-sm">
-                "When would you choose Quick Sort over Merge Sort?"
+                &ldquo;When would you choose Quick Sort over Merge Sort?&rdquo;
               </div>
               <div className="p-3 bg-gray-50 rounded-lg text-sm">
-                "What is the time complexity of Bubble Sort and why is it rarely used?"
+                &ldquo;What is the time complexity of Bubble Sort and why is it rarely used?&rdquo;
               </div>
               <div className="p-3 bg-gray-50 rounded-lg text-sm">
-                "How does Heap Sort work and what are its advantages?"
+                &ldquo;How does Heap Sort work and what are its advantages?&rdquo;
               </div>
               <div className="p-3 bg-gray-50 rounded-lg text-sm">
-                "Implement Quick Sort with a custom partition function"
+                &ldquo;Implement Quick Sort with a custom partition function&rdquo;
               </div>
             </div>
           </div>
@@ -192,7 +192,7 @@ export default function SortingAlgorithmsPage() {
             </Link>
             <Link href="/diagrams/algorithms/graph" className="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
               <h4 className="font-semibold text-green-900">Graph Algorithms</h4>
-              <p className="text-green-700 text-sm">BFS, DFS, Dijkstra's Algorithm</p>
+              <p className="text-green-700 text-sm">BFS, DFS, Dijkstra&apos;s Algorithm</p>
             </Link>
             <Link href="/diagrams/algorithms/dynamic-programming" className="p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
               <h4 className="font-semibold text-purple-900">Dynamic Programming</h4>

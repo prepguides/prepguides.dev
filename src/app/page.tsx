@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRightIcon, ChartBarIcon, CpuChipIcon, ServerIcon, CodeBracketIcon } from '@heroicons/react/24/outline'
+import { ArrowRightIcon, ChartBarIcon, ServerIcon, CodeBracketIcon } from '@heroicons/react/24/outline'
 
 export default function Home() {
   return (
