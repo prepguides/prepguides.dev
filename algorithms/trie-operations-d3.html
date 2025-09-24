@@ -89,8 +89,9 @@
 
         .operation-btn {
             padding: 10px 20px;
-            border: 2px solid #e5e7eb;
-            background: white;
+            border: 2px solid #8b5cf6;
+            background: #8b5cf6;
+            color: white;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
@@ -98,14 +99,17 @@
         }
 
         .operation-btn.active {
-            background: #8b5cf6;
-            color: white;
-            border-color: #8b5cf6;
+            background: #7c3aed;
+            border-color: #7c3aed;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
         }
 
         .operation-btn:hover:not(.active) {
-            border-color: #8b5cf6;
-            color: #8b5cf6;
+            background: #7c3aed;
+            border-color: #7c3aed;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
         }
 
         input[type="text"] {
@@ -130,7 +134,7 @@
             padding: 12px 24px;
             background: #8b5cf6;
             color: white;
-            border: none;
+            border: 2px solid #8b5cf6;
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
@@ -139,13 +143,17 @@
 
         button:hover {
             background: #7c3aed;
+            border-color: #7c3aed;
             transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
         }
 
         button:disabled {
             background: #9ca3af;
+            border-color: #9ca3af;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
         .visualization-area {
