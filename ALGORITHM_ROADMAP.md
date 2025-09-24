@@ -4,33 +4,50 @@
 This document outlines the planned algorithm visualizations for PrepGuides.dev, organized into three phases based on interview frequency and complexity.
 
 ## 📋 Phase 1 - Essential (High Priority)
-*Target: Complete by end of Q1 2025*
+*Target: Complete by end of Q1 2025* - **4/5 Complete (80%)**
 
-### 1. Binary Search Tree Operations
+### 1. ✅ Binary Search Tree Operations - **COMPLETED**
 - **Visualization**: Interactive BST with insert, delete, search operations
 - **Features**: Node highlighting, step-by-step operations, balance indicators
 - **Interview Focus**: Tree traversal, balancing, time complexity
 - **Files**: `algorithms/binary-search-tree.html`
+- **Status**: ✅ Live and functional
 
-### 2. BFS/DFS Graph Traversal
+### 2. ✅ BFS/DFS Graph Traversal - **COMPLETED**
 - **Visualization**: Animated graph traversal with different algorithms
 - **Features**: Node/edge highlighting, queue/stack visualization, path tracking
 - **Interview Focus**: Graph representation, traversal differences, applications
-- **Files**: `algorithms/bfs-dfs.html`
+- **Files**: `algorithms/bfs-dfs-graph-traversal.html`
+- **Status**: ✅ Live and functional
 
-### 3. Dijkstra's Algorithm
+### 3. 🔄 Dijkstra's Algorithm - **NEXT PRIORITY**
 - **Visualization**: Weighted graph with shortest path finding
 - **Features**: Distance updates, priority queue, path reconstruction
 - **Interview Focus**: Greedy algorithms, shortest path problems
 - **Files**: `algorithms/dijkstra.html`
+- **Status**: 🔄 Ready to implement
 
-### 4. Dynamic Programming (Knapsack, LCS)
+### 4. ✅ Sorting Algorithms - **COMPLETED**
+- **Visualization**: 6 sorting algorithms with real-time performance metrics
+- **Features**: Bubble, Selection, Insertion, Merge, Quick, Heap sort
+- **Interview Focus**: Algorithm comparison, time/space complexity
+- **Files**: `algorithms/sorting.html`
+- **Status**: ✅ Live and functional
+
+### 5. ✅ Trie Operations - **COMPLETED**
+- **Visualization**: D3.js-based Trie with professional graph rendering
+- **Features**: Insert, search, delete operations with smooth animations
+- **Interview Focus**: String processing, prefix trees, autocomplete
+- **Files**: `algorithms/trie-operations.html`
+- **Status**: ✅ Live and functional
+
+### 6. Dynamic Programming (Knapsack, LCS)
 - **Visualization**: DP table filling, decision tree, optimal substructure
 - **Features**: Table animation, recursive tree, memoization visualization
 - **Interview Focus**: DP patterns, optimization problems
 - **Files**: `algorithms/dynamic-programming.html`
 
-### 5. AVL Tree Rotations
+### 7. AVL Tree Rotations
 - **Visualization**: Tree balancing with rotation animations
 - **Features**: Balance factor display, rotation types, height maintenance
 - **Interview Focus**: Self-balancing trees, rotation mechanics
@@ -39,13 +56,7 @@ This document outlines the planned algorithm visualizations for PrepGuides.dev, 
 ## 📋 Phase 2 - Important (Medium Priority)
 *Target: Complete by end of Q2 2025*
 
-### 6. Trie Operations
-- **Visualization**: Trie structure with insert, search, delete
-- **Features**: Character-by-character traversal, prefix highlighting
-- **Interview Focus**: String processing, prefix trees, autocomplete
-- **Files**: `algorithms/trie.html`
-
-### 7. Segment Tree
+### 6. Segment Tree
 - **Visualization**: Tree construction and range queries
 - **Features**: Array-to-tree mapping, query highlighting, update operations
 - **Interview Focus**: Range queries, tree construction, lazy propagation
