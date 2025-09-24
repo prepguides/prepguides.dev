@@ -45,19 +45,42 @@ Click **Create** to save the branch protection rule.
 
 ### **Trigger Conditions:**
 1. **PR Review**: Someone with write access approves the PR (+1)
-2. **Branch Protection**: All required checks pass
-3. **PR Requirements**: 
+2. **Self-Approval**: Author comments `/approve` on their own PR
+3. **Branch Protection**: All required checks pass
+4. **PR Requirements**: 
    - Not in draft mode
    - Has description
    - Follows naming convention (`feature/*`, `fix/*`, `docs/*`, `improve/*`)
 
 ### **Auto-Merge Process:**
-1. ✅ **Approval Received**: Admin/contributor approves PR
+
+#### **Option 1: Admin/Reviewer Approval**
+1. ✅ **Approval Received**: Admin/contributor approves PR (+1)
 2. ✅ **Checks Pass**: All status checks pass
 3. ✅ **Auto-Merge**: PR is automatically merged to main
 4. ✅ **Branch Cleanup**: Feature branch is deleted
 5. ✅ **Deployment**: Vercel automatically deploys changes
 6. ✅ **Notification**: Comments added to PR with status
+
+#### **Option 2: Self-Approval (Author)**
+1. ✅ **Self-Approval**: Author comments `/approve` on their PR
+2. ✅ **Validation**: System checks PR requirements
+3. ✅ **Auto-Merge**: PR is automatically merged to main
+4. ✅ **Branch Cleanup**: Feature branch is deleted
+5. ✅ **Deployment**: Vercel automatically deploys changes
+6. ✅ **Notification**: Comments added to PR with status
+
+### **How to Self-Approve:**
+1. **Create PR** with proper naming (`feature/algorithm-name`)
+2. **Add description** (required)
+3. **Comment on PR**: Type `/approve` in a comment
+4. **Auto-merge triggers** immediately (if requirements met)
+
+### **Self-Approval Requirements:**
+- ✅ **Author Only**: Only the PR author can self-approve
+- ✅ **Proper Naming**: Branch must follow convention (`feature/*`, `fix/*`, etc.)
+- ✅ **Has Description**: PR must have a description
+- ✅ **Not Draft**: PR must not be in draft mode
 
 ### **Manual Override:**
 - You can still manually merge PRs if needed
