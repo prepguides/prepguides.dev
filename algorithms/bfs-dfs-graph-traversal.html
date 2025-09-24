@@ -489,7 +489,7 @@
                     if (!this.graph[i].includes(next)) {
                         this.graph[i].push(next);
                         this.graph[next].push(i);
-                        this.links.push({ source: i, target: next });
+                        this.links.push({ source: this.nodes[i], target: this.nodes[next] });
                     }
                 }
 
@@ -505,12 +505,13 @@
                     if (from !== to && !this.graph[from].includes(to)) {
                         this.graph[from].push(to);
                         this.graph[to].push(from);
-                        this.links.push({ source: from, target: to });
+                        this.links.push({ source: this.nodes[from], target: this.nodes[to] });
                         edgesAdded++;
                     }
                     attempts++;
                 }
 
+                console.log('Generated graph:', this.nodes.length, 'nodes,', this.links.length, 'links');
                 this.renderGraph();
                 this.resetStats();
             }
@@ -518,6 +519,8 @@
             renderGraph() {
                 // Clear previous content
                 this.g.selectAll('*').remove();
+
+                console.log('Rendering graph with', this.nodes.length, 'nodes and', this.links.length, 'links');
 
                 // Update simulation
                 this.simulation.nodes(this.nodes);
@@ -527,13 +530,18 @@
                 const link = this.g.selectAll('.link')
                     .data(this.links)
                     .join('line')
-                    .attr('class', 'link');
+                    .attr('class', 'link')
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
 
                 // Nodes
                 const node = this.g.selectAll('.node')
                     .data(this.nodes)
                     .join('g')
                     .attr('class', 'node')
+                    .attr('transform', d => `translate(${d.x},${d.y})`)
                     .call(this.drag(this.simulation));
 
                 node.append('circle')
@@ -542,6 +550,18 @@
                 node.append('text')
                     .text(d => d.label)
                     .attr('dy', '0.31em');
+
+                // Update positions on simulation tick
+                this.simulation.on('tick', () => {
+                    link
+                        .attr('x1', d => d.source.x)
+                        .attr('y1', d => d.source.y)
+                        .attr('x2', d => d.target.x)
+                        .attr('y2', d => d.target.y);
+
+                    node
+                        .attr('transform', d => `translate(${d.x},${d.y})`);
+                });
 
                 // Start simulation
                 this.simulation.alpha(1).restart();
