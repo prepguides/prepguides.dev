@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Binary Search Tree - PrepGuides.dev</title>
     <meta name="description" content="Interactive visualization of Binary Search Tree operations with insert, delete, search, and traversal animations">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -87,79 +88,72 @@
         }
 
         .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
             margin-bottom: 30px;
-            align-items: center;
-            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
         }
 
         .control-group {
             display: flex;
-            flex-direction: column;
-            gap: 8px;
             align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         .control-group label {
             font-weight: 600;
             color: var(--dark);
-            font-size: 0.9rem;
+            min-width: 100px;
         }
 
-        select, input, button {
-            padding: 12px 16px;
+        select, input {
+            padding: 10px 15px;
             border: 2px solid #e5e7eb;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 1rem;
-            transition: all 0.3s ease;
-            background: white;
+            transition: border-color 0.3s ease;
         }
 
         select:focus, input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
         button {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 12px 24px;
+            background: var(--primary);
             color: white;
             border: none;
-            cursor: pointer;
+            border-radius: 8px;
             font-weight: 600;
-            min-width: 120px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         button:hover {
+            background: var(--secondary);
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         button:disabled {
-            opacity: 0.6;
+            background: #9ca3af;
             cursor: not-allowed;
             transform: none;
-        }
-
-        .visualization {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 30px;
-            border: 2px solid #e2e8f0;
-            min-height: 400px;
+            box-shadow: none;
         }
 
         .visualization-area {
             background: white;
             border-radius: 12px;
             padding: 20px;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-            min-height: 400px;
-            position: relative;
-            overflow: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            min-height: 500px;
         }
 
         .tree-container {
@@ -167,107 +161,52 @@
             justify-content: center;
             align-items: flex-start;
             min-height: 400px;
-            padding: 20px;
-            overflow: auto;
             position: relative;
         }
 
-        .tree-node {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
-            margin: 10px;
-            position: relative;
-            transition: all 0.3s ease;
+        /* D3.js styles */
+        .node circle {
+            fill: #fff;
+            stroke: var(--primary);
+            stroke-width: 3px;
             cursor: pointer;
         }
 
-        .tree-node.highlighted {
-            background: var(--warning);
-            transform: scale(1.2);
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+        .node.highlighted circle {
+            fill: var(--warning);
+            stroke: var(--danger);
+            stroke-width: 4px;
         }
 
-        .tree-node.visited {
-            background: var(--success);
+        .node.visited circle {
+            fill: var(--success);
+            stroke: var(--success);
         }
 
-        .tree-node.found {
-            background: var(--danger);
-            animation: pulse 1s infinite;
+        .node text {
+            font: 14px sans-serif;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            font-weight: 600;
+            fill: var(--dark);
         }
 
-        .tree-node.new {
-            background: var(--secondary);
-            animation: bounce 0.6s ease;
+        .link {
+            fill: none;
+            stroke: #6b7280;
+            stroke-width: 2px;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-
-        .tree-level {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 20px 0;
-        }
-
-        .tree-line {
-            position: absolute;
-            background: #6b7280;
-            height: 2px;
-            transform-origin: left center;
-            z-index: 5;
-        }
-
-        .traversal-result {
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .traversal-result h4 {
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-
-        .traversal-sequence {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .traversal-item {
-            background: var(--primary);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
+        .link.highlighted {
+            stroke: var(--danger);
+            stroke-width: 3px;
         }
 
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin-bottom: 30px;
+            margin-top: 30px;
         }
 
         .stat-card {
@@ -291,105 +230,37 @@
             font-weight: 500;
         }
 
-        .algorithm-info {
-            background: white;
+        .traversal-result {
+            background: #f8fafc;
+            border: 2px solid var(--success);
             border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
+            padding: 20px;
+            margin-top: 20px;
         }
 
-        .algorithm-info h3 {
-            color: var(--dark);
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-        }
-
-        .complexity {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .complexity-item {
-            text-align: center;
-            padding: 15px;
-            background: #f8fafc;
-            border-radius: 8px;
-        }
-
-        .complexity-item h4 {
-            color: var(--dark);
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-        }
-
-        .complexity-item p {
-            color: var(--primary);
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .description {
-            color: #6b7280;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .interview-questions {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 30px;
-            margin-top: 30px;
-        }
-
-        .interview-questions h3 {
-            color: var(--dark);
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
-
-        .question-category {
-            margin-bottom: 25px;
-        }
-
-        .question-category h4 {
-            color: var(--primary);
+        .traversal-result h4 {
+            color: var(--success);
             margin-bottom: 10px;
+        }
+
+        .traversal-sequence {
+            font-family: 'Courier New', monospace;
             font-size: 1.1rem;
-        }
-
-        .question-category ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .question-category li {
-            background: white;
-            padding: 12px 16px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary);
-            color: #6b7280;
+            color: var(--dark);
         }
 
         @media (max-width: 768px) {
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .control-group {
-                align-items: stretch;
-            }
-
             h1 {
                 font-size: 2rem;
             }
-
+            
             .content {
                 padding: 20px;
+            }
+            
+            .control-group {
+                flex-direction: column;
+                align-items: stretch;
             }
         }
     </style>
@@ -405,7 +276,7 @@
         <div class="content">
             <div class="controls">
                 <div class="control-group">
-                    <label for="operation">Operation</label>
+                    <label for="operation">Operation:</label>
                     <select id="operation">
                         <option value="insert">Insert</option>
                         <option value="delete">Delete</option>
@@ -415,12 +286,12 @@
                 </div>
 
                 <div class="control-group">
-                    <label for="value">Value</label>
-                    <input type="number" id="value" placeholder="Enter value..." min="1" max="99">
+                    <label for="value">Value:</label>
+                    <input type="number" id="value" placeholder="Enter value (1-99)" min="1" max="99">
                 </div>
 
-                <div class="control-group">
-                    <label for="traversal">Traversal Type</label>
+                <div class="control-group" id="traversalGroup" style="display: none;">
+                    <label for="traversal">Traversal:</label>
                     <select id="traversal">
                         <option value="inorder">Inorder</option>
                         <option value="preorder">Preorder</option>
@@ -430,22 +301,15 @@
                 </div>
 
                 <div class="control-group">
-                    <label for="speed">Speed</label>
-                    <input type="range" id="speed" min="1" max="10" value="5">
-                    <span id="speedValue">5</span>
-                </div>
-
-                <div class="control-group">
                     <button id="execute">Execute</button>
-                    <button id="generate">Generate Random</button>
+                    <button id="generate">Generate Random Tree</button>
                     <button id="reset">Reset</button>
                 </div>
             </div>
 
-            <div class="visualization">
-                <div class="visualization-area" id="visualizationArea">
-                    <!-- Algorithm visualization will be rendered here -->
-                    <p style="color: #6b7280; font-size: 1.1rem;">Algorithm visualization will appear here</p>
+            <div class="visualization-area">
+                <div class="tree-container">
+                    <svg id="treeSvg" width="100%" height="500"></svg>
                 </div>
             </div>
 
@@ -461,71 +325,6 @@
                 <div class="stat-card">
                     <div class="stat-value" id="time">0ms</div>
                     <div class="stat-label">Time</div>
-                </div>
-            </div>
-
-            <div class="algorithm-info">
-                <h3>Binary Search Tree</h3>
-                <div class="complexity">
-                    <div class="complexity-item">
-                        <h4>Search Time</h4>
-                        <p>O(log n) avg, O(n) worst</p>
-                    </div>
-                    <div class="complexity-item">
-                        <h4>Insert/Delete</h4>
-                        <p>O(log n) avg, O(n) worst</p>
-                    </div>
-                    <div class="complexity-item">
-                        <h4>Space</h4>
-                        <p>O(n)</p>
-                    </div>
-                </div>
-                <div class="description">
-                    A Binary Search Tree (BST) is a binary tree where each node has at most two children, and for each node, all values in the left subtree are less than the node's value, and all values in the right subtree are greater than the node's value. This property enables efficient search, insertion, and deletion operations.
-                </div>
-            </div>
-
-            <div class="interview-questions">
-                <h3>Interview Questions</h3>
-                
-                <div class="question-category">
-                    <h4>Basic Concepts</h4>
-                    <ul>
-                        <li>What is a Binary Search Tree and how does it work?</li>
-                        <li>What are the properties of a valid BST?</li>
-                        <li>What's the difference between BST and binary tree?</li>
-                        <li>How do you validate if a binary tree is a BST?</li>
-                    </ul>
-                </div>
-
-                <div class="question-category">
-                    <h4>Operations</h4>
-                    <ul>
-                        <li>Implement BST insert, delete, and search operations</li>
-                        <li>How do you find the minimum and maximum values in a BST?</li>
-                        <li>Implement inorder, preorder, and postorder traversals</li>
-                        <li>How do you find the kth smallest element in a BST?</li>
-                    </ul>
-                </div>
-
-                <div class="question-category">
-                    <h4>Advanced Topics</h4>
-                    <ul>
-                        <li>What causes BST to become unbalanced?</li>
-                        <li>How do you convert a sorted array to a balanced BST?</li>
-                        <li>Implement BST iterator for inorder traversal</li>
-                        <li>How do you find the lowest common ancestor in a BST?</li>
-                    </ul>
-                </div>
-
-                <div class="question-category">
-                    <h4>Time Complexity</h4>
-                    <ul>
-                        <li>What's the time complexity of BST operations?</li>
-                        <li>When does BST have O(n) time complexity?</li>
-                        <li>How can you maintain O(log n) operations?</li>
-                        <li>Compare BST with hash table for search operations</li>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -550,6 +349,27 @@
                 this.startTime = 0;
                 this.traversalSequence = [];
                 
+                // D3.js setup
+                this.svg = d3.select('#treeSvg');
+                this.width = 800;
+                this.height = 500;
+                
+                // Group for zoom/pan
+                this.g = this.svg.append('g');
+
+                // D3 Tree layout
+                this.treeLayout = d3.tree()
+                    .nodeSize([80, 80]); // Horizontal and vertical spacing
+
+                // Zoom behavior
+                this.zoom = d3.zoom()
+                    .scaleExtent([0.1, 4])
+                    .on('zoom', (event) => {
+                        this.g.attr('transform', event.transform);
+                    });
+                
+                this.svg.call(this.zoom);
+                
                 this.initializeElements();
                 this.setupEventListeners();
                 this.resetStats();
@@ -557,66 +377,35 @@
             }
 
             initializeElements() {
-                this.visualizationArea = document.getElementById('visualizationArea');
                 this.operationSelect = document.getElementById('operation');
                 this.valueInput = document.getElementById('value');
                 this.traversalSelect = document.getElementById('traversal');
-                this.speedSlider = document.getElementById('speed');
                 this.executeBtn = document.getElementById('execute');
                 this.generateBtn = document.getElementById('generate');
                 this.resetBtn = document.getElementById('reset');
-                this.speedValue = document.getElementById('speedValue');
                 this.operationsEl = document.getElementById('operations');
                 this.comparisonsEl = document.getElementById('comparisons');
                 this.timeEl = document.getElementById('time');
+                this.traversalGroup = document.getElementById('traversalGroup');
             }
 
             setupEventListeners() {
                 this.executeBtn.addEventListener('click', () => this.executeOperation());
                 this.generateBtn.addEventListener('click', () => this.generateRandomTree());
                 this.resetBtn.addEventListener('click', () => this.reset());
-                this.speedSlider.addEventListener('input', (e) => {
-                    this.speedValue.textContent = e.target.value;
-                });
                 this.operationSelect.addEventListener('change', () => this.updateControls());
             }
 
             updateControls() {
                 const operation = this.operationSelect.value;
-                const valueInput = document.getElementById('value');
-                const traversalSelect = document.getElementById('traversal');
                 
                 if (operation === 'traverse') {
-                    valueInput.style.display = 'none';
-                    traversalSelect.style.display = 'block';
+                    this.valueInput.style.display = 'none';
+                    this.traversalGroup.style.display = 'flex';
                 } else {
-                    valueInput.style.display = 'block';
-                    traversalSelect.style.display = 'none';
+                    this.valueInput.style.display = 'block';
+                    this.traversalGroup.style.display = 'none';
                 }
-            }
-
-            generateRandomTree() {
-                this.root = null;
-                const values = [50, 25, 75, 12, 37, 62, 87, 6, 18, 31, 43, 56, 68, 81, 93];
-                values.forEach(value => {
-                    this.root = this.insertNode(this.root, value);
-                });
-                this.renderTree();
-                this.resetStats();
-            }
-
-            insertNode(node, value) {
-                if (!node) {
-                    return new BSTNode(value);
-                }
-                
-                if (value < node.value) {
-                    node.left = this.insertNode(node.left, value);
-                } else if (value > node.value) {
-                    node.right = this.insertNode(node.right, value);
-                }
-                
-                return node;
             }
 
             async executeOperation() {
@@ -631,7 +420,7 @@
                 const value = parseInt(this.valueInput.value);
 
                 try {
-                    if (isNaN(value) || value < 1 || value > 99) {
+                    if (operation !== 'traverse' && (isNaN(value) || value < 1 || value > 99)) {
                         this.showError('Please enter a valid number between 1 and 99');
                         return;
                     }
@@ -653,6 +442,7 @@
                 } finally {
                     this.isRunning = false;
                     this.executeBtn.disabled = false;
+                    this.updateDuration();
                 }
             }
 
@@ -663,67 +453,96 @@
                 if (!this.root) {
                     this.root = new BSTNode(value);
                     this.renderTree();
-                    await this.highlightNode(this.root.id, 'new');
                     return;
                 }
 
-                await this.insertHelper(this.root, value);
+                await this.insertNode(this.root, value);
+            }
+
+            async insertNode(node, value) {
+                this.comparisons++;
+                this.updateStats();
+
+                if (value < node.value) {
+                    if (node.left) {
+                        await this.insertNode(node.left, value);
+                    } else {
+                        node.left = new BSTNode(value);
+                        this.renderTree();
+                    }
+                } else if (value > node.value) {
+                    if (node.right) {
+                        await this.insertNode(node.right, value);
+                    } else {
+                        node.right = new BSTNode(value);
+                        this.renderTree();
+                    }
+                }
+            }
+
+            async delete(value) {
+                this.operations++;
+                this.updateStats();
+                
+                this.root = await this.deleteNode(this.root, value);
                 this.renderTree();
             }
 
-            async insertHelper(node, value) {
+            async deleteNode(node, value) {
+                if (!node) return null;
+
                 this.comparisons++;
                 this.updateStats();
-                
-                await this.highlightNode(node.id, 'highlighted');
-                await this.sleep(1000 / this.speedSlider.value * 10);
 
                 if (value < node.value) {
-                    if (!node.left) {
-                        node.left = new BSTNode(value);
-                        await this.highlightNode(node.left.id, 'new');
-                    } else {
-                        await this.insertHelper(node.left, value);
-                    }
+                    node.left = await this.deleteNode(node.left, value);
                 } else if (value > node.value) {
-                    if (!node.right) {
-                        node.right = new BSTNode(value);
-                        await this.highlightNode(node.right.id, 'new');
-                    } else {
-                        await this.insertHelper(node.right, value);
-                    }
+                    node.right = await this.deleteNode(node.right, value);
+                } else {
+                    if (!node.left) return node.right;
+                    if (!node.right) return node.left;
+
+                    const minNode = this.findMin(node.right);
+                    node.value = minNode.value;
+                    node.right = await this.deleteNode(node.right, minNode.value);
                 }
+
+                return node;
+            }
+
+            findMin(node) {
+                while (node.left) {
+                    node = node.left;
+                }
+                return node;
             }
 
             async search(value) {
                 this.operations++;
                 this.updateStats();
                 
-                const found = await this.searchHelper(this.root, value);
+                const found = await this.searchNode(this.root, value);
+                this.renderTree();
+                
                 if (found) {
-                    await this.highlightNode(found.id, 'found');
+                    this.showMessage(`Value ${value} found!`, 'success');
                 } else {
-                    // Show not found message
-                    this.visualizationArea.innerHTML += '<div style="text-align: center; color: var(--danger); margin-top: 20px;">Value not found!</div>';
-                    setTimeout(() => this.renderTree(), 2000);
+                    this.showMessage(`Value ${value} not found!`, 'error');
                 }
             }
 
-            async searchHelper(node, value) {
-                if (!node) return null;
-                
+            async searchNode(node, value) {
+                if (!node) return false;
+
                 this.comparisons++;
                 this.updateStats();
-                
-                await this.highlightNode(node.id, 'highlighted');
-                await this.sleep(1000 / this.speedSlider.value * 10);
 
                 if (value === node.value) {
-                    return node;
+                    return true;
                 } else if (value < node.value) {
-                    return await this.searchHelper(node.left, value);
+                    return await this.searchNode(node.left, value);
                 } else {
-                    return await this.searchHelper(node.right, value);
+                    return await this.searchNode(node.right, value);
                 }
             }
 
@@ -731,8 +550,8 @@
                 this.operations++;
                 this.updateStats();
                 
-                this.traversalSequence = [];
                 const traversalType = this.traversalSelect.value;
+                this.traversalSequence = [];
                 
                 switch (traversalType) {
                     case 'inorder':
@@ -753,181 +572,209 @@
             }
 
             async inorderTraversal(node) {
-                if (!node) return;
-                
-                await this.inorderTraversal(node.left);
-                await this.highlightNode(node.id, 'visited');
-                this.traversalSequence.push(node.value);
-                await this.sleep(1000 / this.speedSlider.value * 10);
-                await this.inorderTraversal(node.right);
+                if (node) {
+                    await this.inorderTraversal(node.left);
+                    this.traversalSequence.push(node.value);
+                    await this.delay(500);
+                    this.renderTree();
+                    await this.inorderTraversal(node.right);
+                }
             }
 
             async preorderTraversal(node) {
-                if (!node) return;
-                
-                await this.highlightNode(node.id, 'visited');
-                this.traversalSequence.push(node.value);
-                await this.sleep(1000 / this.speedSlider.value * 10);
-                await this.preorderTraversal(node.left);
-                await this.preorderTraversal(node.right);
+                if (node) {
+                    this.traversalSequence.push(node.value);
+                    await this.delay(500);
+                    this.renderTree();
+                    await this.preorderTraversal(node.left);
+                    await this.preorderTraversal(node.right);
+                }
             }
 
             async postorderTraversal(node) {
-                if (!node) return;
-                
-                await this.postorderTraversal(node.left);
-                await this.postorderTraversal(node.right);
-                await this.highlightNode(node.id, 'visited');
-                this.traversalSequence.push(node.value);
-                await this.sleep(1000 / this.speedSlider.value * 10);
+                if (node) {
+                    await this.postorderTraversal(node.left);
+                    await this.postorderTraversal(node.right);
+                    this.traversalSequence.push(node.value);
+                    await this.delay(500);
+                    this.renderTree();
+                }
             }
 
             async levelOrderTraversal(node) {
                 if (!node) return;
                 
                 const queue = [node];
-                
                 while (queue.length > 0) {
                     const current = queue.shift();
-                    await this.highlightNode(current.id, 'visited');
                     this.traversalSequence.push(current.value);
-                    await this.sleep(1000 / this.speedSlider.value * 10);
+                    await this.delay(500);
+                    this.renderTree();
                     
                     if (current.left) queue.push(current.left);
                     if (current.right) queue.push(current.right);
                 }
             }
 
-            showTraversalResult() {
-                const resultDiv = document.createElement('div');
-                resultDiv.className = 'traversal-result';
-                resultDiv.innerHTML = `
-                    <h4>${this.traversalSelect.value.charAt(0).toUpperCase() + this.traversalSelect.value.slice(1)} Traversal Result:</h4>
-                    <div class="traversal-sequence">
-                        ${this.traversalSequence.map(val => `<span class="traversal-item">${val}</span>`).join('')}
-                    </div>
-                `;
-                this.visualizationArea.appendChild(resultDiv);
-            }
-
-            async highlightNode(nodeId, className) {
-                const node = document.getElementById(nodeId);
-                if (node) {
-                    node.classList.add(className);
-                    await this.sleep(500);
-                    node.classList.remove(className);
-                }
-            }
-
             renderTree() {
-                this.visualizationArea.innerHTML = '<div class="tree-container" id="treeContainer"></div>';
-                const container = document.getElementById('treeContainer');
-                
-                if (this.root) {
-                    // Calculate tree dimensions
-                    const treeHeight = this.getTreeHeight(this.root);
-                    const treeWidth = Math.pow(2, treeHeight - 1) * 80; // 80px spacing between nodes
-                    
-                    // Set container dimensions
-                    container.style.width = `${treeWidth}px`;
-                    container.style.height = `${treeHeight * 100}px`;
-                    container.style.position = 'relative';
-                    
-                    // Render tree with proper positioning
-                    this.renderNodeWithLines(this.root, container, treeWidth / 2, 50, treeWidth / 4, 100);
-                } else {
-                    container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 50px;">Tree is empty</p>';
+                // Clear previous content
+                this.g.selectAll('*').remove();
+
+                if (!this.root) {
+                    this.g.append('text')
+                        .attr('x', this.width / 2)
+                        .attr('y', this.height / 2)
+                        .attr('text-anchor', 'middle')
+                        .attr('fill', '#6b7280')
+                        .style('font-size', '1.2rem')
+                        .text('Tree is empty. Insert some values to see the visualization.');
+                    return;
                 }
+
+                // Convert BST to D3 hierarchy format
+                const rootData = d3.hierarchy(this.root, d => [d.left, d.right].filter(Boolean));
+                this.treeLayout(rootData);
+
+                // Calculate bounds of the tree
+                let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+                rootData.each(d => {
+                    minX = Math.min(minX, d.x);
+                    maxX = Math.max(maxX, d.x);
+                    minY = Math.min(minY, d.y);
+                    maxY = Math.max(maxY, d.y);
+                });
+
+                const treeWidth = maxX - minX;
+                const treeHeight = maxY - minY;
+
+                // Center the tree in the SVG
+                const translateX = (this.width / 2) - (minX + treeWidth / 2);
+                const translateY = 50 - minY;
+                this.g.attr('transform', `translate(${translateX},${translateY})`);
+
+                // Links (edges)
+                this.g.selectAll('.link')
+                    .data(rootData.links())
+                    .join('path')
+                    .attr('class', 'link')
+                    .attr('d', d3.linkVertical()
+                        .x(d => d.x)
+                        .y(d => d.y));
+
+                // Nodes
+                const nodes = this.g.selectAll('.node')
+                    .data(rootData.descendants())
+                    .join('g')
+                    .attr('class', d => {
+                        let classes = 'node';
+                        if (this.traversalSequence.includes(d.data.value)) {
+                            classes += ' visited';
+                        }
+                        return classes;
+                    })
+                    .attr('transform', d => `translate(${d.x},${d.y})`);
+
+                nodes.append('circle')
+                    .attr('r', 25);
+
+                nodes.append('text')
+                    .text(d => d.data.value)
+                    .attr('dy', '0.31em');
             }
 
-            getTreeHeight(node) {
-                if (!node) return 0;
-                return 1 + Math.max(this.getTreeHeight(node.left), this.getTreeHeight(node.right));
-            }
-
-            renderNodeWithLines(node, container, x, y, xOffset, yOffset) {
-                if (!node) return;
+            generateRandomTree() {
+                this.root = null;
+                const numNodes = Math.floor(Math.random() * 8) + 5; // 5-12 nodes
+                const values = [];
                 
-                // Create node element
-                const nodeDiv = document.createElement('div');
-                nodeDiv.className = 'tree-node';
-                nodeDiv.id = node.id;
-                nodeDiv.textContent = node.value;
-                nodeDiv.style.position = 'absolute';
-                nodeDiv.style.left = `${x - 25}px`; // Center the node (50px width / 2)
-                nodeDiv.style.top = `${y - 25}px`; // Center the node (50px height / 2)
-                nodeDiv.style.zIndex = '10';
-                
-                container.appendChild(nodeDiv);
-                
-                // Draw lines to children
-                if (node.left) {
-                    const leftX = x - xOffset;
-                    const leftY = y + yOffset;
-                    
-                    // Create line element
-                    const line = document.createElement('div');
-                    line.className = 'tree-line';
-                    line.style.position = 'absolute';
-                    line.style.left = `${x - 25}px`;
-                    line.style.top = `${y + 25}px`;
-                    line.style.width = `${Math.sqrt(xOffset * xOffset + yOffset * yOffset)}px`;
-                    line.style.height = '2px';
-                    line.style.backgroundColor = '#6b7280';
-                    line.style.transformOrigin = '0 0';
-                    line.style.transform = `rotate(${Math.atan2(yOffset, -xOffset) * 180 / Math.PI}deg)`;
-                    line.style.zIndex = '5';
-                    
-                    container.appendChild(line);
-                    
-                    // Recursively render left child
-                    this.renderNodeWithLines(node.left, container, leftX, leftY, xOffset / 2, yOffset);
+                for (let i = 0; i < numNodes; i++) {
+                    let value;
+                    do {
+                        value = Math.floor(Math.random() * 50) + 1;
+                    } while (values.includes(value));
+                    values.push(value);
                 }
                 
-                if (node.right) {
-                    const rightX = x + xOffset;
-                    const rightY = y + yOffset;
-                    
-                    // Create line element
-                    const line = document.createElement('div');
-                    line.className = 'tree-line';
-                    line.style.position = 'absolute';
-                    line.style.left = `${x + 25}px`;
-                    line.style.top = `${y + 25}px`;
-                    line.style.width = `${Math.sqrt(xOffset * xOffset + yOffset * yOffset)}px`;
-                    line.style.height = '2px';
-                    line.style.backgroundColor = '#6b7280';
-                    line.style.transformOrigin = '0 0';
-                    line.style.transform = `rotate(${Math.atan2(yOffset, xOffset) * 180 / Math.PI}deg)`;
-                    line.style.zIndex = '5';
-                    
-                    container.appendChild(line);
-                    
-                    // Recursively render right child
-                    this.renderNodeWithLines(node.right, container, rightX, rightY, xOffset / 2, yOffset);
+                values.forEach(value => {
+                    if (!this.root) {
+                        this.root = new BSTNode(value);
+                    } else {
+                        this.insertNodeSync(this.root, value);
+                    }
+                });
+                
+                this.renderTree();
+                this.resetStats();
+            }
+
+            insertNodeSync(node, value) {
+                if (value < node.value) {
+                    if (node.left) {
+                        this.insertNodeSync(node.left, value);
+                    } else {
+                        node.left = new BSTNode(value);
+                    }
+                } else if (value > node.value) {
+                    if (node.right) {
+                        this.insertNodeSync(node.right, value);
+                    } else {
+                        node.right = new BSTNode(value);
+                    }
                 }
             }
 
             reset() {
-                this.isRunning = false;
-                this.executeBtn.disabled = false;
-                this.resetStats();
-                this.traversalSequence = [];
                 this.root = null;
                 this.renderTree();
+                this.resetStats();
+                this.traversalSequence = [];
+                this.clearTraversalResult();
             }
 
-            async sleep(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
+            resetStats() {
+                this.operations = 0;
+                this.comparisons = 0;
+                this.startTime = 0;
+                this.updateStats();
             }
-            
-            showError(message) {
-                const errorDiv = document.createElement('div');
-                errorDiv.style.cssText = `
+
+            updateStats() {
+                this.operationsEl.textContent = this.operations;
+                this.comparisonsEl.textContent = this.comparisons;
+            }
+
+            updateDuration() {
+                const duration = Math.round(performance.now() - this.startTime);
+                this.timeEl.textContent = `${duration}ms`;
+            }
+
+            showTraversalResult() {
+                this.clearTraversalResult();
+                
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'traversal-result';
+                resultDiv.innerHTML = `
+                    <h4>${this.traversalSelect.value.charAt(0).toUpperCase() + this.traversalSelect.value.slice(1)} Traversal Result:</h4>
+                    <div class="traversal-sequence">${this.traversalSequence.join(' → ')}</div>
+                `;
+                
+                document.querySelector('.visualization-area').appendChild(resultDiv);
+            }
+
+            clearTraversalResult() {
+                const existingResult = document.querySelector('.traversal-result');
+                if (existingResult) {
+                    existingResult.remove();
+                }
+            }
+
+            showMessage(message, type) {
+                const messageDiv = document.createElement('div');
+                messageDiv.style.cssText = `
                     position: fixed;
                     top: 20px;
                     right: 20px;
-                    background: #ef4444;
+                    background: ${type === 'success' ? '#10b981' : '#ef4444'};
                     color: white;
                     padding: 15px 20px;
                     border-radius: 8px;
@@ -935,30 +782,22 @@
                     z-index: 1000;
                     font-weight: 500;
                 `;
-                errorDiv.textContent = message;
-                document.body.appendChild(errorDiv);
+                messageDiv.textContent = message;
+                document.body.appendChild(messageDiv);
                 
                 setTimeout(() => {
-                    if (errorDiv.parentNode) {
-                        errorDiv.parentNode.removeChild(errorDiv);
+                    if (messageDiv.parentNode) {
+                        messageDiv.parentNode.removeChild(messageDiv);
                     }
                 }, 3000);
             }
 
-            resetStats() {
-                this.operations = 0;
-                this.comparisons = 0;
-                this.operationsEl.textContent = '0';
-                this.comparisonsEl.textContent = '0';
-                this.timeEl.textContent = '0ms';
+            showError(message) {
+                this.showMessage(message, 'error');
             }
 
-            updateStats() {
-                const currentTime = performance.now();
-                const elapsed = Math.round(currentTime - this.startTime);
-                this.timeEl.textContent = `${elapsed}ms`;
-                this.operationsEl.textContent = this.operations;
-                this.comparisonsEl.textContent = this.comparisons;
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
             }
         }
 

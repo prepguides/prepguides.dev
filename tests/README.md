@@ -18,7 +18,7 @@ This directory contains all testing files and resources organized by category.
 ## 🧪 Testing Framework
 
 ### Core Logic Testing
-The core testing framework validates algorithm implementations independently of UI:
+The core testing framework validates algorithm implementations independently of UI. All visualizations now use D3.js for professional rendering:
 
 ```bash
 # Run tests from command line
