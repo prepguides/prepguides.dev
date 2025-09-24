@@ -1184,76 +1184,40 @@
                 this.nodePositions.clear();
                 this.edgePositions.clear();
                 
-                // Use a proper tree layout algorithm
-                const levelHeight = 100;
-                const nodeSpacing = 120;
-                
-                // Calculate positions using a proper tree layout
-                this.calculateTreeLayout();
-                
-                // Center the entire tree
-                this.centerTree();
+                // Use a simple, reliable tree layout algorithm
+                this.calculateSimpleTreeLayout();
             }
 
-            calculateTreeLayout() {
-                // First pass: calculate subtree widths
-                this.calculateSubtreeWidths(this.root);
+            calculateSimpleTreeLayout() {
+                // Simple breadth-first layout
+                const queue = [{ node: this.root, level: 0, x: 0 }];
+                const levelNodes = new Map();
                 
-                // Second pass: position nodes
-                this.positionNodes(this.root, 0, 0);
-            }
-
-            calculateSubtreeWidths(node) {
-                if (!node) return 0;
-                
-                if (node.children.size === 0) {
-                    node.subtreeWidth = 1;
-                    return 1;
+                // Collect all nodes by level
+                while (queue.length > 0) {
+                    const { node, level, x } = queue.shift();
+                    
+                    if (!levelNodes.has(level)) {
+                        levelNodes.set(level, []);
+                    }
+                    levelNodes.get(level).push(node);
+                    
+                    // Add children to queue
+                    for (const [char, child] of node.children) {
+                        queue.push({ node: child, level: level + 1, x: x });
+                    }
                 }
                 
-                let totalWidth = 0;
-                for (const [char, child] of node.children) {
-                    totalWidth += this.calculateSubtreeWidths(child);
-                }
-                
-                node.subtreeWidth = Math.max(totalWidth, node.children.size);
-                return node.subtreeWidth;
-            }
-
-            positionNodes(node, level, x) {
-                if (!node) return x;
-                
-                // Position the current node
-                this.nodePositions.set(node.id, { x, y: level * 100 });
-                
-                if (node.children.size === 0) {
-                    return x + 1;
-                }
-                
-                // Position children
-                let currentX = x;
-                for (const [char, child] of node.children) {
-                    currentX = this.positionNodes(child, level + 1, currentX);
-                }
-                
-                return currentX;
-            }
-
-            centerTree() {
-                // Calculate bounds
-                const bounds = this.calculateTrieBounds();
-                const treeWidth = bounds.maxX - bounds.minX;
-                const treeHeight = bounds.maxY - bounds.minY;
-                
-                // Calculate center offset
-                const centerX = treeWidth / 2;
-                const centerY = treeHeight / 2;
-                
-                // Apply centering offset to all nodes
-                for (const [nodeId, position] of this.nodePositions) {
-                    this.nodePositions.set(nodeId, {
-                        x: position.x - bounds.minX - centerX + 400, // Center at x=400
-                        y: position.y - bounds.minY + 100 // Start at y=100
+                // Position nodes at each level
+                for (const [level, nodes] of levelNodes) {
+                    const nodeSpacing = 150;
+                    const startX = -(nodes.length - 1) * nodeSpacing / 2;
+                    
+                    nodes.forEach((node, index) => {
+                        const x = startX + index * nodeSpacing;
+                        const y = level * 120;
+                        
+                        this.nodePositions.set(node.id, { x, y });
                     });
                 }
             }
