@@ -671,11 +671,6 @@
                 // Group for zoom/pan
                 this.g = this.svg.append('g');
 
-                // Code execution synchronization
-                this.codeSync = new CodeExecutionSync();
-                this.initializeCodeBlocks();
-                this.setupEventListeners();
-
                 // D3 Tree layout
                 this.treeLayout = d3.tree()
                     .nodeSize([80, 80]); // Horizontal and vertical spacing
@@ -694,6 +689,10 @@
                 this.setupCodeEventListeners();
                 this.resetStats();
                 this.generateRandomTree();
+
+                // Code execution synchronization (after DOM elements are ready)
+                this.codeSync = new CodeExecutionSync();
+                this.initializeCodeBlocks();
             }
 
             initializeElements() {
@@ -1417,6 +1416,7 @@ private boolean searchNode(TreeNode node, int value) {
             }
 
             async executeOperationWithCodeSync() {
+                console.log('executeOperationWithCodeSync called');
                 if (this.isRunning) return;
                 
                 this.isRunning = true;
@@ -1427,6 +1427,8 @@ private boolean searchNode(TreeNode node, int value) {
                 const operation = this.operationSelect.value;
                 const value = parseInt(this.valueInput.value);
 
+                console.log(`Executing operation: ${operation} with value: ${value}`);
+
                 try {
                     if (operation !== 'traverse' && (isNaN(value) || value < 1 || value > 99)) {
                         this.showError('Please enter a valid number between 1 and 99');
@@ -1435,6 +1437,7 @@ private boolean searchNode(TreeNode node, int value) {
                     
                     // Define execution steps for code synchronization
                     const executionSteps = this.generateExecutionSteps(operation, value);
+                    console.log('Generated execution steps:', executionSteps);
                     
                     // Start code execution synchronization
                     await this.codeSync.startExecution(`${operation}Operation`, executionSteps);
@@ -1781,8 +1784,12 @@ private void inOrder(TreeNode node, List<Integer> result) {
 
         // Global functions for code execution controls
         function startCodeExecution() {
+            console.log('startCodeExecution called');
             if (window.bstVisualizer) {
+                console.log('BST visualizer found, calling executeOperationWithCodeSync');
                 window.bstVisualizer.executeOperationWithCodeSync();
+            } else {
+                console.log('BST visualizer not found');
             }
         }
 

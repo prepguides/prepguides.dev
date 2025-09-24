@@ -650,14 +650,14 @@
                 this.height = 400;
                 this.margin = { top: 20, right: 20, bottom: 40, left: 20 };
                 
-                // Code execution synchronization
-                this.codeSync = new CodeExecutionSync();
-                this.initializeCodeBlocks();
-                this.setupCodeEventListeners();
-                
                 this.initializeElements();
                 this.setupEventListeners();
                 this.generateArray();
+
+                // Code execution synchronization (after DOM elements are ready)
+                this.codeSync = new CodeExecutionSync();
+                this.initializeCodeBlocks();
+                this.setupCodeEventListeners();
             }
 
             initializeElements() {
@@ -1672,8 +1672,12 @@ private static void merge(int[] arr, int[] left, int[] right) {
 
         // Global functions for code execution controls
         function startCodeExecution() {
+            console.log('startCodeExecution called for sorting');
             if (window.sortingVisualizer) {
+                console.log('Sorting visualizer found, calling startSortingWithCodeSync');
                 window.sortingVisualizer.startSortingWithCodeSync();
+            } else {
+                console.log('Sorting visualizer not found');
             }
         }
 
