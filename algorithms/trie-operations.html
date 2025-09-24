@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trie Operations - PrepGuides.dev</title>
+    <meta name="description" content="Interactive visualization of Trie (Prefix Tree) operations with insert, search, and delete functionality">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .controls {
+            background: white;
+            padding: 30px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            padding: 10px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .operation-selector {
+            display: flex;
+            gap: 10px;
+            background: #f3f4f6;
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .operation-selector button {
+            background: transparent;
+            color: var(--dark);
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .operation-selector button.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .visualization-area {
+            background: #f8fafc;
+            min-height: 500px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .trie-container {
+            width: 100%;
+            max-width: 1000px;
+            min-height: 400px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .trie-node {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            border: 3px solid transparent;
+        }
+
+        .trie-node.root {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .trie-node.end-of-word {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-color: #059669;
+        }
+
+        .trie-node.highlighted {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            animation: pulse 0.6s ease-in-out;
+            transform: scale(1.1);
+        }
+
+        .trie-node.current {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            animation: bounce 0.8s ease-in-out;
+        }
+
+        .trie-edge {
+            position: absolute;
+            height: 3px;
+            background: #6b7280;
+            transform-origin: left center;
+            z-index: 5;
+            transition: all 0.3s ease;
+        }
+
+        .trie-edge.highlighted {
+            background: #f59e0b;
+            height: 5px;
+            animation: pulse 0.6s ease-in-out;
+        }
+
+        .trie-edge-label {
+            position: absolute;
+            background: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--dark);
+            border: 1px solid #e5e7eb;
+            z-index: 15;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .word-list {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .word-list h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-size: 1rem;
+        }
+
+        .word-item {
+            background: #f3f4f6;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .word-item.highlighted {
+            background: var(--primary);
+            color: white;
+        }
+
+        .step-info {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .step-info h4 {
+            color: #0369a1;
+            margin-bottom: 10px;
+        }
+
+        .step-info p {
+            color: #0c4a6e;
+            margin: 0;
+        }
+
+        .info-panel {
+            background: white;
+            padding: 30px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .info-section h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .info-section p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .complexity-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .complexity-table th,
+        .complexity-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .complexity-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .interview-questions {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .interview-questions h4 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .interview-questions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .interview-questions li {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .interview-questions li strong {
+            color: var(--dark);
+        }
+
+        .predefined-words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .predefined-word {
+            background: #e5e7eb;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .predefined-word:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .operation-selector {
+                justify-content: center;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .visualization-area {
+                padding: 20px;
+            }
+
+            .trie-container {
+                min-height: 300px;
+            }
+
+            .word-list {
+                position: static;
+                margin-top: 20px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header>
+            <a href="../algorithms.html" class="back-button">← Back to Algorithms</a>
+            <h1>Trie Operations</h1>
+            <p class="subtitle">Interactive visualization of Trie (Prefix Tree) data structure operations</p>
+        </header>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Operation</label>
+                <div class="operation-selector">
+                    <button id="insertBtn" class="active" onclick="selectOperation('insert')">Insert</button>
+                    <button id="searchBtn" onclick="selectOperation('search')">Search</button>
+                    <button id="deleteBtn" onclick="selectOperation('delete')">Delete</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Word</label>
+                <input type="text" id="wordInput" placeholder="Enter word..." maxlength="10">
+            </div>
+
+            <button onclick="performOperation()" id="operationBtn">Insert Word</button>
+            <button onclick="clearTrie()" id="clearBtn">Clear Trie</button>
+        </div>
+
+        <div class="visualization-area">
+            <div class="trie-container" id="trieContainer">
+                <!-- Trie will be rendered here -->
+            </div>
+            
+            <div class="word-list" id="wordList">
+                <h3>Words in Trie</h3>
+                <div id="wordItems">
+                    <!-- Words will be displayed here -->
+                </div>
+            </div>
+
+            <div class="step-info" id="stepInfo" style="display: none;">
+                <h4 id="stepTitle">Current Step</h4>
+                <p id="stepDescription">Enter a word and select an operation to begin</p>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-grid">
+                <div class="info-section">
+                    <h3>What is a Trie?</h3>
+                    <p>A <strong>Trie</strong> (pronounced "try") is a tree-like data structure that stores strings in a way that makes prefix-based operations very efficient. Each node represents a character, and paths from root to leaf nodes represent complete words.</p>
+                    
+                    <p><strong>Key Properties:</strong></p>
+                    <ul>
+                        <li>• Root node is empty (represents start of all words)</li>
+                        <li>• Each path from root represents a prefix</li>
+                        <li>• Leaf nodes (or marked nodes) represent end of words</li>
+                        <li>• Common prefixes share the same path</li>
+                    </ul>
+                    
+                    <table class="complexity-table">
+                        <tr>
+                            <th>Operation</th>
+                            <th>Time Complexity</th>
+                            <th>Space Complexity</th>
+                        </tr>
+                        <tr>
+                            <td>Insert</td>
+                            <td>O(m)</td>
+                            <td>O(m)</td>
+                        </tr>
+                        <tr>
+                            <td>Search</td>
+                            <td>O(m)</td>
+                            <td>O(1)</td>
+                        </tr>
+                        <tr>
+                            <td>Delete</td>
+                            <td>O(m)</td>
+                            <td>O(1)</td>
+                        </tr>
+                    </table>
+                    <p><em>Where m is the length of the word</em></p>
+                </div>
+
+                <div class="info-section">
+                    <h3>Common Use Cases</h3>
+                    <p><strong>Autocomplete:</strong> Find all words with a given prefix</p>
+                    <p><strong>Spell Checker:</strong> Check if a word exists in dictionary</p>
+                    <p><strong>IP Routing:</strong> Longest prefix matching in network routing</p>
+                    <p><strong>Word Games:</strong> Scrabble, Boggle word validation</p>
+                    <p><strong>Search Engines:</strong> Prefix-based search suggestions</p>
+
+                    <div class="predefined-words">
+                        <h4>Try these words:</h4>
+                        <div class="predefined-word" onclick="insertPredefinedWord('cat')">cat</div>
+                        <div class="predefined-word" onclick="insertPredefinedWord('car')">car</div>
+                        <div class="predefined-word" onclick="insertPredefinedWord('card')">card</div>
+                        <div class="predefined-word" onclick="insertPredefinedWord('care')">care</div>
+                        <div class="predefined-word" onclick="insertPredefinedWord('careful')">careful</div>
+                        <div class="predefined-word" onclick="insertPredefinedWord('careless')">careless</div>
+                        <div class="predefined-word" onclick="insertPredefinedWord('dog')">dog</div>
+                        <div class="predefined-word" onclick="insertPredefinedWord('door')">door</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="interview-questions">
+                <h4>Common Interview Questions</h4>
+                <ul>
+                    <li><strong>Implement a Trie with insert, search, and startsWith operations.</strong> Classic trie implementation with boolean flags for end-of-word.</li>
+                    <li><strong>Find all words with a given prefix.</strong> Use DFS from the prefix node to find all complete words.</li>
+                    <li><strong>Design a search autocomplete system.</strong> Use trie for prefix matching and return top K suggestions.</li>
+                    <li><strong>Implement word search in a 2D grid.</strong> Use trie to store dictionary words and DFS in grid.</li>
+                    <li><strong>Design a spell checker.</strong> Use trie for fast word lookup and suggest corrections for typos.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class TrieNode {
+            constructor(char = '') {
+                this.char = char;
+                this.children = new Map();
+                this.isEndOfWord = false;
+                this.x = 0;
+                this.y = 0;
+                this.id = Math.random().toString(36).substr(2, 9);
+            }
+        }
+
+        class TrieVisualization {
+            constructor() {
+                this.root = new TrieNode('ROOT');
+                this.currentOperation = 'insert';
+                this.isRunning = false;
+                this.animationSpeed = 800;
+                this.nodePositions = new Map();
+                this.edgePositions = new Map();
+                this.words = new Set();
+            }
+
+            selectOperation(operation) {
+                this.currentOperation = operation;
+                
+                // Update UI
+                document.getElementById('insertBtn').classList.toggle('active', operation === 'insert');
+                document.getElementById('searchBtn').classList.toggle('active', operation === 'search');
+                document.getElementById('deleteBtn').classList.toggle('active', operation === 'delete');
+                
+                const button = document.getElementById('operationBtn');
+                button.textContent = operation === 'insert' ? 'Insert Word' : 
+                                   operation === 'search' ? 'Search Word' : 'Delete Word';
+                
+                this.updateStepInfo('Operation Selected', `Selected ${operation} operation. Enter a word to ${operation}.`);
+            }
+
+            async performOperation() {
+                const word = document.getElementById('wordInput').value.toLowerCase().trim();
+                
+                if (!word) {
+                    this.updateStepInfo('Error', 'Please enter a word');
+                    return;
+                }
+
+                if (!/^[a-z]+$/.test(word)) {
+                    this.updateStepInfo('Error', 'Please enter only lowercase letters');
+                    return;
+                }
+
+                if (this.isRunning) return;
+                this.isRunning = true;
+
+                switch (this.currentOperation) {
+                    case 'insert':
+                        await this.insertWord(word);
+                        break;
+                    case 'search':
+                        await this.searchWord(word);
+                        break;
+                    case 'delete':
+                        await this.deleteWord(word);
+                        break;
+                }
+
+                this.isRunning = false;
+                document.getElementById('wordInput').value = '';
+            }
+
+            async insertWord(word) {
+                this.updateStepInfo('Inserting Word', `Inserting "${word}" into the trie...`);
+                
+                let current = this.root;
+                let path = [];
+                
+                for (let i = 0; i < word.length; i++) {
+                    const char = word[i];
+                    path.push(char);
+                    
+                    this.updateStepInfo('Processing Character', `Processing character "${char}" (position ${i + 1}/${word.length})`);
+                    
+                    if (!current.children.has(char)) {
+                        // Create new node
+                        const newNode = new TrieNode(char);
+                        current.children.set(char, newNode);
+                        this.updateStepInfo('Creating Node', `Creating new node for character "${char}"`);
+                    } else {
+                        this.updateStepInfo('Following Path', `Following existing path for character "${char}"`);
+                    }
+                    
+                    current = current.children.get(char);
+                    
+                    // Highlight current path
+                    await this.highlightPath(path, 'current');
+                    await this.delay(this.animationSpeed);
+                }
+                
+                // Mark as end of word
+                current.isEndOfWord = true;
+                this.words.add(word);
+                this.updateStepInfo('Word Inserted', `Successfully inserted "${word}" into the trie`);
+                
+                // Final highlight
+                await this.highlightPath([...word], 'highlighted');
+                await this.delay(this.animationSpeed);
+                
+                this.renderTrie();
+                this.updateWordList();
+            }
+
+            async searchWord(word) {
+                this.updateStepInfo('Searching Word', `Searching for "${word}" in the trie...`);
+                
+                let current = this.root;
+                let path = [];
+                
+                for (let i = 0; i < word.length; i++) {
+                    const char = word[i];
+                    path.push(char);
+                    
+                    this.updateStepInfo('Checking Character', `Checking character "${char}" (position ${i + 1}/${word.length})`);
+                    
+                    if (!current.children.has(char)) {
+                        this.updateStepInfo('Word Not Found', `Character "${char}" not found. "${word}" is not in the trie.`);
+                        await this.highlightPath(path, 'current');
+                        await this.delay(this.animationSpeed);
+                        return false;
+                    }
+                    
+                    current = current.children.get(char);
+                    await this.highlightPath(path, 'current');
+                    await this.delay(this.animationSpeed);
+                }
+                
+                if (current.isEndOfWord) {
+                    this.updateStepInfo('Word Found', `"${word}" found in the trie!`);
+                    await this.highlightPath([...word], 'highlighted');
+                } else {
+                    this.updateStepInfo('Word Not Found', `"${word}" is a prefix but not a complete word in the trie.`);
+                    await this.highlightPath([...word], 'current');
+                }
+                
+                await this.delay(this.animationSpeed);
+                return current.isEndOfWord;
+            }
+
+            async deleteWord(word) {
+                this.updateStepInfo('Deleting Word', `Deleting "${word}" from the trie...`);
+                
+                // First check if word exists
+                const exists = await this.searchWord(word);
+                if (!exists) {
+                    this.updateStepInfo('Word Not Found', `"${word}" not found in the trie. Cannot delete.`);
+                    return false;
+                }
+                
+                // Mark as not end of word
+                let current = this.root;
+                for (const char of word) {
+                    current = current.children.get(char);
+                }
+                current.isEndOfWord = false;
+                this.words.delete(word);
+                
+                // Clean up unused nodes (simplified - in real implementation, you'd traverse back)
+                this.updateStepInfo('Word Deleted', `Successfully deleted "${word}" from the trie`);
+                
+                this.renderTrie();
+                this.updateWordList();
+                return true;
+            }
+
+            async highlightPath(path, state) {
+                // Clear previous highlights
+                document.querySelectorAll('.trie-node, .trie-edge').forEach(el => {
+                    el.classList.remove('current', 'highlighted');
+                });
+                
+                // This is a simplified version - in a full implementation,
+                // you'd track the actual path through the trie structure
+                this.renderTrie();
+            }
+
+            renderTrie() {
+                const container = document.getElementById('trieContainer');
+                container.innerHTML = '';
+                
+                if (this.words.size === 0) {
+                    container.innerHTML = '<div style="text-align: center; padding: 50px; color: #6b7280; font-size: 1.2rem;">Trie is empty. Insert some words to see the visualization.</div>';
+                    return;
+                }
+                
+                // Calculate positions for nodes
+                this.calculatePositions();
+                
+                // Render edges first (so they appear behind nodes)
+                this.renderEdges(container);
+                
+                // Render nodes
+                this.renderNodes(container);
+            }
+
+            calculatePositions() {
+                this.nodePositions.clear();
+                this.edgePositions.clear();
+                
+                const startX = 100;
+                const startY = 50;
+                const levelHeight = 80;
+                const nodeSpacing = 120;
+                
+                // Position root node
+                this.nodePositions.set(this.root.id, { x: startX, y: startY });
+                
+                // Position other nodes using BFS
+                const queue = [{ node: this.root, level: 0, index: 0 }];
+                const levelNodes = new Map();
+                
+                while (queue.length > 0) {
+                    const { node, level, index } = queue.shift();
+                    
+                    if (level > 0) {
+                        const levelCount = levelNodes.get(level) || 0;
+                        levelNodes.set(level, levelCount + 1);
+                        
+                        const x = startX + (index - levelCount / 2) * nodeSpacing;
+                        const y = startY + level * levelHeight;
+                        
+                        this.nodePositions.set(node.id, { x, y });
+                    }
+                    
+                    // Add children to queue
+                    let childIndex = 0;
+                    for (const [char, child] of node.children) {
+                        queue.push({ 
+                            node: child, 
+                            level: level + 1, 
+                            index: index * 10 + childIndex 
+                        });
+                        childIndex++;
+                    }
+                }
+            }
+
+            renderNodes(container) {
+                const renderNode = (node) => {
+                    const position = this.nodePositions.get(node.id);
+                    if (!position) return;
+                    
+                    const nodeElement = document.createElement('div');
+                    nodeElement.className = 'trie-node';
+                    nodeElement.id = `node-${node.id}`;
+                    nodeElement.textContent = node.char || 'ROOT';
+                    nodeElement.style.left = `${position.x - 30}px`;
+                    nodeElement.style.top = `${position.y - 30}px`;
+                    
+                    if (node === this.root) {
+                        nodeElement.classList.add('root');
+                    }
+                    if (node.isEndOfWord) {
+                        nodeElement.classList.add('end-of-word');
+                    }
+                    
+                    container.appendChild(nodeElement);
+                    
+                    // Render children
+                    for (const [char, child] of node.children) {
+                        renderNode(child);
+                    }
+                };
+                
+                renderNode(this.root);
+            }
+
+            renderEdges(container) {
+                const renderEdges = (node) => {
+                    for (const [char, child] of node.children) {
+                        const parentPos = this.nodePositions.get(node.id);
+                        const childPos = this.nodePositions.get(child.id);
+                        
+                        if (parentPos && childPos) {
+                            // Create edge
+                            const edge = document.createElement('div');
+                            edge.className = 'trie-edge';
+                            
+                            const dx = childPos.x - parentPos.x;
+                            const dy = childPos.y - parentPos.y;
+                            const length = Math.sqrt(dx * dx + dy * dy);
+                            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                            
+                            edge.style.left = `${parentPos.x}px`;
+                            edge.style.top = `${parentPos.y}px`;
+                            edge.style.width = `${length}px`;
+                            edge.style.transform = `rotate(${angle}deg)`;
+                            
+                            container.appendChild(edge);
+                            
+                            // Create edge label
+                            const label = document.createElement('div');
+                            label.className = 'trie-edge-label';
+                            label.textContent = char;
+                            label.style.left = `${parentPos.x + dx/2 - 10}px`;
+                            label.style.top = `${parentPos.y + dy/2 - 10}px`;
+                            
+                            container.appendChild(label);
+                        }
+                        
+                        // Render edges for children
+                        renderEdges(child);
+                    }
+                };
+                
+                renderEdges(this.root);
+            }
+
+            updateWordList() {
+                const container = document.getElementById('wordItems');
+                container.innerHTML = '';
+                
+                const sortedWords = Array.from(this.words).sort();
+                sortedWords.forEach(word => {
+                    const wordElement = document.createElement('div');
+                    wordElement.className = 'word-item';
+                    wordElement.textContent = word;
+                    container.appendChild(wordElement);
+                });
+            }
+
+            updateStepInfo(title, description) {
+                document.getElementById('stepTitle').textContent = title;
+                document.getElementById('stepDescription').textContent = description;
+                document.getElementById('stepInfo').style.display = 'block';
+            }
+
+            clearTrie() {
+                this.root = new TrieNode('ROOT');
+                this.words.clear();
+                this.renderTrie();
+                this.updateWordList();
+                this.updateStepInfo('Trie Cleared', 'All words have been removed from the trie');
+            }
+
+            insertPredefinedWord(word) {
+                document.getElementById('wordInput').value = word;
+                this.selectOperation('insert');
+            }
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+
+        // Initialize the application
+        const trieVisualization = new TrieVisualization();
+        
+        // Event listeners
+        document.getElementById('wordInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                trieVisualization.performOperation();
+            }
+        });
+
+        // Initialize with empty trie
+        trieVisualization.renderTrie();
+    </script>
+</body>
+</html>
