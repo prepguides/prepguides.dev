@@ -169,18 +169,51 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            width: 100%;
+            max-width: 100%;
         }
 
         .trie-container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 100%;
             min-height: 400px;
+            max-height: 80vh;
             background: white;
             border-radius: 16px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             position: relative;
-            overflow: hidden;
+            overflow: auto;
             padding: 20px;
+            border: 2px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .trie-content {
+            position: relative;
+            min-width: 100%;
+            min-height: 100%;
+            display: block;
+        }
+
+        .trie-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .trie-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .trie-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .trie-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
 
         .trie-node {
@@ -430,6 +463,13 @@
 
             .trie-container {
                 min-height: 300px;
+                max-height: 60vh;
+                padding: 15px;
+            }
+
+            .trie-content {
+                min-width: auto;
+                min-height: auto;
             }
 
             .word-list {
@@ -465,6 +505,7 @@
 
             <button id="operationBtn">Insert Word</button>
             <button id="clearBtn">Clear Trie</button>
+            <button id="centerBtn">Center Trie</button>
         </div>
 
         <div class="visualization-area">
@@ -715,22 +756,20 @@
                 this.updateStepInfo('Deleting Word', `Deleting "${word}" from the trie...`);
                 
                 // First check if word exists
-                const exists = await this.searchWord(word);
-                if (!exists) {
+                if (!this.trie.search(word)) {
                     this.updateStepInfo('Word Not Found', `"${word}" not found in the trie. Cannot delete.`);
                     return false;
                 }
                 
-                // Mark as not end of word
-                let current = this.root;
-                for (const char of word) {
-                    current = current.children.get(char);
+                // Delete from the actual trie structure
+                const deleted = this.trie.delete(word);
+                if (deleted) {
+                    this.words.delete(word);
+                    this.updateStepInfo('Word Deleted', `Successfully deleted "${word}" from the trie`);
+                } else {
+                    this.updateStepInfo('Delete Failed', `Failed to delete "${word}" from the trie`);
+                    return false;
                 }
-                current.isEndOfWord = false;
-                this.words.delete(word);
-                
-                // Clean up unused nodes (simplified - in real implementation, you'd traverse back)
-                this.updateStepInfo('Word Deleted', `Successfully deleted "${word}" from the trie`);
                 
                 this.renderTrie();
                 this.updateWordList();
@@ -752,66 +791,96 @@
                 const container = document.getElementById('trieContainer');
                 container.innerHTML = '';
                 
-                if (this.words.size === 0) {
+                // Check if trie is empty by checking if root has any children
+                if (this.root.children.size === 0) {
                     container.innerHTML = '<div style="text-align: center; padding: 50px; color: #6b7280; font-size: 1.2rem;">Trie is empty. Insert some words to see the visualization.</div>';
                     return;
                 }
                 
+                // Create content wrapper for centering
+                const contentWrapper = document.createElement('div');
+                contentWrapper.className = 'trie-content';
+                container.appendChild(contentWrapper);
+                
                 // Calculate positions for nodes
                 this.calculatePositions();
                 
+                // Calculate the bounds of the trie to center it properly
+                const bounds = this.calculateTrieBounds();
+                const centerX = bounds.minX + (bounds.maxX - bounds.minX) / 2;
+                const centerY = bounds.minY + (bounds.maxY - bounds.minY) / 2;
+                
+                // Set content wrapper size to accommodate the trie with proper padding
+                const trieWidth = bounds.maxX - bounds.minX;
+                const trieHeight = bounds.maxY - bounds.minY;
+                const padding = 200;
+                
+                contentWrapper.style.width = `${Math.max(trieWidth + padding, container.clientWidth)}px`;
+                contentWrapper.style.height = `${Math.max(trieHeight + padding, container.clientHeight)}px`;
+                
                 // Render edges first (so they appear behind nodes)
-                this.renderEdges(container);
+                this.renderEdges(contentWrapper);
                 
                 // Render nodes
-                this.renderNodes(container);
+                this.renderNodes(contentWrapper);
+                
+                // Center the trie in the viewport after a short delay to ensure rendering is complete
+                setTimeout(() => {
+                    this.centerTrieInViewport(container, centerX, centerY);
+                }, 100);
             }
 
             calculatePositions() {
                 this.nodePositions.clear();
                 this.edgePositions.clear();
                 
-                const startX = 200;
-                const startY = 80;
-                const levelHeight = 100;
-                const nodeSpacing = 150;
+                // Use a more flexible positioning system
+                const levelHeight = 120;
+                const minNodeSpacing = 100;
                 
-                // Position root node
-                this.nodePositions.set(this.root.id, { x: startX, y: startY });
+                // First pass: calculate all node positions using a tree layout algorithm
+                this.calculateTreeLayout(this.root, 0, 0, levelHeight, minNodeSpacing);
                 
-                // Position other nodes using BFS with better spacing
-                const queue = [{ node: this.root, level: 0, index: 0, parentX: startX }];
-                const levelNodes = new Map();
+                // Second pass: adjust positions to prevent overlaps and ensure visibility
+                this.adjustPositionsForVisibility();
+            }
+
+            calculateTreeLayout(node, level, index, levelHeight, minSpacing) {
+                if (!node) return;
                 
-                while (queue.length > 0) {
-                    const { node, level, index, parentX } = queue.shift();
-                    
-                    if (level > 0) {
-                        const levelCount = levelNodes.get(level) || 0;
-                        levelNodes.set(level, levelCount + 1);
-                        
-                        // Better positioning algorithm to prevent overlaps
-                        const totalNodesAtLevel = this.countNodesAtLevel(this.root, level);
-                        const spacing = Math.max(nodeSpacing, 800 / totalNodesAtLevel);
-                        const startOffset = -(totalNodesAtLevel - 1) * spacing / 2;
-                        
-                        const x = startX + startOffset + levelCount * spacing;
-                        const y = startY + level * levelHeight;
-                        
-                        this.nodePositions.set(node.id, { x, y });
-                    }
-                    
-                    // Add children to queue
-                    let childIndex = 0;
-                    for (const [char, child] of node.children) {
-                        queue.push({ 
-                            node: child, 
-                            level: level + 1, 
-                            index: index * 10 + childIndex,
-                            parentX: this.nodePositions.get(node.id)?.x || startX
-                        });
-                        childIndex++;
-                    }
+                // Calculate position for this node
+                const totalNodesAtLevel = this.countNodesAtLevel(this.root, level);
+                const spacing = Math.max(minSpacing, 1200 / Math.max(totalNodesAtLevel, 1));
+                const startOffset = -(totalNodesAtLevel - 1) * spacing / 2;
+                
+                const x = startOffset + index * spacing;
+                const y = level * levelHeight;
+                
+                this.nodePositions.set(node.id, { x, y });
+                
+                // Recursively position children
+                let childIndex = 0;
+                for (const [char, child] of node.children) {
+                    this.calculateTreeLayout(child, level + 1, childIndex, levelHeight, minSpacing);
+                    childIndex++;
+                }
+            }
+
+            adjustPositionsForVisibility() {
+                // Calculate the bounds of all positioned nodes
+                const bounds = this.calculateTrieBounds();
+                
+                // Add padding to ensure all nodes are visible
+                const padding = 100;
+                const minX = bounds.minX - padding;
+                const minY = bounds.minY - padding;
+                
+                // Adjust all positions to ensure they're positive and have proper spacing
+                for (const [nodeId, position] of this.nodePositions) {
+                    this.nodePositions.set(nodeId, {
+                        x: position.x - minX + padding,
+                        y: position.y - minY + padding
+                    });
                 }
             }
             
@@ -834,6 +903,72 @@
                 }
                 
                 return count;
+            }
+
+            getMaxLevel(root) {
+                if (!root || root.children.size === 0) return 0;
+                
+                let maxLevel = 0;
+                const queue = [{ node: root, level: 0 }];
+                
+                while (queue.length > 0) {
+                    const { node, level } = queue.shift();
+                    maxLevel = Math.max(maxLevel, level);
+                    
+                    for (const [char, child] of node.children) {
+                        queue.push({ node: child, level: level + 1 });
+                    }
+                }
+                
+                return maxLevel;
+            }
+
+            calculateTrieBounds() {
+                let minX = Infinity, maxX = -Infinity;
+                let minY = Infinity, maxY = -Infinity;
+                
+                for (const [nodeId, position] of this.nodePositions) {
+                    minX = Math.min(minX, position.x);
+                    maxX = Math.max(maxX, position.x);
+                    minY = Math.min(minY, position.y);
+                    maxY = Math.max(maxY, position.y);
+                }
+                
+                // Add padding for node size (60px diameter)
+                const padding = 30;
+                return {
+                    minX: minX - padding,
+                    maxX: maxX + padding,
+                    minY: minY - padding,
+                    maxY: maxY + padding
+                };
+            }
+
+            centerTrieInViewport(container, centerX, centerY) {
+                // Calculate the scroll position to center the trie
+                const containerRect = container.getBoundingClientRect();
+                const contentWrapper = container.querySelector('.trie-content');
+                
+                if (!contentWrapper) return;
+                
+                // Calculate the center position within the content wrapper
+                const contentWidth = contentWrapper.offsetWidth;
+                const contentHeight = contentWrapper.offsetHeight;
+                
+                // Calculate scroll position to center the trie
+                const scrollLeft = centerX - containerRect.width / 2;
+                const scrollTop = centerY - containerRect.height / 2;
+                
+                // Ensure scroll position is within bounds
+                const maxScrollLeft = Math.max(0, contentWidth - containerRect.width);
+                const maxScrollTop = Math.max(0, contentHeight - containerRect.height);
+                
+                // Smooth scroll to center the trie
+                container.scrollTo({
+                    left: Math.max(0, Math.min(scrollLeft, maxScrollLeft)),
+                    top: Math.max(0, Math.min(scrollTop, maxScrollTop)),
+                    behavior: 'smooth'
+                });
             }
 
             renderNodes(container) {
@@ -934,6 +1069,21 @@
                 this.updateStepInfo('Trie Cleared', 'All words have been removed from the trie');
             }
 
+            centerTrie() {
+                if (this.root.children.size === 0) {
+                    this.updateStepInfo('Cannot Center', 'Trie is empty. Insert some words first.');
+                    return;
+                }
+
+                const container = document.getElementById('trieContainer');
+                const bounds = this.calculateTrieBounds();
+                const centerX = bounds.minX + (bounds.maxX - bounds.minX) / 2;
+                const centerY = bounds.minY + (bounds.maxY - bounds.minY) / 2;
+                
+                this.centerTrieInViewport(container, centerX, centerY);
+                this.updateStepInfo('Trie Centered', 'Trie has been centered in the viewport');
+            }
+
             insertPredefinedWord(word) {
                 document.getElementById('wordInput').value = word;
                 this.selectOperation('insert');
@@ -997,6 +1147,10 @@
 
         document.getElementById('clearBtn').addEventListener('click', () => {
             trieVisualization.clearTrie();
+        });
+
+        document.getElementById('centerBtn').addEventListener('click', () => {
+            trieVisualization.centerTrie();
         });
 
         // Fix predefined word buttons
