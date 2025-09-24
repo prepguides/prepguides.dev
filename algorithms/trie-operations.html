@@ -13,210 +13,204 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --primary: #6366f1;
-            --secondary: #8b5cf6;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #1f2937;
-            --light: #f3f4f6;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
             padding: 20px;
         }
 
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-
-        header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 40px;
+        .header {
             text-align: center;
-            position: relative;
-            overflow: hidden;
+            margin-bottom: 30px;
+            color: white;
         }
 
-        .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.2);
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
             color: white;
             text-decoration: none;
             padding: 10px 20px;
-            border-radius: 12px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            transition: background 0.3s ease;
         }
 
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            font-weight: 300;
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .controls {
             background: white;
-            padding: 30px;
-            border-bottom: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
             align-items: center;
-            justify-content: center;
         }
 
         .control-group {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            align-items: center;
         }
 
         .control-group label {
             font-weight: 600;
-            color: var(--dark);
+            color: #374151;
             font-size: 0.9rem;
         }
 
-        input, select {
-            padding: 10px 15px;
+        .operation-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .operation-btn {
+            padding: 10px 20px;
+            border: 2px solid #8b5cf6;
+            background: #8b5cf6;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .operation-btn.active {
+            background: #7c3aed;
+            border-color: #7c3aed;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
+        }
+
+        .operation-btn:hover:not(.active) {
+            background: #7c3aed;
+            border-color: #7c3aed;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
+        }
+
+        input[type="text"] {
+            padding: 12px 16px;
             border: 2px solid #e5e7eb;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 1rem;
             transition: border-color 0.3s ease;
         }
 
-        input:focus, select:focus {
+        input[type="text"]:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: #8b5cf6;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
         }
 
         button {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
             padding: 12px 24px;
-            border-radius: 12px;
+            background: #8b5cf6;
+            color: white;
+            border: 2px solid #8b5cf6;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.95rem;
         }
 
         button:hover {
+            background: #7c3aed;
+            border-color: #7c3aed;
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
         }
 
         button:disabled {
-            opacity: 0.6;
+            background: #9ca3af;
+            border-color: #9ca3af;
             cursor: not-allowed;
             transform: none;
-        }
-
-        .operation-selector {
-            display: flex;
-            gap: 10px;
-            background: #f3f4f6;
-            padding: 8px;
-            border-radius: 12px;
-        }
-
-        .operation-selector button {
-            background: transparent;
-            color: var(--dark);
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .operation-selector button.active {
-            background: var(--primary);
-            color: white;
+            box-shadow: none;
         }
 
         .visualization-area {
-            background: #f8fafc;
-            min-height: 500px;
-            padding: 40px;
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            width: 100%;
-            max-width: 100%;
+            gap: 25px;
         }
 
         .trie-container {
-            width: 100%;
-            max-width: 100%;
-            min-height: 400px;
-            max-height: 80vh;
+            flex: 1;
             background: white;
             border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            min-height: 500px;
             position: relative;
-            overflow: auto;
+        }
+
+        .word-list {
+            width: 250px;
+            background: white;
+            border-radius: 16px;
             padding: 20px;
-            border: 2px solid #e5e7eb;
-            cursor: grab;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            height: fit-content;
         }
 
-        .trie-container:active {
-            cursor: grabbing;
+        .word-list h3 {
+            margin-bottom: 15px;
+            color: #374151;
+            font-size: 1.1rem;
         }
 
-        .trie-content {
-            position: relative;
-            min-width: 100%;
-            min-height: 100%;
-            display: block;
+        .word-item {
+            padding: 8px 12px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
         }
 
-        .trie-container::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        .step-info {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
         }
 
-        .trie-container::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
+        .step-info h4 {
+            color: #0c4a6e;
+            margin-bottom: 5px;
         }
 
-        .trie-container::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-
-        .trie-container::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+        .step-info p {
+            color: #0c4a6e;
+            font-size: 0.9rem;
         }
 
         .trie-help {
@@ -243,244 +237,40 @@
             margin: 5px 0;
         }
 
-        .trie-node {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
+        /* D3.js styles */
+        .link {
+            fill: none;
+            stroke: #6b7280;
+            stroke-width: 2px;
+        }
+
+        .node circle {
+            stroke: #fff;
+            stroke-width: 2px;
+        }
+
+        .node text {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
             font-weight: bold;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 10;
-            border: 3px solid transparent;
-        }
-
-        .trie-node.root {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-
-        .trie-node.end-of-word {
-            background: linear-gradient(135deg, #10b981, #059669);
-            border-color: #059669;
-        }
-
-        .trie-node.highlighted {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            animation: pulse 0.6s ease-in-out;
-            transform: scale(1.1);
-        }
-
-        .trie-node.current {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-            animation: bounce 0.8s ease-in-out;
-        }
-
-        .trie-edge {
-            position: absolute;
-            height: 3px;
-            background: #6b7280;
-            transform-origin: left center;
-            z-index: 5;
-            transition: all 0.3s ease;
+            fill: white;
         }
 
         .edge-label {
-            position: absolute;
-            background: #f3f4f6;
-            color: #374151;
+            font-family: 'Inter', sans-serif;
             font-size: 12px;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1px solid #d1d5db;
-            z-index: 3;
-            pointer-events: none;
-        }
-
-        .trie-edge.highlighted {
-            background: #f59e0b;
-            height: 5px;
-            animation: pulse 0.6s ease-in-out;
-        }
-
-        .trie-edge-label {
-            position: absolute;
-            background: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--dark);
-            border: 1px solid #e5e7eb;
-            z-index: 15;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-
-        .word-list {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            min-width: 200px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .word-list h3 {
-            margin-bottom: 15px;
-            color: var(--dark);
-            font-size: 1rem;
-        }
-
-        .word-item {
-            background: #f3f4f6;
-            padding: 8px 12px;
-            margin-bottom: 5px;
-            border-radius: 6px;
-            font-size: 0.9rem;
+            fill: #374151;
             font-weight: 500;
-            color: var(--dark);
         }
 
-        .word-item.highlighted {
-            background: var(--primary);
-            color: white;
+        .node.highlighted circle {
+            stroke: #f59e0b;
+            stroke-width: 3px;
         }
 
-        .step-info {
-            background: #f0f9ff;
-            border: 1px solid #0ea5e9;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            width: 100%;
-            max-width: 800px;
-        }
-
-        .step-info h4 {
-            color: #0369a1;
-            margin-bottom: 10px;
-        }
-
-        .step-info p {
-            color: #0c4a6e;
-            margin: 0;
-        }
-
-        .info-panel {
-            background: white;
-            padding: 30px;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .info-section h3 {
-            color: var(--dark);
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-
-        .info-section p {
-            color: #6b7280;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .complexity-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        .complexity-table th,
-        .complexity-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .complexity-table th {
-            background: #f9fafb;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .interview-questions {
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-        }
-
-        .interview-questions h4 {
-            color: var(--dark);
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-
-        .interview-questions ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .interview-questions li {
-            background: white;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .interview-questions li strong {
-            color: var(--dark);
-        }
-
-        .predefined-words {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .predefined-word {
-            background: #e5e7eb;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .predefined-word:hover {
-            background: var(--primary);
-            color: white;
+        .link.highlighted {
+            stroke: #f59e0b;
+            stroke-width: 3px;
         }
 
         @media (max-width: 768px) {
@@ -489,52 +279,41 @@
                 align-items: stretch;
             }
 
-            .operation-selector {
+            .operation-buttons {
                 justify-content: center;
             }
 
-            h1 {
-                font-size: 2rem;
+            .action-buttons {
+                justify-content: center;
+                flex-wrap: wrap;
             }
 
             .visualization-area {
-                padding: 20px;
-            }
-
-            .trie-container {
-                min-height: 300px;
-                max-height: 60vh;
-                padding: 15px;
-            }
-
-            .trie-content {
-                min-width: auto;
-                min-height: auto;
+                flex-direction: column;
             }
 
             .word-list {
-                position: static;
-                margin-top: 20px;
                 width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <header>
-            <a href="../algorithms.html" class="back-button">← Back to Algorithms</a>
+    <div class="container">
+        <a href="../algorithms.html" class="back-link">← Back to Algorithms</a>
+        
+        <div class="header">
             <h1>Trie Operations</h1>
-            <p class="subtitle">Interactive visualization of Trie (Prefix Tree) data structure operations</p>
-        </header>
+            <p>Interactive visualization of Trie (Prefix Tree) data structure operations</p>
+        </div>
 
         <div class="controls">
             <div class="control-group">
                 <label>Operation</label>
-                <div class="operation-selector">
-                    <button id="insertBtn" class="active">Insert</button>
-                    <button id="searchBtn">Search</button>
-                    <button id="deleteBtn">Delete</button>
+                <div class="operation-buttons">
+                    <button class="operation-btn active" data-operation="insert">Insert</button>
+                    <button class="operation-btn" data-operation="search">Search</button>
+                    <button class="operation-btn" data-operation="delete">Delete</button>
                 </div>
             </div>
 
@@ -543,121 +322,49 @@
                 <input type="text" id="wordInput" placeholder="Enter word..." maxlength="10">
             </div>
 
-            <button id="operationBtn">Insert Word</button>
-            <button id="clearBtn">Clear Trie</button>
-            <button id="centerBtn">Center Trie</button>
-            <button id="resetViewBtn">Reset View</button>
+            <div class="action-buttons">
+                <button id="operationBtn">Insert Word</button>
+                <button id="clearBtn">Clear Trie</button>
+                <button id="centerBtn">Center Trie</button>
+                <button id="resetViewBtn">Reset View</button>
+            </div>
         </div>
 
         <div class="visualization-area">
-            <div class="trie-container" id="trieContainer">
-                <svg id="trieSvg" width="100%" height="100%"></svg>
-            </div>
-            <div class="trie-help" id="trieHelp" style="display: none;">
-                <p>💡 <strong>Navigation Tips:</strong></p>
-                <ul>
-                    <li>🖱️ <strong>Drag</strong> to move around the trie</li>
-                    <li>🔄 <strong>Scroll</strong> to zoom in/out</li>
-                    <li>🎯 <strong>Center Trie</strong> to reset position</li>
-                    <li>🔄 <strong>Reset View</strong> to start over</li>
-                </ul>
+            <div class="trie-container">
+                <svg id="trieSvg" width="100%" height="500"></svg>
             </div>
             
-            <div class="word-list" id="wordList">
+            <div class="word-list">
                 <h3>Words in Trie</h3>
                 <div id="wordItems">
                     <!-- Words will be displayed here -->
                 </div>
             </div>
-
-            <div class="step-info" id="stepInfo" style="display: none;">
-                <h4 id="stepTitle">Current Step</h4>
-                <p id="stepDescription">Enter a word and select an operation to begin</p>
-            </div>
         </div>
 
-        <div class="info-panel">
-            <div class="info-grid">
-                <div class="info-section">
-                    <h3>What is a Trie?</h3>
-                    <p>A <strong>Trie</strong> (pronounced "try") is a tree-like data structure that stores strings in a way that makes prefix-based operations very efficient. Each node represents a character, and paths from root to leaf nodes represent complete words.</p>
-                    
-                    <p><strong>Key Properties:</strong></p>
-                    <ul>
-                        <li>• Root node is empty (represents start of all words)</li>
-                        <li>• Each path from root represents a prefix</li>
-                        <li>• Leaf nodes (or marked nodes) represent end of words</li>
-                        <li>• Common prefixes share the same path</li>
-                    </ul>
-                    
-                    <table class="complexity-table">
-                        <tr>
-                            <th>Operation</th>
-                            <th>Time Complexity</th>
-                            <th>Space Complexity</th>
-                        </tr>
-                        <tr>
-                            <td>Insert</td>
-                            <td>O(m)</td>
-                            <td>O(m)</td>
-                        </tr>
-                        <tr>
-                            <td>Search</td>
-                            <td>O(m)</td>
-                            <td>O(1)</td>
-                        </tr>
-                        <tr>
-                            <td>Delete</td>
-                            <td>O(m)</td>
-                            <td>O(1)</td>
-                        </tr>
-                    </table>
-                    <p><em>Where m is the length of the word</em></p>
-                </div>
+        <div class="step-info" id="stepInfo">
+            <h4 id="stepTitle">Ready</h4>
+            <p id="stepDescription">Select an operation and enter a word to get started.</p>
+        </div>
 
-                <div class="info-section">
-                    <h3>Common Use Cases</h3>
-                    <p><strong>Autocomplete:</strong> Find all words with a given prefix</p>
-                    <p><strong>Spell Checker:</strong> Check if a word exists in dictionary</p>
-                    <p><strong>IP Routing:</strong> Longest prefix matching in network routing</p>
-                    <p><strong>Word Games:</strong> Scrabble, Boggle word validation</p>
-                    <p><strong>Search Engines:</strong> Prefix-based search suggestions</p>
-
-                    <div class="predefined-words">
-                        <h4>Try these words:</h4>
-                        <div class="predefined-word">cat</div>
-                        <div class="predefined-word">car</div>
-                        <div class="predefined-word">card</div>
-                        <div class="predefined-word">care</div>
-                        <div class="predefined-word">careful</div>
-                        <div class="predefined-word">careless</div>
-                        <div class="predefined-word">dog</div>
-                        <div class="predefined-word">door</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="interview-questions">
-                <h4>Common Interview Questions</h4>
-                <ul>
-                    <li><strong>Implement a Trie with insert, search, and startsWith operations.</strong> Classic trie implementation with boolean flags for end-of-word.</li>
-                    <li><strong>Find all words with a given prefix.</strong> Use DFS from the prefix node to find all complete words.</li>
-                    <li><strong>Design a search autocomplete system.</strong> Use trie for prefix matching and return top K suggestions.</li>
-                    <li><strong>Implement word search in a 2D grid.</strong> Use trie to store dictionary words and DFS in grid.</li>
-                    <li><strong>Design a spell checker.</strong> Use trie for fast word lookup and suggest corrections for typos.</li>
-                </ul>
-            </div>
+        <div class="trie-help" id="trieHelp" style="display: none;">
+            <p>💡 <strong>Navigation Tips:</strong></p>
+            <ul>
+                <li>🖱️ <strong>Drag</strong> to move around the trie</li>
+                <li>🔄 <strong>Scroll</strong> to zoom in/out</li>
+                <li>🎯 <strong>Center Trie</strong> to reset position</li>
+                <li>🔄 <strong>Reset View</strong> to start over</li>
+            </ul>
         </div>
     </div>
 
     <script>
         class TrieNode {
-            constructor(char = '') {
+            constructor(char) {
                 this.char = char;
                 this.children = new Map();
                 this.isEndOfWord = false;
-                this.x = 0;
-                this.y = 0;
                 this.id = Math.random().toString(36).substr(2, 9);
             }
         }
@@ -674,7 +381,7 @@
                 // D3.js setup
                 this.svg = d3.select('#trieSvg');
                 this.width = 800;
-                this.height = 600;
+                this.height = 500;
                 this.zoom = d3.zoom()
                     .scaleExtent([0.1, 4])
                     .on('zoom', (event) => {
@@ -688,19 +395,44 @@
                 this.renderTrie();
             }
 
-            selectOperation(operation) {
-                this.currentOperation = operation;
-                
-                // Update UI
-                document.getElementById('insertBtn').classList.toggle('active', operation === 'insert');
-                document.getElementById('searchBtn').classList.toggle('active', operation === 'search');
-                document.getElementById('deleteBtn').classList.toggle('active', operation === 'delete');
-                
-                const button = document.getElementById('operationBtn');
-                button.textContent = operation === 'insert' ? 'Insert Word' : 
-                                   operation === 'search' ? 'Search Word' : 'Delete Word';
-                
-                this.updateStepInfo('Operation Selected', `Selected ${operation} operation. Enter a word to ${operation}.`);
+            initializeEventListeners() {
+                // Operation buttons
+                document.querySelectorAll('.operation-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.operation-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        this.currentOperation = btn.dataset.operation;
+                        document.getElementById('operationBtn').textContent = 
+                            this.currentOperation.charAt(0).toUpperCase() + this.currentOperation.slice(1) + ' Word';
+                    });
+                });
+
+                // Main operation button
+                document.getElementById('operationBtn').addEventListener('click', () => {
+                    this.performOperation();
+                });
+
+                // Clear button
+                document.getElementById('clearBtn').addEventListener('click', () => {
+                    this.clearTrie();
+                });
+
+                // Center button
+                document.getElementById('centerBtn').addEventListener('click', () => {
+                    this.centerTrie();
+                });
+
+                // Reset view button
+                document.getElementById('resetViewBtn').addEventListener('click', () => {
+                    this.resetView();
+                });
+
+                // Enter key support
+                document.getElementById('wordInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.performOperation();
+                    }
+                });
             }
 
             async performOperation() {
@@ -753,48 +485,24 @@
                     this.updateStepInfo('Processing Character', `Processing character "${char}" (position ${i + 1}/${word.length})`);
                     
                     if (!current.children.has(char)) {
-                        // Create new node
                         const newNode = new TrieNode(char);
                         current.children.set(char, newNode);
                         this.updateStepInfo('Creating Node', `Creating new node for character "${char}"`);
-                        
-                        // Add the new node to the display immediately
-                        await this.addNodeToDisplay(newNode, current, char);
-                        await this.delay(this.animationSpeed);
                     } else {
                         this.updateStepInfo('Following Path', `Following existing path for character "${char}"`);
                     }
                     
                     current = current.children.get(char);
                     
-                    // Highlight current path
-                    await this.highlightPath(path, 'current');
                     await this.delay(this.animationSpeed);
+                    this.renderTrie();
                 }
                 
-                // Mark as end of word
                 current.isEndOfWord = true;
                 this.words.add(word);
                 this.updateStepInfo('Word Inserted', `Successfully inserted "${word}" into the trie`);
                 
-                // Update the end-of-word styling
-                this.updateEndOfWordStyling(current.id);
-                
-                // Final highlight
-                await this.highlightPath([...word], 'highlighted');
-                await this.delay(this.animationSpeed);
-                
-                // Ensure proper centering after word insertion
-                setTimeout(() => {
-                    const container = document.getElementById('trieContainer');
-                    const contentWrapper = container.querySelector('.trie-content');
-                    if (contentWrapper) {
-                        this.centerTrieInViewport(container, 
-                            contentWrapper.offsetWidth / 2, 
-                            contentWrapper.offsetHeight / 2);
-                    }
-                }, 200);
-                
+                this.renderTrie();
                 this.updateWordList();
             }
 
@@ -811,98 +519,60 @@
                     this.updateStepInfo('Checking Character', `Checking character "${char}" (position ${i + 1}/${word.length})`);
                     
                     if (!current.children.has(char)) {
-                        this.updateStepInfo('Word Not Found', `Character "${char}" not found. "${word}" is not in the trie.`);
-                        await this.highlightPath(path, 'current');
-                        await this.delay(this.animationSpeed);
+                        this.updateStepInfo('Word Not Found', `"${word}" not found in the trie`);
                         return false;
                     }
                     
                     current = current.children.get(char);
-                    await this.highlightPath(path, 'current');
                     await this.delay(this.animationSpeed);
                 }
                 
                 if (current.isEndOfWord) {
-                    this.updateStepInfo('Word Found', `"${word}" found in the trie!`);
-                    await this.highlightPath([...word], 'highlighted');
+                    this.updateStepInfo('Word Found', `"${word}" found in the trie`);
+                    return true;
                 } else {
-                    this.updateStepInfo('Word Not Found', `"${word}" is a prefix but not a complete word in the trie.`);
-                    await this.highlightPath([...word], 'current');
+                    this.updateStepInfo('Word Not Found', `"${word}" not found in the trie`);
+                    return false;
                 }
-                
-                await this.delay(this.animationSpeed);
-                return current.isEndOfWord;
             }
 
             async deleteWord(word) {
                 this.updateStepInfo('Deleting Word', `Deleting "${word}" from the trie...`);
                 
-                // First check if word exists
                 if (!this.searchWordInTrie(word)) {
                     this.updateStepInfo('Word Not Found', `"${word}" not found in the trie. Cannot delete.`);
                     return false;
                 }
                 
-                // Show the path being deleted
-                await this.highlightPath([...word], 'current');
-                await this.delay(this.animationSpeed);
+                // Delete from trie structure
+                this.deleteFromTrie(this.root, word, 0);
+                this.words.delete(word);
                 
-                // Delete from the trie structure step by step
-                let current = this.root;
-                let path = [];
-                let nodesToRemove = [];
-                
-                // Find the path and mark nodes for removal
-                for (let i = 0; i < word.length; i++) {
-                    const char = word[i];
-                    path.push(char);
-                    
-                    this.updateStepInfo('Processing Character', `Processing character "${char}" for deletion (position ${i + 1}/${word.length})`);
-                    
-                    if (!current.children.has(char)) {
-                        this.updateStepInfo('Delete Failed', `Character "${char}" not found. Cannot delete "${word}".`);
-                        return false;
-                    }
-                    
-                    current = current.children.get(char);
-                    nodesToRemove.push({ node: current, char: char, index: i });
-                    
-                    // Highlight current path
-                    await this.highlightPath(path, 'current');
-                    await this.delay(this.animationSpeed);
+                this.updateStepInfo('Word Deleted', `Successfully deleted "${word}" from the trie`);
+                this.renderTrie();
+                this.updateWordList();
+                return true;
+            }
+
+            deleteFromTrie(node, word, index) {
+                if (index === word.length) {
+                    node.isEndOfWord = false;
+                    return node.children.size === 0;
                 }
                 
-                // Check if it's actually an end of word
-                if (!current.isEndOfWord) {
-                    this.updateStepInfo('Delete Failed', `"${word}" is not a complete word in the trie.`);
+                const char = word[index];
+                if (!node.children.has(char)) {
                     return false;
                 }
                 
-                // Mark as not end of word
-                current.isEndOfWord = false;
-                this.words.delete(word);
+                const shouldDelete = this.deleteFromTrie(node.children.get(char), word, index + 1);
                 
-                // Remove nodes that are no longer needed (no children and not end of word)
-                for (let i = nodesToRemove.length - 1; i >= 0; i--) {
-                    const { node, char } = nodesToRemove[i];
-                    const parent = this.findParentNode(node);
-                    
-                    if (parent && !node.isEndOfWord && node.children.size === 0) {
-                        // Remove the node from parent
-                        parent.children.delete(char);
-                        this.updateStepInfo('Removing Node', `Removing node "${char}" as it's no longer needed`);
-                        
-                        // Remove the visual node
-                        this.removeNodeFromDisplay(node.id);
-                        await this.delay(this.animationSpeed);
-                    } else {
-                        break; // Stop removing if we hit a node that's still needed
-                    }
+                if (shouldDelete) {
+                    node.children.delete(char);
+                    return node.children.size === 0 && !node.isEndOfWord;
                 }
                 
-                this.updateStepInfo('Word Deleted', `Successfully deleted "${word}" from the trie`);
-                this.updateWordList();
-                return true;
+                return false;
             }
 
             searchWordInTrie(word) {
@@ -917,546 +587,143 @@
                 return current.isEndOfWord;
             }
 
-            findParentNode(targetNode) {
-                const queue = [{ node: this.root, parent: null }];
-                
-                while (queue.length > 0) {
-                    const { node, parent } = queue.shift();
-                    
-                    for (const [char, child] of node.children) {
-                        if (child === targetNode) {
-                            return node;
-                        }
-                        queue.push({ node: child, parent: node });
-                    }
-                }
-                return null;
-            }
-
-            async addNodeToDisplay(newNode, parentNode, char) {
-                const container = document.getElementById('trieContainer');
-                const contentWrapper = container.querySelector('.trie-content');
-                
-                if (!contentWrapper) {
-                    // If no content wrapper exists, do full render
-                    this.renderTrie();
-                    return;
-                }
-                
-                // Recalculate all positions to ensure proper layout
-                this.calculatePositions();
-                const position = this.nodePositions.get(newNode.id);
-                
-                if (!position) {
-                    // If position calculation failed, do full render
-                    this.renderTrie();
-                    return;
-                }
-                
-                // Create the new node element
-                const nodeElement = document.createElement('div');
-                nodeElement.className = 'trie-node';
-                nodeElement.id = `node-${newNode.id}`;
-                nodeElement.textContent = newNode.char;
-                nodeElement.style.left = `${position.x - 30}px`;
-                nodeElement.style.top = `${position.y - 30}px`;
-                nodeElement.setAttribute('data-char', newNode.char);
-                nodeElement.setAttribute('data-node-id', newNode.id);
-                
-                // Add entrance animation
-                nodeElement.style.transform = 'scale(0)';
-                nodeElement.style.opacity = '0';
-                nodeElement.style.transition = 'all 0.5s ease';
-                
-                contentWrapper.appendChild(nodeElement);
-                
-                // Animate the node appearing
-                setTimeout(() => {
-                    nodeElement.style.transform = 'scale(1)';
-                    nodeElement.style.opacity = '1';
-                }, 50);
-                
-                // Create edge to parent
-                await this.addEdgeToDisplay(parentNode, newNode, char);
-                
-                // Re-center the trie after adding the node
-                setTimeout(() => {
-                    this.centerTrieInViewport(container, 
-                        contentWrapper.offsetWidth / 2, 
-                        contentWrapper.offsetHeight / 2);
-                }, 100);
-            }
-
-            async addEdgeToDisplay(parentNode, childNode, char) {
-                const container = document.getElementById('trieContainer');
-                const contentWrapper = container.querySelector('.trie-content');
-                
-                if (!contentWrapper) return;
-                
-                const parentPosition = this.nodePositions.get(parentNode.id);
-                const childPosition = this.nodePositions.get(childNode.id);
-                
-                if (!parentPosition || !childPosition) return;
-                
-                // Create edge element with consistent styling
-                const edgeElement = document.createElement('div');
-                edgeElement.className = 'trie-edge';
-                edgeElement.setAttribute('data-from', parentNode.id);
-                edgeElement.setAttribute('data-to', childNode.id);
-                
-                // Calculate edge position and rotation
-                const dx = childPosition.x - parentPosition.x;
-                const dy = childPosition.y - parentPosition.y;
-                const length = Math.sqrt(dx * dx + dy * dy);
-                const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-                
-                // Position edge from parent center to child center
-                edgeElement.style.left = `${parentPosition.x}px`;
-                edgeElement.style.top = `${parentPosition.y + 30}px`; // Offset from center
-                edgeElement.style.width = `${length}px`;
-                edgeElement.style.height = '3px';
-                edgeElement.style.transform = `rotate(${angle}deg)`;
-                edgeElement.style.transformOrigin = '0 50%';
-                edgeElement.style.backgroundColor = '#6b7280';
-                edgeElement.style.position = 'absolute';
-                edgeElement.style.zIndex = '1';
-                
-                // Add entrance animation
-                edgeElement.style.opacity = '0';
-                edgeElement.style.transition = 'all 0.5s ease';
-                
-                contentWrapper.appendChild(edgeElement);
-                
-                // Animate the edge appearing
-                setTimeout(() => {
-                    edgeElement.style.opacity = '1';
-                }, 50);
-                
-                // Add character label on edge
-                const labelElement = document.createElement('div');
-                labelElement.className = 'edge-label';
-                labelElement.textContent = char;
-                labelElement.setAttribute('data-edge-char', char);
-                labelElement.setAttribute('data-from', parentNode.id);
-                labelElement.setAttribute('data-to', childNode.id);
-                
-                // Position label at the midpoint of the edge
-                const midX = parentPosition.x + dx * 0.5;
-                const midY = parentPosition.y + dy * 0.5 + 30; // Match edge offset
-                
-                labelElement.style.left = `${midX - 10}px`;
-                labelElement.style.top = `${midY - 10}px`;
-                labelElement.style.position = 'absolute';
-                labelElement.style.zIndex = '3';
-                labelElement.style.opacity = '0';
-                labelElement.style.transition = 'all 0.5s ease';
-                
-                contentWrapper.appendChild(labelElement);
-                
-                setTimeout(() => {
-                    labelElement.style.opacity = '1';
-                }, 100);
-            }
-
-            updateEndOfWordStyling(nodeId) {
-                const nodeElement = document.getElementById(`node-${nodeId}`);
-                if (nodeElement) {
-                    nodeElement.classList.add('end-of-word');
-                }
-            }
-
-            removeNodeFromDisplay(nodeId) {
-                const nodeElement = document.getElementById(`node-${nodeId}`);
-                if (nodeElement) {
-                    // Add removal animation
-                    nodeElement.style.transition = 'all 0.5s ease';
-                    nodeElement.style.transform = 'scale(0)';
-                    nodeElement.style.opacity = '0';
-                    
-                    setTimeout(() => {
-                        if (nodeElement.parentNode) {
-                            nodeElement.parentNode.removeChild(nodeElement);
-                        }
-                    }, 500);
-                }
-                
-                // Remove associated edges
-                const edges = document.querySelectorAll(`[data-from="${nodeId}"], [data-to="${nodeId}"]`);
-                edges.forEach(edge => {
-                    edge.style.transition = 'all 0.5s ease';
-                    edge.style.opacity = '0';
-                    setTimeout(() => {
-                        if (edge.parentNode) {
-                            edge.parentNode.removeChild(edge);
-                        }
-                    }, 500);
-                });
-                
-                // Remove associated labels
-                const labels = document.querySelectorAll(`[data-node="${nodeId}"]`);
-                labels.forEach(label => {
-                    label.style.transition = 'all 0.5s ease';
-                    label.style.opacity = '0';
-                    setTimeout(() => {
-                        if (label.parentNode) {
-                            label.parentNode.removeChild(label);
-                        }
-                    }, 500);
-                });
-            }
-
-            async highlightPath(path, state) {
-                // Clear previous highlights
-                document.querySelectorAll('.trie-node, .trie-edge').forEach(el => {
-                    el.classList.remove('current', 'highlighted');
-                });
-                
-                // Add highlighting to current path nodes
-                for (let i = 0; i < path.length; i++) {
-                    const char = path[i];
-                    const nodeElement = document.querySelector(`[data-char="${char}"]`);
-                    if (nodeElement) {
-                        nodeElement.classList.add(state);
-                    }
-                }
-            }
-
             renderTrie() {
-                const container = document.getElementById('trieContainer');
-                container.innerHTML = '';
+                // Clear existing content
+                this.g.selectAll('*').remove();
                 
-                // Check if trie is empty by checking if root has any children
+                // Check if trie is empty
                 if (this.root.children.size === 0) {
-                    container.innerHTML = '<div style="text-align: center; padding: 50px; color: #6b7280; font-size: 1.2rem;">Trie is empty. Insert some words to see the visualization.</div>';
+                    this.g.append('text')
+                        .attr('x', this.width / 2)
+                        .attr('y', this.height / 2)
+                        .attr('text-anchor', 'middle')
+                        .attr('font-size', '18px')
+                        .attr('fill', '#6b7280')
+                        .text('Trie is empty. Insert some words to see the visualization.');
                     return;
                 }
                 
-                // Create content wrapper for centering
-                const contentWrapper = document.createElement('div');
-                contentWrapper.className = 'trie-content';
-                container.appendChild(contentWrapper);
+                // Convert trie to D3 hierarchy
+                const data = this.convertToD3Hierarchy();
                 
-                // Calculate positions for nodes
-                this.calculatePositions();
+                // Create tree layout
+                const tree = d3.tree()
+                    .size([this.width - 100, this.height - 100]);
                 
-                // Calculate the bounds of the trie
-                const bounds = this.calculateTrieBounds();
-                const trieWidth = bounds.maxX - bounds.minX;
-                const trieHeight = bounds.maxY - bounds.minY;
+                const root = d3.hierarchy(data);
+                tree(root);
                 
-                // Get container dimensions
-                const containerRect = container.getBoundingClientRect();
-                const containerWidth = containerRect.width - 40; // Account for padding
-                const containerHeight = containerRect.height - 40; // Account for padding
-                
-                // Calculate content wrapper size with generous padding
-                const padding = Math.max(200, Math.max(containerWidth, containerHeight) * 0.5);
-                const contentWidth = Math.max(trieWidth + padding * 2, containerWidth);
-                const contentHeight = Math.max(trieHeight + padding * 2, containerHeight);
-                
-                contentWrapper.style.width = `${contentWidth}px`;
-                contentWrapper.style.height = `${contentHeight}px`;
-                
-                // Center the trie within the content wrapper
-                const centerX = contentWidth / 2;
-                const centerY = contentHeight / 2;
-                const trieCenterX = bounds.minX + trieWidth / 2;
-                const trieCenterY = bounds.minY + trieHeight / 2;
-                
-                // Calculate offset to center the trie
-                const offsetX = centerX - trieCenterX;
-                const offsetY = centerY - trieCenterY;
-                
-                // Apply offset to all node positions
-                for (const [nodeId, position] of this.nodePositions) {
-                    this.nodePositions.set(nodeId, {
-                        x: position.x + offsetX,
-                        y: position.y + offsetY
-                    });
-                }
-                
-                // Render edges first (so they appear behind nodes)
-                this.renderEdges(contentWrapper);
+                // Render links
+                this.g.selectAll('.link')
+                    .data(root.links())
+                    .enter()
+                    .append('path')
+                    .attr('class', 'link')
+                    .attr('d', d3.linkVertical()
+                        .x(d => d.x + 50)
+                        .y(d => d.y + 50))
+                    .style('fill', 'none')
+                    .style('stroke', '#6b7280')
+                    .style('stroke-width', 2);
                 
                 // Render nodes
-                this.renderNodes(contentWrapper);
+                const nodes = this.g.selectAll('.node')
+                    .data(root.descendants())
+                    .enter()
+                    .append('g')
+                    .attr('class', 'node')
+                    .attr('transform', d => `translate(${d.x + 50},${d.y + 50})`);
                 
-                // Add drag functionality
-                this.addDragFunctionality(container);
+                // Add circles
+                nodes.append('circle')
+                    .attr('r', 25)
+                    .style('fill', d => {
+                        if (d.data.name === 'ROOT') return '#ef4444';
+                        return d.data.isEndOfWord ? '#10b981' : '#3b82f6';
+                    })
+                    .style('stroke', '#fff')
+                    .style('stroke-width', 2);
+                
+                // Add text
+                nodes.append('text')
+                    .attr('dy', '.35em')
+                    .attr('text-anchor', 'middle')
+                    .style('fill', 'white')
+                    .style('font-weight', 'bold')
+                    .style('font-size', '14px')
+                    .text(d => d.data.name);
+                
+                // Add edge labels
+                this.g.selectAll('.edge-label')
+                    .data(root.links())
+                    .enter()
+                    .append('text')
+                    .attr('class', 'edge-label')
+                    .attr('x', d => (d.source.x + d.target.x) / 2 + 50)
+                    .attr('y', d => (d.source.y + d.target.y) / 2 + 50)
+                    .attr('text-anchor', 'middle')
+                    .attr('font-size', '12px')
+                    .attr('fill', '#374151')
+                    .text(d => d.target.data.edgeChar);
                 
                 // Show help text
                 const helpElement = document.getElementById('trieHelp');
                 if (helpElement) {
                     helpElement.style.display = 'block';
                 }
-                
-                // Center the trie in the viewport
-                setTimeout(() => {
-                    this.centerTrieInViewport(container, centerX, centerY);
-                }, 100);
             }
 
-            calculatePositions() {
-                this.nodePositions.clear();
-                this.edgePositions.clear();
-                
-                // Use a simple, reliable tree layout algorithm
-                this.calculateSimpleTreeLayout();
-            }
-
-            calculateSimpleTreeLayout() {
-                // Simple breadth-first layout
-                const queue = [{ node: this.root, level: 0, x: 0 }];
-                const levelNodes = new Map();
-                
-                // Collect all nodes by level
-                while (queue.length > 0) {
-                    const { node, level, x } = queue.shift();
-                    
-                    if (!levelNodes.has(level)) {
-                        levelNodes.set(level, []);
-                    }
-                    levelNodes.get(level).push(node);
-                    
-                    // Add children to queue
-                    for (const [char, child] of node.children) {
-                        queue.push({ node: child, level: level + 1, x: x });
-                    }
-                }
-                
-                // Position nodes at each level
-                for (const [level, nodes] of levelNodes) {
-                    const nodeSpacing = 150;
-                    const startX = -(nodes.length - 1) * nodeSpacing / 2;
-                    
-                    nodes.forEach((node, index) => {
-                        const x = startX + index * nodeSpacing;
-                        const y = level * 120;
-                        
-                        this.nodePositions.set(node.id, { x, y });
-                    });
-                }
-            }
-
-            calculateTreeLayout(node, level, index, levelHeight, minSpacing) {
-                if (!node) return;
-                
-                // Calculate position for this node
-                const totalNodesAtLevel = this.countNodesAtLevel(this.root, level);
-                const spacing = Math.max(minSpacing, 1200 / Math.max(totalNodesAtLevel, 1));
-                const startOffset = -(totalNodesAtLevel - 1) * spacing / 2;
-                
-                const x = startOffset + index * spacing;
-                const y = level * levelHeight;
-                
-                this.nodePositions.set(node.id, { x, y });
-                
-                // Recursively position children
-                let childIndex = 0;
-                for (const [char, child] of node.children) {
-                    this.calculateTreeLayout(child, level + 1, childIndex, levelHeight, minSpacing);
-                    childIndex++;
-                }
-            }
-
-            adjustPositionsForVisibility() {
-                // Calculate the bounds of all positioned nodes
-                const bounds = this.calculateTrieBounds();
-                
-                // Add padding to ensure all nodes are visible
-                const padding = 150;
-                const minX = bounds.minX - padding;
-                const minY = bounds.minY - padding;
-                
-                // Center the trie horizontally
-                const trieWidth = bounds.maxX - bounds.minX;
-                const centerOffset = (trieWidth + 2 * padding) / 2;
-                
-                // Adjust all positions to ensure they're positive and centered
-                for (const [nodeId, position] of this.nodePositions) {
-                    this.nodePositions.set(nodeId, {
-                        x: position.x - minX + centerOffset - trieWidth / 2,
-                        y: position.y - minY + padding
-                    });
-                }
-            }
-            
-            countNodesAtLevel(root, targetLevel) {
-                if (targetLevel === 0) return 1;
-                
-                let count = 0;
-                const queue = [{ node: root, level: 0 }];
-                
-                while (queue.length > 0) {
-                    const { node, level } = queue.shift();
-                    
-                    if (level === targetLevel) {
-                        count++;
-                    } else if (level < targetLevel) {
-                        for (const [char, child] of node.children) {
-                            queue.push({ node: child, level: level + 1 });
-                        }
-                    }
-                }
-                
-                return count;
-            }
-
-            getMaxLevel(root) {
-                if (!root || root.children.size === 0) return 0;
-                
-                let maxLevel = 0;
-                const queue = [{ node: root, level: 0 }];
-                
-                while (queue.length > 0) {
-                    const { node, level } = queue.shift();
-                    maxLevel = Math.max(maxLevel, level);
+            convertToD3Hierarchy() {
+                const convert = (node, edgeChar = '') => {
+                    const result = {
+                        name: node.char,
+                        isEndOfWord: node.isEndOfWord,
+                        edgeChar: edgeChar,
+                        children: []
+                    };
                     
                     for (const [char, child] of node.children) {
-                        queue.push({ node: child, level: level + 1 });
-                    }
-                }
-                
-                return maxLevel;
-            }
-
-            calculateTrieBounds() {
-                let minX = Infinity, maxX = -Infinity;
-                let minY = Infinity, maxY = -Infinity;
-                
-                for (const [nodeId, position] of this.nodePositions) {
-                    minX = Math.min(minX, position.x);
-                    maxX = Math.max(maxX, position.x);
-                    minY = Math.min(minY, position.y);
-                    maxY = Math.max(maxY, position.y);
-                }
-                
-                // Add padding for node size (60px diameter)
-                const padding = 30;
-                return {
-                    minX: minX - padding,
-                    maxX: maxX + padding,
-                    minY: minY - padding,
-                    maxY: maxY + padding
-                };
-            }
-
-            centerTrieInViewport(container, centerX, centerY) {
-                // Calculate the scroll position to center the trie
-                const containerRect = container.getBoundingClientRect();
-                const contentWrapper = container.querySelector('.trie-content');
-                
-                if (!contentWrapper) return;
-                
-                // Calculate the center position within the content wrapper
-                const contentWidth = contentWrapper.offsetWidth;
-                const contentHeight = contentWrapper.offsetHeight;
-                
-                // Calculate scroll position to center the trie
-                const scrollLeft = centerX - containerRect.width / 2;
-                const scrollTop = centerY - containerRect.height / 2;
-                
-                // Ensure scroll position is within bounds
-                const maxScrollLeft = Math.max(0, contentWidth - containerRect.width);
-                const maxScrollTop = Math.max(0, contentHeight - containerRect.height);
-                
-                // Smooth scroll to center the trie
-                container.scrollTo({
-                    left: Math.max(0, Math.min(scrollLeft, maxScrollLeft)),
-                    top: Math.max(0, Math.min(scrollTop, maxScrollTop)),
-                    behavior: 'smooth'
-                });
-            }
-
-            renderNodes(container) {
-                const renderNode = (node) => {
-                    const position = this.nodePositions.get(node.id);
-                    if (!position) return;
-                    
-                    const nodeElement = document.createElement('div');
-                    nodeElement.className = 'trie-node';
-                    nodeElement.id = `node-${node.id}`;
-                    nodeElement.textContent = node.char || 'ROOT';
-                    nodeElement.style.left = `${position.x - 30}px`;
-                    nodeElement.style.top = `${position.y - 30}px`;
-                    nodeElement.setAttribute('data-char', node.char || 'ROOT');
-                    nodeElement.setAttribute('data-node-id', node.id);
-                    
-                    if (node === this.root) {
-                        nodeElement.classList.add('root');
-                    }
-                    if (node.isEndOfWord) {
-                        nodeElement.classList.add('end-of-word');
+                        result.children.push(convert(child, char));
                     }
                     
-                    container.appendChild(nodeElement);
-                    
-                    // Render children
-                    for (const [char, child] of node.children) {
-                        renderNode(child);
-                    }
+                    return result;
                 };
                 
-                renderNode(this.root);
+                return convert(this.root);
             }
 
-            renderEdges(container) {
-                const renderEdges = (node) => {
-                    for (const [char, child] of node.children) {
-                        const parentPos = this.nodePositions.get(node.id);
-                        const childPos = this.nodePositions.get(child.id);
-                        
-                        if (parentPos && childPos) {
-                            // Create edge with proper positioning
-                            const edge = document.createElement('div');
-                            edge.className = 'trie-edge';
-                            edge.setAttribute('data-from', node.id);
-                            edge.setAttribute('data-to', child.id);
-                            
-                            const dx = childPos.x - parentPos.x;
-                            const dy = childPos.y - parentPos.y;
-                            const length = Math.sqrt(dx * dx + dy * dy);
-                            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-                            
-                            // Position edge from parent center to child center
-                            edge.style.left = `${parentPos.x}px`;
-                            edge.style.top = `${parentPos.y + 30}px`; // Offset from center
-                            edge.style.width = `${length}px`;
-                            edge.style.height = '3px';
-                            edge.style.transform = `rotate(${angle}deg)`;
-                            edge.style.transformOrigin = '0 50%';
-                            edge.style.backgroundColor = '#6b7280';
-                            edge.style.position = 'absolute';
-                            edge.style.zIndex = '1';
-                            
-                            container.appendChild(edge);
-                            
-                            // Create edge label positioned correctly
-                            const label = document.createElement('div');
-                            label.className = 'edge-label';
-                            label.textContent = char;
-                            label.setAttribute('data-edge-char', char);
-                            label.setAttribute('data-from', node.id);
-                            label.setAttribute('data-to', child.id);
-                            
-                            // Position label at the midpoint of the edge
-                            const midX = parentPos.x + dx * 0.5;
-                            const midY = parentPos.y + dy * 0.5 + 30; // Match edge offset
-                            
-                            label.style.left = `${midX - 10}px`;
-                            label.style.top = `${midY - 10}px`;
-                            label.style.position = 'absolute';
-                            label.style.zIndex = '3';
-                            
-                            container.appendChild(label);
-                        }
-                        
-                        // Render edges for children
-                        renderEdges(child);
-                    }
-                };
+            clearTrie() {
+                this.root = new TrieNode('ROOT');
+                this.words.clear();
+                this.renderTrie();
+                this.updateWordList();
+                this.updateStepInfo('Trie Cleared', 'All words have been removed from the trie');
+            }
+
+            centerTrie() {
+                if (this.root.children.size === 0) {
+                    this.updateStepInfo('Cannot Center', 'Trie is empty. Insert some words first.');
+                    return;
+                }
+
+                // Reset zoom and pan
+                this.svg.transition().duration(750).call(
+                    this.zoom.transform,
+                    d3.zoomIdentity.translate(this.width / 2, this.height / 2).scale(1)
+                );
                 
-                renderEdges(this.root);
+                this.updateStepInfo('Trie Centered', 'Trie has been centered in the viewport');
+            }
+
+            resetView() {
+                if (this.root.children.size === 0) {
+                    this.updateStepInfo('Cannot Reset', 'Trie is empty. Insert some words first.');
+                    return;
+                }
+
+                this.renderTrie();
+                this.centerTrie();
+                this.updateStepInfo('View Reset', 'Trie view has been reset to default position');
             }
 
             updateWordList() {
@@ -1478,196 +745,6 @@
                 document.getElementById('stepInfo').style.display = 'block';
             }
 
-            clearTrie() {
-                this.root = new TrieNode('ROOT');
-                this.words.clear();
-                this.renderTrie(); // Use full render for clear operation
-                this.updateWordList();
-                this.updateStepInfo('Trie Cleared', 'All words have been removed from the trie');
-            }
-
-            centerTrie() {
-                if (this.root.children.size === 0) {
-                    this.updateStepInfo('Cannot Center', 'Trie is empty. Insert some words first.');
-                    return;
-                }
-
-                const container = document.getElementById('trieContainer');
-                const contentWrapper = container.querySelector('.trie-content');
-                
-                if (!contentWrapper) return;
-                
-                const centerX = contentWrapper.offsetWidth / 2;
-                const centerY = contentWrapper.offsetHeight / 2;
-                
-                this.centerTrieInViewport(container, centerX, centerY);
-                this.updateStepInfo('Trie Centered', 'Trie has been centered in the viewport');
-            }
-
-            resetView() {
-                if (this.root.children.size === 0) {
-                    this.updateStepInfo('Cannot Reset', 'Trie is empty. Insert some words first.');
-                    return;
-                }
-
-                // Re-render the trie to reset the view
-                this.renderTrie();
-                this.updateStepInfo('View Reset', 'Trie view has been reset to default position');
-            }
-
-            updateTrieDisplay() {
-                // Check if trie is empty
-                if (this.root.children.size === 0) {
-                    const container = document.getElementById('trieContainer');
-                    container.innerHTML = '<div style="text-align: center; padding: 50px; color: #6b7280; font-size: 1.2rem;">Trie is empty. Insert some words to see the visualization.</div>';
-                    return;
-                }
-
-                const container = document.getElementById('trieContainer');
-                const existingContent = container.querySelector('.trie-content');
-                
-                if (!existingContent) {
-                    // If no existing content, do full render
-                    this.renderTrie();
-                    return;
-                }
-
-                // Update positions for new/changed nodes
-                this.calculatePositions();
-                
-                // Calculate new bounds
-                const bounds = this.calculateTrieBounds();
-                const trieWidth = bounds.maxX - bounds.minX;
-                const trieHeight = bounds.maxY - bounds.minY;
-                
-                // Get container dimensions
-                const containerRect = container.getBoundingClientRect();
-                const containerWidth = containerRect.width - 40;
-                const containerHeight = containerRect.height - 40;
-                
-                // Calculate new content wrapper size
-                const padding = Math.max(200, Math.max(containerWidth, containerHeight) * 0.5);
-                const contentWidth = Math.max(trieWidth + padding * 2, containerWidth);
-                const contentHeight = Math.max(trieHeight + padding * 2, containerHeight);
-                
-                // Update content wrapper size if needed
-                if (existingContent.offsetWidth !== contentWidth || existingContent.offsetHeight !== contentHeight) {
-                    existingContent.style.width = `${contentWidth}px`;
-                    existingContent.style.height = `${contentHeight}px`;
-                }
-                
-                // Center the trie within the content wrapper
-                const centerX = contentWidth / 2;
-                const centerY = contentHeight / 2;
-                const trieCenterX = bounds.minX + trieWidth / 2;
-                const trieCenterY = bounds.minY + trieHeight / 2;
-                
-                // Calculate offset to center the trie
-                const offsetX = centerX - trieCenterX;
-                const offsetY = centerY - trieCenterY;
-                
-                // Apply offset to all node positions
-                for (const [nodeId, position] of this.nodePositions) {
-                    this.nodePositions.set(nodeId, {
-                        x: position.x + offsetX,
-                        y: position.y + offsetY
-                    });
-                }
-                
-                // Clear existing content
-                existingContent.innerHTML = '';
-                
-                // Render edges first
-                this.renderEdges(existingContent);
-                
-                // Render nodes
-                this.renderNodes(existingContent);
-                
-                // Center the trie in the viewport smoothly
-                setTimeout(() => {
-                    this.centerTrieInViewport(container, centerX, centerY);
-                }, 50);
-            }
-
-            addDragFunctionality(container) {
-                let isDragging = false;
-                let startX = 0;
-                let startY = 0;
-                let scrollLeft = 0;
-                let scrollTop = 0;
-
-                container.addEventListener('mousedown', (e) => {
-                    // Only start drag if clicking on empty space or the container itself
-                    if (e.target === container || e.target.classList.contains('trie-content')) {
-                        isDragging = true;
-                        container.style.cursor = 'grabbing';
-                        startX = e.pageX - container.offsetLeft;
-                        startY = e.pageY - container.offsetTop;
-                        scrollLeft = container.scrollLeft;
-                        scrollTop = container.scrollTop;
-                        e.preventDefault();
-                    }
-                });
-
-                container.addEventListener('mouseleave', () => {
-                    isDragging = false;
-                    container.style.cursor = 'grab';
-                });
-
-                container.addEventListener('mouseup', () => {
-                    isDragging = false;
-                    container.style.cursor = 'grab';
-                });
-
-                container.addEventListener('mousemove', (e) => {
-                    if (!isDragging) return;
-                    e.preventDefault();
-                    const x = e.pageX - container.offsetLeft;
-                    const y = e.pageY - container.offsetTop;
-                    const walkX = (x - startX) * 2; // Multiply for faster dragging
-                    const walkY = (y - startY) * 2;
-                    container.scrollLeft = scrollLeft - walkX;
-                    container.scrollTop = scrollTop - walkY;
-                });
-
-                // Add touch support for mobile devices
-                container.addEventListener('touchstart', (e) => {
-                    if (e.target === container || e.target.classList.contains('trie-content')) {
-                        isDragging = true;
-                        const touch = e.touches[0];
-                        startX = touch.pageX - container.offsetLeft;
-                        startY = touch.pageY - container.offsetTop;
-                        scrollLeft = container.scrollLeft;
-                        scrollTop = container.scrollTop;
-                    }
-                });
-
-                container.addEventListener('touchend', () => {
-                    isDragging = false;
-                });
-
-                container.addEventListener('touchmove', (e) => {
-                    if (!isDragging) return;
-                    e.preventDefault();
-                    const touch = e.touches[0];
-                    const x = touch.pageX - container.offsetLeft;
-                    const y = touch.pageY - container.offsetTop;
-                    const walkX = (x - startX) * 2;
-                    const walkY = (y - startY) * 2;
-                    container.scrollLeft = scrollLeft - walkX;
-                    container.scrollTop = scrollTop - walkY;
-                });
-            }
-
-            insertPredefinedWord(word) {
-                document.getElementById('wordInput').value = word;
-                this.selectOperation('insert');
-            }
-
-            delay(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
-            }
-            
             showError(message) {
                 const errorDiv = document.createElement('div');
                 errorDiv.style.cssText = `
@@ -1691,57 +768,14 @@
                     }
                 }, 3000);
             }
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
         }
 
-        // Initialize the application
+        // Initialize the visualization
         const trieVisualization = new TrieVisualization();
-        
-        // Event listeners
-        document.getElementById('wordInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                trieVisualization.performOperation();
-            }
-        });
-
-        // Fix button event listeners
-        document.getElementById('insertBtn').addEventListener('click', () => {
-            trieVisualization.selectOperation('insert');
-        });
-
-        document.getElementById('searchBtn').addEventListener('click', () => {
-            trieVisualization.selectOperation('search');
-        });
-
-        document.getElementById('deleteBtn').addEventListener('click', () => {
-            trieVisualization.selectOperation('delete');
-        });
-
-        document.getElementById('operationBtn').addEventListener('click', () => {
-            trieVisualization.performOperation();
-        });
-
-        document.getElementById('clearBtn').addEventListener('click', () => {
-            trieVisualization.clearTrie();
-        });
-
-        document.getElementById('centerBtn').addEventListener('click', () => {
-            trieVisualization.centerTrie();
-        });
-
-        document.getElementById('resetViewBtn').addEventListener('click', () => {
-            trieVisualization.resetView();
-        });
-
-        // Fix predefined word buttons
-        document.querySelectorAll('.predefined-word').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const word = btn.textContent;
-                trieVisualization.insertPredefinedWord(word);
-            });
-        });
-
-        // Initialize with empty trie
-        trieVisualization.renderTrie();
     </script>
 </body>
 </html>
