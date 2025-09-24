@@ -960,7 +960,7 @@
                 
                 if (!parentPosition || !childPosition) return;
                 
-                // Create edge element
+                // Create edge element with consistent styling
                 const edgeElement = document.createElement('div');
                 edgeElement.className = 'trie-edge';
                 edgeElement.setAttribute('data-from', parentNode.id);
@@ -972,11 +972,16 @@
                 const length = Math.sqrt(dx * dx + dy * dy);
                 const angle = Math.atan2(dy, dx) * (180 / Math.PI);
                 
+                // Position edge from parent center to child center
                 edgeElement.style.left = `${parentPosition.x}px`;
-                edgeElement.style.top = `${parentPosition.y}px`;
+                edgeElement.style.top = `${parentPosition.y + 30}px`; // Offset from center
                 edgeElement.style.width = `${length}px`;
+                edgeElement.style.height = '3px';
                 edgeElement.style.transform = `rotate(${angle}deg)`;
                 edgeElement.style.transformOrigin = '0 50%';
+                edgeElement.style.backgroundColor = '#6b7280';
+                edgeElement.style.position = 'absolute';
+                edgeElement.style.zIndex = '1';
                 
                 // Add entrance animation
                 edgeElement.style.opacity = '0';
@@ -993,8 +998,18 @@
                 const labelElement = document.createElement('div');
                 labelElement.className = 'edge-label';
                 labelElement.textContent = char;
-                labelElement.style.left = `${parentPosition.x + dx * 0.5 - 10}px`;
-                labelElement.style.top = `${parentPosition.y + dy * 0.5 - 10}px`;
+                labelElement.setAttribute('data-edge-char', char);
+                labelElement.setAttribute('data-from', parentNode.id);
+                labelElement.setAttribute('data-to', childNode.id);
+                
+                // Position label at the midpoint of the edge
+                const midX = parentPosition.x + dx * 0.5;
+                const midY = parentPosition.y + dy * 0.5 + 30; // Match edge offset
+                
+                labelElement.style.left = `${midX - 10}px`;
+                labelElement.style.top = `${midY - 10}px`;
+                labelElement.style.position = 'absolute';
+                labelElement.style.zIndex = '3';
                 labelElement.style.opacity = '0';
                 labelElement.style.transition = 'all 0.5s ease';
                 
@@ -1147,15 +1162,55 @@
                 this.nodePositions.clear();
                 this.edgePositions.clear();
                 
-                // Use a more flexible positioning system
+                // Use a proper tree layout algorithm
                 const levelHeight = 120;
-                const minNodeSpacing = 100;
+                const nodeSpacing = 150;
                 
-                // First pass: calculate all node positions using a tree layout algorithm
-                this.calculateTreeLayout(this.root, 0, 0, levelHeight, minNodeSpacing);
+                // Calculate positions using a breadth-first approach
+                this.calculateBreadthFirstLayout(levelHeight, nodeSpacing);
                 
-                // Second pass: adjust positions to prevent overlaps and ensure visibility
+                // Ensure no overlaps and proper spacing
                 this.adjustPositionsForVisibility();
+            }
+
+            calculateBreadthFirstLayout(levelHeight, nodeSpacing) {
+                const queue = [{ node: this.root, level: 0, index: 0, parentX: 0 }];
+                const nodesAtLevel = new Map();
+                
+                // First pass: collect all nodes by level
+                while (queue.length > 0) {
+                    const { node, level, index, parentX } = queue.shift();
+                    
+                    if (!nodesAtLevel.has(level)) {
+                        nodesAtLevel.set(level, []);
+                    }
+                    nodesAtLevel.get(level).push({ node, index, parentX });
+                    
+                    // Add children to queue
+                    let childIndex = 0;
+                    for (const [char, child] of node.children) {
+                        queue.push({ 
+                            node: child, 
+                            level: level + 1, 
+                            index: childIndex, 
+                            parentX: parentX + (index * nodeSpacing)
+                        });
+                        childIndex++;
+                    }
+                }
+                
+                // Second pass: position nodes at each level
+                for (const [level, nodes] of nodesAtLevel) {
+                    const totalNodes = nodes.length;
+                    const startX = -(totalNodes - 1) * nodeSpacing / 2;
+                    
+                    nodes.forEach(({ node, index }, i) => {
+                        const x = startX + (i * nodeSpacing);
+                        const y = level * levelHeight;
+                        
+                        this.nodePositions.set(node.id, { x, y });
+                    });
+                }
             }
 
             calculateTreeLayout(node, level, index, levelHeight, minSpacing) {
@@ -1323,28 +1378,46 @@
                         const childPos = this.nodePositions.get(child.id);
                         
                         if (parentPos && childPos) {
-                            // Create edge
+                            // Create edge with proper positioning
                             const edge = document.createElement('div');
                             edge.className = 'trie-edge';
+                            edge.setAttribute('data-from', node.id);
+                            edge.setAttribute('data-to', child.id);
                             
                             const dx = childPos.x - parentPos.x;
                             const dy = childPos.y - parentPos.y;
                             const length = Math.sqrt(dx * dx + dy * dy);
                             const angle = Math.atan2(dy, dx) * 180 / Math.PI;
                             
+                            // Position edge from parent center to child center
                             edge.style.left = `${parentPos.x}px`;
-                            edge.style.top = `${parentPos.y}px`;
+                            edge.style.top = `${parentPos.y + 30}px`; // Offset from center
                             edge.style.width = `${length}px`;
+                            edge.style.height = '3px';
                             edge.style.transform = `rotate(${angle}deg)`;
+                            edge.style.transformOrigin = '0 50%';
+                            edge.style.backgroundColor = '#6b7280';
+                            edge.style.position = 'absolute';
+                            edge.style.zIndex = '1';
                             
                             container.appendChild(edge);
                             
-                            // Create edge label
+                            // Create edge label positioned correctly
                             const label = document.createElement('div');
-                            label.className = 'trie-edge-label';
+                            label.className = 'edge-label';
                             label.textContent = char;
-                            label.style.left = `${parentPos.x + dx/2 - 10}px`;
-                            label.style.top = `${parentPos.y + dy/2 - 10}px`;
+                            label.setAttribute('data-edge-char', char);
+                            label.setAttribute('data-from', node.id);
+                            label.setAttribute('data-to', child.id);
+                            
+                            // Position label at the midpoint of the edge
+                            const midX = parentPos.x + dx * 0.5;
+                            const midY = parentPos.y + dy * 0.5 + 30; // Match edge offset
+                            
+                            label.style.left = `${midX - 10}px`;
+                            label.style.top = `${midY - 10}px`;
+                            label.style.position = 'absolute';
+                            label.style.zIndex = '3';
                             
                             container.appendChild(label);
                         }
