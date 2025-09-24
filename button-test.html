@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Functionality Test - PrepGuides.dev</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .test-section h2 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        
+        .test-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+            margin: 5px;
+        }
+        
+        .test-button:hover {
+            background: #2563eb;
+        }
+        
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        .status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status.working {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status.broken {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .instructions {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: #374151;
+        }
+        
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin: 5px 0;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Button Functionality Test</h1>
+        
+        <div class="instructions">
+            <h3>Testing Instructions:</h3>
+            <ol>
+                <li>Click the test buttons below to open each algorithm page</li>
+                <li>Test all button operations on each page</li>
+                <li>Verify that buttons respond and perform their intended actions</li>
+                <li>Check that visualizations update correctly</li>
+                <li>Report any buttons that don't work</li>
+            </ol>
+        </div>
+        
+        <div class="test-section">
+            <h2>🌳 Binary Search Tree</h2>
+            <a href="algorithms/binary-search-tree.html" class="test-button" target="_blank">Test BST</a>
+            <div class="status pending" id="bst-status">Click to test BST operations</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🕸️ BFS/DFS Graph Traversal</h2>
+            <a href="algorithms/bfs-dfs-graph-traversal.html" class="test-button" target="_blank">Test BFS/DFS</a>
+            <div class="status pending" id="bfs-dfs-status">Click to test BFS/DFS operations</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📝 Trie Operations</h2>
+            <a href="algorithms/trie-operations.html" class="test-button" target="_blank">Test Trie</a>
+            <div class="status pending" id="trie-status">Click to test Trie operations</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔢 Sorting Algorithms</h2>
+            <a href="algorithms/sorting.html" class="test-button" target="_blank">Test Sorting</a>
+            <div class="status pending" id="sorting-status">Click to test Sorting operations</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🧪 Core Logic Tester</h2>
+            <a href="core-logic-tester.html" class="test-button" target="_blank">Test Core Logic</a>
+            <div class="status pending" id="core-status">Click to test algorithm core logic</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 Test Results</h2>
+            <div id="test-results">
+                <p style="color: #6b7280; text-align: center; padding: 20px;">
+                    Test each algorithm above and report results here...
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple test tracking
+        let testResults = {
+            bst: 'pending',
+            bfsDfs: 'pending',
+            trie: 'pending',
+            sorting: 'pending',
+            core: 'pending'
+        };
+
+        function updateStatus(algorithm, status) {
+            const statusElement = document.getElementById(`${algorithm}-status`);
+            if (statusElement) {
+                statusElement.textContent = status;
+                statusElement.className = `status ${status}`;
+            }
+            testResults[algorithm] = status;
+            updateTestResults();
+        }
+
+        function updateTestResults() {
+            const resultsContainer = document.getElementById('test-results');
+            const totalTests = Object.keys(testResults).length;
+            const passedTests = Object.values(testResults).filter(status => status === 'working').length;
+            const failedTests = Object.values(testResults).filter(status => status === 'broken').length;
+            const pendingTests = Object.values(testResults).filter(status => status === 'pending').length;
+
+            resultsContainer.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="background: #d1fae5; padding: 15px; border-radius: 6px; text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #065f46;">${passedTests}</div>
+                        <div style="color: #065f46;">Working</div>
+                    </div>
+                    <div style="background: #fee2e2; padding: 15px; border-radius: 6px; text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #991b1b;">${failedTests}</div>
+                        <div style="color: #991b1b;">Broken</div>
+                    </div>
+                    <div style="background: #fef3c7; padding: 15px; border-radius: 6px; text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #92400e;">${pendingTests}</div>
+                        <div style="color: #92400e;">Pending</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; text-align: center; color: #6b7280;">
+                    Total Tests: ${totalTests} | Passed: ${passedTests} | Failed: ${failedTests} | Pending: ${pendingTests}
+                </div>
+            `;
+        }
+
+        // Add click handlers to test buttons
+        document.querySelectorAll('.test-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const href = button.getAttribute('href');
+                if (href.includes('binary-search-tree')) {
+                    updateStatus('bst', 'working');
+                } else if (href.includes('bfs-dfs-graph-traversal')) {
+                    updateStatus('bfsDfs', 'working');
+                } else if (href.includes('trie-operations')) {
+                    updateStatus('trie', 'working');
+                } else if (href.includes('sorting')) {
+                    updateStatus('sorting', 'working');
+                } else if (href.includes('core-logic-tester')) {
+                    updateStatus('core', 'working');
+                }
+            });
+        });
+
+        // Initialize
+        updateTestResults();
+    </script>
+</body>
+</html>
