@@ -452,9 +452,9 @@
             <div class="control-group">
                 <label>Operation</label>
                 <div class="operation-selector">
-                    <button id="insertBtn" class="active" onclick="selectOperation('insert')">Insert</button>
-                    <button id="searchBtn" onclick="selectOperation('search')">Search</button>
-                    <button id="deleteBtn" onclick="selectOperation('delete')">Delete</button>
+                    <button id="insertBtn" class="active">Insert</button>
+                    <button id="searchBtn">Search</button>
+                    <button id="deleteBtn">Delete</button>
                 </div>
             </div>
 
@@ -463,8 +463,8 @@
                 <input type="text" id="wordInput" placeholder="Enter word..." maxlength="10">
             </div>
 
-            <button onclick="performOperation()" id="operationBtn">Insert Word</button>
-            <button onclick="clearTrie()" id="clearBtn">Clear Trie</button>
+            <button id="operationBtn">Insert Word</button>
+            <button id="clearBtn">Clear Trie</button>
         </div>
 
         <div class="visualization-area">
@@ -534,14 +534,14 @@
 
                     <div class="predefined-words">
                         <h4>Try these words:</h4>
-                        <div class="predefined-word" onclick="insertPredefinedWord('cat')">cat</div>
-                        <div class="predefined-word" onclick="insertPredefinedWord('car')">car</div>
-                        <div class="predefined-word" onclick="insertPredefinedWord('card')">card</div>
-                        <div class="predefined-word" onclick="insertPredefinedWord('care')">care</div>
-                        <div class="predefined-word" onclick="insertPredefinedWord('careful')">careful</div>
-                        <div class="predefined-word" onclick="insertPredefinedWord('careless')">careless</div>
-                        <div class="predefined-word" onclick="insertPredefinedWord('dog')">dog</div>
-                        <div class="predefined-word" onclick="insertPredefinedWord('door')">door</div>
+                        <div class="predefined-word">cat</div>
+                        <div class="predefined-word">car</div>
+                        <div class="predefined-word">card</div>
+                        <div class="predefined-word">care</div>
+                        <div class="predefined-word">careful</div>
+                        <div class="predefined-word">careless</div>
+                        <div class="predefined-word">dog</div>
+                        <div class="predefined-word">door</div>
                     </div>
                 </div>
             </div>
@@ -976,6 +976,35 @@
             if (e.key === 'Enter') {
                 trieVisualization.performOperation();
             }
+        });
+
+        // Fix button event listeners
+        document.getElementById('insertBtn').addEventListener('click', () => {
+            trieVisualization.selectOperation('insert');
+        });
+
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            trieVisualization.selectOperation('search');
+        });
+
+        document.getElementById('deleteBtn').addEventListener('click', () => {
+            trieVisualization.selectOperation('delete');
+        });
+
+        document.getElementById('operationBtn').addEventListener('click', () => {
+            trieVisualization.performOperation();
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            trieVisualization.clearTrie();
+        });
+
+        // Fix predefined word buttons
+        document.querySelectorAll('.predefined-word').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const word = btn.textContent;
+                trieVisualization.insertPredefinedWord(word);
+            });
         });
 
         // Initialize with empty trie
