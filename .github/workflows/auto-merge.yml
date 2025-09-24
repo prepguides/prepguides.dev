@@ -6,6 +6,11 @@ on:
   issue_comment:
     types: [created]
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
 jobs:
   # Auto-merge on review approval
   auto-merge:
@@ -27,14 +32,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           target: main
           merge-method: merge
-          delete-branch: true
-          merge-commit-message: |
-            Auto-merge: ${{ github.event.pull_request.title }}
-            
-            Approved by: ${{ github.event.review.user.login }}
-            PR: #${{ github.event.pull_request.number }}
-            
-            ${{ github.event.pull_request.body }}
+          pr-number: ${{ github.event.pull_request.number }}
 
       - name: Comment on PR
         uses: actions/github-script@v7
@@ -77,12 +75,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           target: main
           merge-method: merge
-          delete-branch: true
-          merge-commit-message: |
-            Self-approved merge: ${{ github.event.issue.title }}
-            
-            Approved by: ${{ github.event.comment.user.login }} (author)
-            PR: #${{ github.event.issue.number }}
+          pr-number: ${{ github.event.issue.number }}
 
       - name: Self-approval notification
         uses: actions/github-script@v7
