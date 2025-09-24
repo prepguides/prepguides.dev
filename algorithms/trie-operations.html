@@ -601,12 +601,17 @@
                 const word = document.getElementById('wordInput').value.toLowerCase().trim();
                 
                 if (!word) {
-                    this.updateStepInfo('Error', 'Please enter a word');
+                    this.showError('Please enter a word');
                     return;
                 }
 
                 if (!/^[a-z]+$/.test(word)) {
-                    this.updateStepInfo('Error', 'Please enter only lowercase letters');
+                    this.showError('Please enter only lowercase letters');
+                    return;
+                }
+                
+                if (word.length > 10) {
+                    this.showError('Word must be 10 characters or less');
                     return;
                 }
 
@@ -766,26 +771,31 @@
                 this.nodePositions.clear();
                 this.edgePositions.clear();
                 
-                const startX = 100;
-                const startY = 50;
-                const levelHeight = 80;
-                const nodeSpacing = 120;
+                const startX = 200;
+                const startY = 80;
+                const levelHeight = 100;
+                const nodeSpacing = 150;
                 
                 // Position root node
                 this.nodePositions.set(this.root.id, { x: startX, y: startY });
                 
-                // Position other nodes using BFS
-                const queue = [{ node: this.root, level: 0, index: 0 }];
+                // Position other nodes using BFS with better spacing
+                const queue = [{ node: this.root, level: 0, index: 0, parentX: startX }];
                 const levelNodes = new Map();
                 
                 while (queue.length > 0) {
-                    const { node, level, index } = queue.shift();
+                    const { node, level, index, parentX } = queue.shift();
                     
                     if (level > 0) {
                         const levelCount = levelNodes.get(level) || 0;
                         levelNodes.set(level, levelCount + 1);
                         
-                        const x = startX + (index - levelCount / 2) * nodeSpacing;
+                        // Better positioning algorithm to prevent overlaps
+                        const totalNodesAtLevel = this.countNodesAtLevel(this.root, level);
+                        const spacing = Math.max(nodeSpacing, 800 / totalNodesAtLevel);
+                        const startOffset = -(totalNodesAtLevel - 1) * spacing / 2;
+                        
+                        const x = startX + startOffset + levelCount * spacing;
                         const y = startY + level * levelHeight;
                         
                         this.nodePositions.set(node.id, { x, y });
@@ -797,11 +807,33 @@
                         queue.push({ 
                             node: child, 
                             level: level + 1, 
-                            index: index * 10 + childIndex 
+                            index: index * 10 + childIndex,
+                            parentX: this.nodePositions.get(node.id)?.x || startX
                         });
                         childIndex++;
                     }
                 }
+            }
+            
+            countNodesAtLevel(root, targetLevel) {
+                if (targetLevel === 0) return 1;
+                
+                let count = 0;
+                const queue = [{ node: root, level: 0 }];
+                
+                while (queue.length > 0) {
+                    const { node, level } = queue.shift();
+                    
+                    if (level === targetLevel) {
+                        count++;
+                    } else if (level < targetLevel) {
+                        for (const [char, child] of node.children) {
+                            queue.push({ node: child, level: level + 1 });
+                        }
+                    }
+                }
+                
+                return count;
             }
 
             renderNodes(container) {
@@ -909,6 +941,30 @@
 
             delay(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
+            }
+            
+            showError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #ef4444;
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    z-index: 1000;
+                    font-weight: 500;
+                `;
+                errorDiv.textContent = message;
+                document.body.appendChild(errorDiv);
+                
+                setTimeout(() => {
+                    if (errorDiv.parentNode) {
+                        errorDiv.parentNode.removeChild(errorDiv);
+                    }
+                }, 3000);
             }
         }
 
