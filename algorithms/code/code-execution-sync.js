@@ -44,6 +44,29 @@ class CodeExecutionSync {
     }
 
     /**
+     * Create a code block element with syntax highlighting
+     * @param {string} code - The code content
+     * @param {string} language - The programming language
+     * @returns {HTMLElement} The created code block element
+     */
+    createCodeBlock(code, language) {
+        const codeContainer = document.createElement('div');
+        codeContainer.className = 'code-container';
+        codeContainer.setAttribute('data-language', language);
+        
+        const lines = code.split('\n');
+        lines.forEach((line, index) => {
+            const lineElement = document.createElement('div');
+            lineElement.className = 'code-line';
+            lineElement.setAttribute('data-line', index + 1);
+            lineElement.textContent = line;
+            codeContainer.appendChild(lineElement);
+        });
+        
+        return codeContainer;
+    }
+
+    /**
      * Start code execution synchronization
      * @param {string} algorithmId - The algorithm being executed
      * @param {Array} executionSteps - Array of execution steps
@@ -121,12 +144,12 @@ class CodeExecutionSync {
 
         // Add new highlights
         const element = codeBlock.element;
-        const lines = element.querySelectorAll('.line');
+        const lines = element.querySelectorAll('.code-line');
         
         lineNumbers.forEach(lineNum => {
             if (lines[lineNum - 1]) {
                 const line = lines[lineNum - 1];
-                line.classList.add('highlighted', `highlight-${type}`);
+                line.classList.add('highlighted-code-line', `highlight-${type}`);
                 codeBlock.currentHighlight = lineNum;
             }
         });
@@ -149,10 +172,10 @@ class CodeExecutionSync {
         if (!codeBlock) return;
 
         const element = codeBlock.element;
-        const highlightedLines = element.querySelectorAll('.highlighted');
+        const highlightedLines = element.querySelectorAll('.highlighted-code-line');
         highlightedLines.forEach(line => {
-            line.classList.remove('highlighted', 'highlight-executing', 'highlight-comparing', 
-                                 'highlight-swapping', 'highlight-inserting', 'highlight-deleting');
+            line.classList.remove('highlighted-code-line', 'highlight-execution', 'highlight-comparison', 
+                                 'highlight-swap', 'highlight-insert', 'highlight-delete');
         });
         codeBlock.currentHighlight = null;
     }
@@ -361,6 +384,84 @@ class CodeExecutionSync {
         };
 
         return complexityMap[algorithm] || 'O(?)';
+    }
+
+    /**
+     * Pause the current execution
+     */
+    pauseExecution() {
+        this.isExecuting = false;
+        if (this.executionTimer) {
+            clearTimeout(this.executionTimer);
+            this.executionTimer = null;
+        }
+        this.updateProgress('Paused');
+    }
+
+    /**
+     * Stop the current execution and reset
+     */
+    stopExecution() {
+        this.isExecuting = false;
+        this.currentStep = 0;
+        if (this.executionTimer) {
+            clearTimeout(this.executionTimer);
+            this.executionTimer = null;
+        }
+        this.clearAllHighlights();
+        this.updateProgress('Stopped');
+        this.resetMetrics();
+    }
+
+    /**
+     * Set the execution speed
+     * @param {number} speed - Speed in milliseconds
+     */
+    setExecutionSpeed(speed) {
+        this.executionSpeed = speed;
+    }
+
+    /**
+     * Clear all highlights from all code blocks
+     */
+    clearAllHighlights() {
+        this.codeBlocks.forEach((block, id) => {
+            const lines = block.element.querySelectorAll('.code-line');
+            lines.forEach(line => {
+                line.classList.remove('highlighted-code-line', 'highlight-execution', 'highlight-comparison', 'highlight-swap', 'highlight-insert', 'highlight-delete');
+            });
+            block.currentHighlight = null;
+        });
+    }
+
+    /**
+     * Update progress display
+     * @param {string} status - Current status
+     */
+    updateProgress(status) {
+        const progressText = document.getElementById('progressText');
+        if (progressText) {
+            progressText.textContent = status;
+        }
+        
+        const progressFill = document.getElementById('progressFill');
+        if (progressFill) {
+            const percentage = this.totalSteps > 0 ? (this.currentStep / this.totalSteps) * 100 : 0;
+            progressFill.style.width = `${percentage}%`;
+        }
+    }
+
+    /**
+     * Reset performance metrics
+     */
+    resetMetrics() {
+        this.performanceMetrics = {
+            startTime: 0,
+            endTime: 0,
+            comparisons: 0,
+            swaps: 0,
+            operations: 0
+        };
     }
 }
 
