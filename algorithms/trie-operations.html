@@ -185,9 +185,11 @@
             overflow: auto;
             padding: 20px;
             border: 2px solid #e5e7eb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            cursor: grab;
+        }
+
+        .trie-container:active {
+            cursor: grabbing;
         }
 
         .trie-content {
@@ -214,6 +216,30 @@
 
         .trie-container::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
+        }
+
+        .trie-help {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #0c4a6e;
+        }
+
+        .trie-help p {
+            margin: 0 0 10px 0;
+            font-weight: 600;
+        }
+
+        .trie-help ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .trie-help li {
+            margin: 5px 0;
         }
 
         .trie-node {
@@ -506,11 +532,21 @@
             <button id="operationBtn">Insert Word</button>
             <button id="clearBtn">Clear Trie</button>
             <button id="centerBtn">Center Trie</button>
+            <button id="resetViewBtn">Reset View</button>
         </div>
 
         <div class="visualization-area">
             <div class="trie-container" id="trieContainer">
                 <!-- Trie will be rendered here -->
+            </div>
+            <div class="trie-help" id="trieHelp" style="display: none;">
+                <p>💡 <strong>Navigation Tips:</strong></p>
+                <ul>
+                    <li>🖱️ <strong>Drag</strong> to move around the trie</li>
+                    <li>🔄 <strong>Scroll</strong> to zoom in/out</li>
+                    <li>🎯 <strong>Center Trie</strong> to reset position</li>
+                    <li>🔄 <strong>Reset View</strong> to start over</li>
+                </ul>
             </div>
             
             <div class="word-list" id="wordList">
@@ -805,18 +841,41 @@
                 // Calculate positions for nodes
                 this.calculatePositions();
                 
-                // Calculate the bounds of the trie to center it properly
+                // Calculate the bounds of the trie
                 const bounds = this.calculateTrieBounds();
-                const centerX = bounds.minX + (bounds.maxX - bounds.minX) / 2;
-                const centerY = bounds.minY + (bounds.maxY - bounds.minY) / 2;
-                
-                // Set content wrapper size to accommodate the trie with proper padding
                 const trieWidth = bounds.maxX - bounds.minX;
                 const trieHeight = bounds.maxY - bounds.minY;
-                const padding = 200;
                 
-                contentWrapper.style.width = `${Math.max(trieWidth + padding, container.clientWidth)}px`;
-                contentWrapper.style.height = `${Math.max(trieHeight + padding, container.clientHeight)}px`;
+                // Get container dimensions
+                const containerRect = container.getBoundingClientRect();
+                const containerWidth = containerRect.width - 40; // Account for padding
+                const containerHeight = containerRect.height - 40; // Account for padding
+                
+                // Calculate content wrapper size with generous padding
+                const padding = Math.max(200, Math.max(containerWidth, containerHeight) * 0.5);
+                const contentWidth = Math.max(trieWidth + padding * 2, containerWidth);
+                const contentHeight = Math.max(trieHeight + padding * 2, containerHeight);
+                
+                contentWrapper.style.width = `${contentWidth}px`;
+                contentWrapper.style.height = `${contentHeight}px`;
+                
+                // Center the trie within the content wrapper
+                const centerX = contentWidth / 2;
+                const centerY = contentHeight / 2;
+                const trieCenterX = bounds.minX + trieWidth / 2;
+                const trieCenterY = bounds.minY + trieHeight / 2;
+                
+                // Calculate offset to center the trie
+                const offsetX = centerX - trieCenterX;
+                const offsetY = centerY - trieCenterY;
+                
+                // Apply offset to all node positions
+                for (const [nodeId, position] of this.nodePositions) {
+                    this.nodePositions.set(nodeId, {
+                        x: position.x + offsetX,
+                        y: position.y + offsetY
+                    });
+                }
                 
                 // Render edges first (so they appear behind nodes)
                 this.renderEdges(contentWrapper);
@@ -824,7 +883,16 @@
                 // Render nodes
                 this.renderNodes(contentWrapper);
                 
-                // Center the trie in the viewport after a short delay to ensure rendering is complete
+                // Add drag functionality
+                this.addDragFunctionality(container);
+                
+                // Show help text
+                const helpElement = document.getElementById('trieHelp');
+                if (helpElement) {
+                    helpElement.style.display = 'block';
+                }
+                
+                // Center the trie in the viewport
                 setTimeout(() => {
                     this.centerTrieInViewport(container, centerX, centerY);
                 }, 100);
@@ -1076,12 +1144,96 @@
                 }
 
                 const container = document.getElementById('trieContainer');
-                const bounds = this.calculateTrieBounds();
-                const centerX = bounds.minX + (bounds.maxX - bounds.minX) / 2;
-                const centerY = bounds.minY + (bounds.maxY - bounds.minY) / 2;
+                const contentWrapper = container.querySelector('.trie-content');
+                
+                if (!contentWrapper) return;
+                
+                const centerX = contentWrapper.offsetWidth / 2;
+                const centerY = contentWrapper.offsetHeight / 2;
                 
                 this.centerTrieInViewport(container, centerX, centerY);
                 this.updateStepInfo('Trie Centered', 'Trie has been centered in the viewport');
+            }
+
+            resetView() {
+                if (this.root.children.size === 0) {
+                    this.updateStepInfo('Cannot Reset', 'Trie is empty. Insert some words first.');
+                    return;
+                }
+
+                // Re-render the trie to reset the view
+                this.renderTrie();
+                this.updateStepInfo('View Reset', 'Trie view has been reset to default position');
+            }
+
+            addDragFunctionality(container) {
+                let isDragging = false;
+                let startX = 0;
+                let startY = 0;
+                let scrollLeft = 0;
+                let scrollTop = 0;
+
+                container.addEventListener('mousedown', (e) => {
+                    // Only start drag if clicking on empty space or the container itself
+                    if (e.target === container || e.target.classList.contains('trie-content')) {
+                        isDragging = true;
+                        container.style.cursor = 'grabbing';
+                        startX = e.pageX - container.offsetLeft;
+                        startY = e.pageY - container.offsetTop;
+                        scrollLeft = container.scrollLeft;
+                        scrollTop = container.scrollTop;
+                        e.preventDefault();
+                    }
+                });
+
+                container.addEventListener('mouseleave', () => {
+                    isDragging = false;
+                    container.style.cursor = 'grab';
+                });
+
+                container.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    container.style.cursor = 'grab';
+                });
+
+                container.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const x = e.pageX - container.offsetLeft;
+                    const y = e.pageY - container.offsetTop;
+                    const walkX = (x - startX) * 2; // Multiply for faster dragging
+                    const walkY = (y - startY) * 2;
+                    container.scrollLeft = scrollLeft - walkX;
+                    container.scrollTop = scrollTop - walkY;
+                });
+
+                // Add touch support for mobile devices
+                container.addEventListener('touchstart', (e) => {
+                    if (e.target === container || e.target.classList.contains('trie-content')) {
+                        isDragging = true;
+                        const touch = e.touches[0];
+                        startX = touch.pageX - container.offsetLeft;
+                        startY = touch.pageY - container.offsetTop;
+                        scrollLeft = container.scrollLeft;
+                        scrollTop = container.scrollTop;
+                    }
+                });
+
+                container.addEventListener('touchend', () => {
+                    isDragging = false;
+                });
+
+                container.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const x = touch.pageX - container.offsetLeft;
+                    const y = touch.pageY - container.offsetTop;
+                    const walkX = (x - startX) * 2;
+                    const walkY = (y - startY) * 2;
+                    container.scrollLeft = scrollLeft - walkX;
+                    container.scrollTop = scrollTop - walkY;
+                });
             }
 
             insertPredefinedWord(word) {
@@ -1151,6 +1303,10 @@
 
         document.getElementById('centerBtn').addEventListener('click', () => {
             trieVisualization.centerTrie();
+        });
+
+        document.getElementById('resetViewBtn').addEventListener('click', () => {
+            trieVisualization.resetView();
         });
 
         // Fix predefined word buttons
