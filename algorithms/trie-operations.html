@@ -290,6 +290,19 @@
             transition: all 0.3s ease;
         }
 
+        .edge-label {
+            position: absolute;
+            background: #f3f4f6;
+            color: #374151;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            z-index: 3;
+            pointer-events: none;
+        }
+
         .trie-edge.highlighted {
             background: #f59e0b;
             height: 5px;
@@ -728,6 +741,10 @@
                         const newNode = new TrieNode(char);
                         current.children.set(char, newNode);
                         this.updateStepInfo('Creating Node', `Creating new node for character "${char}"`);
+                        
+                        // Add the new node to the display immediately
+                        await this.addNodeToDisplay(newNode, current, char);
+                        await this.delay(this.animationSpeed);
                     } else {
                         this.updateStepInfo('Following Path', `Following existing path for character "${char}"`);
                     }
@@ -744,11 +761,13 @@
                 this.words.add(word);
                 this.updateStepInfo('Word Inserted', `Successfully inserted "${word}" into the trie`);
                 
+                // Update the end-of-word styling
+                this.updateEndOfWordStyling(current.id);
+                
                 // Final highlight
                 await this.highlightPath([...word], 'highlighted');
                 await this.delay(this.animationSpeed);
                 
-                this.updateTrieDisplay();
                 this.updateWordList();
             }
 
@@ -792,24 +811,245 @@
                 this.updateStepInfo('Deleting Word', `Deleting "${word}" from the trie...`);
                 
                 // First check if word exists
-                if (!this.trie.search(word)) {
+                if (!this.searchWordInTrie(word)) {
                     this.updateStepInfo('Word Not Found', `"${word}" not found in the trie. Cannot delete.`);
                     return false;
                 }
                 
-                // Delete from the actual trie structure
-                const deleted = this.trie.delete(word);
-                if (deleted) {
-                    this.words.delete(word);
-                    this.updateStepInfo('Word Deleted', `Successfully deleted "${word}" from the trie`);
-                } else {
-                    this.updateStepInfo('Delete Failed', `Failed to delete "${word}" from the trie`);
+                // Show the path being deleted
+                await this.highlightPath([...word], 'current');
+                await this.delay(this.animationSpeed);
+                
+                // Delete from the trie structure step by step
+                let current = this.root;
+                let path = [];
+                let nodesToRemove = [];
+                
+                // Find the path and mark nodes for removal
+                for (let i = 0; i < word.length; i++) {
+                    const char = word[i];
+                    path.push(char);
+                    
+                    this.updateStepInfo('Processing Character', `Processing character "${char}" for deletion (position ${i + 1}/${word.length})`);
+                    
+                    if (!current.children.has(char)) {
+                        this.updateStepInfo('Delete Failed', `Character "${char}" not found. Cannot delete "${word}".`);
+                        return false;
+                    }
+                    
+                    current = current.children.get(char);
+                    nodesToRemove.push({ node: current, char: char, index: i });
+                    
+                    // Highlight current path
+                    await this.highlightPath(path, 'current');
+                    await this.delay(this.animationSpeed);
+                }
+                
+                // Check if it's actually an end of word
+                if (!current.isEndOfWord) {
+                    this.updateStepInfo('Delete Failed', `"${word}" is not a complete word in the trie.`);
                     return false;
                 }
                 
-                this.updateTrieDisplay();
+                // Mark as not end of word
+                current.isEndOfWord = false;
+                this.words.delete(word);
+                
+                // Remove nodes that are no longer needed (no children and not end of word)
+                for (let i = nodesToRemove.length - 1; i >= 0; i--) {
+                    const { node, char } = nodesToRemove[i];
+                    const parent = this.findParentNode(node);
+                    
+                    if (parent && !node.isEndOfWord && node.children.size === 0) {
+                        // Remove the node from parent
+                        parent.children.delete(char);
+                        this.updateStepInfo('Removing Node', `Removing node "${char}" as it's no longer needed`);
+                        
+                        // Remove the visual node
+                        this.removeNodeFromDisplay(node.id);
+                        await this.delay(this.animationSpeed);
+                    } else {
+                        break; // Stop removing if we hit a node that's still needed
+                    }
+                }
+                
+                this.updateStepInfo('Word Deleted', `Successfully deleted "${word}" from the trie`);
                 this.updateWordList();
                 return true;
+            }
+
+            searchWordInTrie(word) {
+                let current = this.root;
+                for (let i = 0; i < word.length; i++) {
+                    const char = word[i];
+                    if (!current.children.has(char)) {
+                        return false;
+                    }
+                    current = current.children.get(char);
+                }
+                return current.isEndOfWord;
+            }
+
+            findParentNode(targetNode) {
+                const queue = [{ node: this.root, parent: null }];
+                
+                while (queue.length > 0) {
+                    const { node, parent } = queue.shift();
+                    
+                    for (const [char, child] of node.children) {
+                        if (child === targetNode) {
+                            return node;
+                        }
+                        queue.push({ node: child, parent: node });
+                    }
+                }
+                return null;
+            }
+
+            async addNodeToDisplay(newNode, parentNode, char) {
+                const container = document.getElementById('trieContainer');
+                const contentWrapper = container.querySelector('.trie-content');
+                
+                if (!contentWrapper) {
+                    // If no content wrapper exists, do full render
+                    this.renderTrie();
+                    return;
+                }
+                
+                // Calculate position for the new node
+                this.calculatePositions();
+                const position = this.nodePositions.get(newNode.id);
+                
+                if (!position) return;
+                
+                // Create the new node element
+                const nodeElement = document.createElement('div');
+                nodeElement.className = 'trie-node';
+                nodeElement.id = `node-${newNode.id}`;
+                nodeElement.textContent = newNode.char;
+                nodeElement.style.left = `${position.x - 30}px`;
+                nodeElement.style.top = `${position.y - 30}px`;
+                nodeElement.setAttribute('data-char', newNode.char);
+                nodeElement.setAttribute('data-node-id', newNode.id);
+                
+                // Add entrance animation
+                nodeElement.style.transform = 'scale(0)';
+                nodeElement.style.opacity = '0';
+                nodeElement.style.transition = 'all 0.5s ease';
+                
+                contentWrapper.appendChild(nodeElement);
+                
+                // Animate the node appearing
+                setTimeout(() => {
+                    nodeElement.style.transform = 'scale(1)';
+                    nodeElement.style.opacity = '1';
+                }, 50);
+                
+                // Create edge to parent
+                await this.addEdgeToDisplay(parentNode, newNode, char);
+            }
+
+            async addEdgeToDisplay(parentNode, childNode, char) {
+                const container = document.getElementById('trieContainer');
+                const contentWrapper = container.querySelector('.trie-content');
+                
+                if (!contentWrapper) return;
+                
+                const parentPosition = this.nodePositions.get(parentNode.id);
+                const childPosition = this.nodePositions.get(childNode.id);
+                
+                if (!parentPosition || !childPosition) return;
+                
+                // Create edge element
+                const edgeElement = document.createElement('div');
+                edgeElement.className = 'trie-edge';
+                edgeElement.setAttribute('data-from', parentNode.id);
+                edgeElement.setAttribute('data-to', childNode.id);
+                
+                // Calculate edge position and rotation
+                const dx = childPosition.x - parentPosition.x;
+                const dy = childPosition.y - parentPosition.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+                
+                edgeElement.style.left = `${parentPosition.x}px`;
+                edgeElement.style.top = `${parentPosition.y}px`;
+                edgeElement.style.width = `${length}px`;
+                edgeElement.style.transform = `rotate(${angle}deg)`;
+                edgeElement.style.transformOrigin = '0 50%';
+                
+                // Add entrance animation
+                edgeElement.style.opacity = '0';
+                edgeElement.style.transition = 'all 0.5s ease';
+                
+                contentWrapper.appendChild(edgeElement);
+                
+                // Animate the edge appearing
+                setTimeout(() => {
+                    edgeElement.style.opacity = '1';
+                }, 50);
+                
+                // Add character label on edge
+                const labelElement = document.createElement('div');
+                labelElement.className = 'edge-label';
+                labelElement.textContent = char;
+                labelElement.style.left = `${parentPosition.x + dx * 0.5 - 10}px`;
+                labelElement.style.top = `${parentPosition.y + dy * 0.5 - 10}px`;
+                labelElement.style.opacity = '0';
+                labelElement.style.transition = 'all 0.5s ease';
+                
+                contentWrapper.appendChild(labelElement);
+                
+                setTimeout(() => {
+                    labelElement.style.opacity = '1';
+                }, 100);
+            }
+
+            updateEndOfWordStyling(nodeId) {
+                const nodeElement = document.getElementById(`node-${nodeId}`);
+                if (nodeElement) {
+                    nodeElement.classList.add('end-of-word');
+                }
+            }
+
+            removeNodeFromDisplay(nodeId) {
+                const nodeElement = document.getElementById(`node-${nodeId}`);
+                if (nodeElement) {
+                    // Add removal animation
+                    nodeElement.style.transition = 'all 0.5s ease';
+                    nodeElement.style.transform = 'scale(0)';
+                    nodeElement.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        if (nodeElement.parentNode) {
+                            nodeElement.parentNode.removeChild(nodeElement);
+                        }
+                    }, 500);
+                }
+                
+                // Remove associated edges
+                const edges = document.querySelectorAll(`[data-from="${nodeId}"], [data-to="${nodeId}"]`);
+                edges.forEach(edge => {
+                    edge.style.transition = 'all 0.5s ease';
+                    edge.style.opacity = '0';
+                    setTimeout(() => {
+                        if (edge.parentNode) {
+                            edge.parentNode.removeChild(edge);
+                        }
+                    }, 500);
+                });
+                
+                // Remove associated labels
+                const labels = document.querySelectorAll(`[data-node="${nodeId}"]`);
+                labels.forEach(label => {
+                    label.style.transition = 'all 0.5s ease';
+                    label.style.opacity = '0';
+                    setTimeout(() => {
+                        if (label.parentNode) {
+                            label.parentNode.removeChild(label);
+                        }
+                    }, 500);
+                });
             }
 
             async highlightPath(path, state) {
