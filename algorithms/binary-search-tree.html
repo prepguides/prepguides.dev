@@ -166,8 +166,10 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            min-height: 350px;
+            min-height: 400px;
             padding: 20px;
+            overflow: auto;
+            position: relative;
         }
 
         .tree-node {
@@ -230,15 +232,7 @@
             background: #6b7280;
             height: 2px;
             transform-origin: left center;
-        }
-
-        .tree-line.horizontal {
-            width: 50px;
-        }
-
-        .tree-line.vertical {
-            width: 2px;
-            height: 30px;
+            z-index: 5;
         }
 
         .traversal-result {
@@ -831,29 +825,87 @@
                 const container = document.getElementById('treeContainer');
                 
                 if (this.root) {
-                    this.renderNode(this.root, container, 0, 0);
+                    // Calculate tree dimensions
+                    const treeHeight = this.getTreeHeight(this.root);
+                    const treeWidth = Math.pow(2, treeHeight - 1) * 80; // 80px spacing between nodes
+                    
+                    // Set container dimensions
+                    container.style.width = `${treeWidth}px`;
+                    container.style.height = `${treeHeight * 100}px`;
+                    container.style.position = 'relative';
+                    
+                    // Render tree with proper positioning
+                    this.renderNodeWithLines(this.root, container, treeWidth / 2, 50, treeWidth / 4, 100);
                 } else {
-                    container.innerHTML = '<p style="color: #6b7280; text-align: center;">Tree is empty</p>';
+                    container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 50px;">Tree is empty</p>';
                 }
             }
 
-            renderNode(node, container, level, position) {
+            getTreeHeight(node) {
+                if (!node) return 0;
+                return 1 + Math.max(this.getTreeHeight(node.left), this.getTreeHeight(node.right));
+            }
+
+            renderNodeWithLines(node, container, x, y, xOffset, yOffset) {
                 if (!node) return;
                 
+                // Create node element
                 const nodeDiv = document.createElement('div');
                 nodeDiv.className = 'tree-node';
                 nodeDiv.id = node.id;
                 nodeDiv.textContent = node.value;
-                nodeDiv.style.marginLeft = `${position * 60}px`;
-                nodeDiv.style.marginTop = `${level * 80}px`;
+                nodeDiv.style.position = 'absolute';
+                nodeDiv.style.left = `${x - 25}px`; // Center the node (50px width / 2)
+                nodeDiv.style.top = `${y - 25}px`; // Center the node (50px height / 2)
+                nodeDiv.style.zIndex = '10';
                 
                 container.appendChild(nodeDiv);
                 
+                // Draw lines to children
                 if (node.left) {
-                    this.renderNode(node.left, container, level + 1, position - 1);
+                    const leftX = x - xOffset;
+                    const leftY = y + yOffset;
+                    
+                    // Create line element
+                    const line = document.createElement('div');
+                    line.className = 'tree-line';
+                    line.style.position = 'absolute';
+                    line.style.left = `${x - 25}px`;
+                    line.style.top = `${y + 25}px`;
+                    line.style.width = `${Math.sqrt(xOffset * xOffset + yOffset * yOffset)}px`;
+                    line.style.height = '2px';
+                    line.style.backgroundColor = '#6b7280';
+                    line.style.transformOrigin = '0 0';
+                    line.style.transform = `rotate(${Math.atan2(yOffset, -xOffset) * 180 / Math.PI}deg)`;
+                    line.style.zIndex = '5';
+                    
+                    container.appendChild(line);
+                    
+                    // Recursively render left child
+                    this.renderNodeWithLines(node.left, container, leftX, leftY, xOffset / 2, yOffset);
                 }
+                
                 if (node.right) {
-                    this.renderNode(node.right, container, level + 1, position + 1);
+                    const rightX = x + xOffset;
+                    const rightY = y + yOffset;
+                    
+                    // Create line element
+                    const line = document.createElement('div');
+                    line.className = 'tree-line';
+                    line.style.position = 'absolute';
+                    line.style.left = `${x + 25}px`;
+                    line.style.top = `${y + 25}px`;
+                    line.style.width = `${Math.sqrt(xOffset * xOffset + yOffset * yOffset)}px`;
+                    line.style.height = '2px';
+                    line.style.backgroundColor = '#6b7280';
+                    line.style.transformOrigin = '0 0';
+                    line.style.transform = `rotate(${Math.atan2(yOffset, xOffset) * 180 / Math.PI}deg)`;
+                    line.style.zIndex = '5';
+                    
+                    container.appendChild(line);
+                    
+                    // Recursively render right child
+                    this.renderNodeWithLines(node.right, container, rightX, rightY, xOffset / 2, yOffset);
                 }
             }
 
