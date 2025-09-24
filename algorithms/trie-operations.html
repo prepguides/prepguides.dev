@@ -1196,42 +1196,33 @@
             }
 
             calculateBreadthFirstLayout(levelHeight, nodeSpacing) {
-                const queue = [{ node: this.root, level: 0, index: 0 }];
-                const nodesAtLevel = new Map();
+                // Use a more compact tree layout algorithm
+                this.calculateCompactTreeLayout(this.root, 0, 0, levelHeight, nodeSpacing);
+            }
+
+            calculateCompactTreeLayout(node, level, x, levelHeight, nodeSpacing) {
+                if (!node) return x;
                 
-                // First pass: collect all nodes by level
-                while (queue.length > 0) {
-                    const { node, level, index } = queue.shift();
-                    
-                    if (!nodesAtLevel.has(level)) {
-                        nodesAtLevel.set(level, []);
-                    }
-                    nodesAtLevel.get(level).push({ node, index });
-                    
-                    // Add children to queue
-                    let childIndex = 0;
-                    for (const [char, child] of node.children) {
-                        queue.push({ 
-                            node: child, 
-                            level: level + 1, 
-                            index: childIndex
-                        });
-                        childIndex++;
-                    }
+                // Position the current node
+                this.nodePositions.set(node.id, { x, y: level * levelHeight });
+                
+                if (node.children.size === 0) {
+                    return x;
                 }
                 
-                // Second pass: position nodes at each level with proper centering
-                for (const [level, nodes] of nodesAtLevel) {
-                    const totalNodes = nodes.length;
-                    const startX = -(totalNodes - 1) * nodeSpacing / 2;
-                    
-                    nodes.forEach(({ node, index }, i) => {
-                        const x = startX + (i * nodeSpacing);
-                        const y = level * levelHeight;
-                        
-                        this.nodePositions.set(node.id, { x, y });
-                    });
+                // Calculate positions for children
+                const children = Array.from(node.children.values());
+                const childSpacing = Math.max(nodeSpacing, 100); // Minimum spacing
+                
+                // Start positioning children from the left
+                let currentX = x - (children.length - 1) * childSpacing / 2;
+                
+                for (const child of children) {
+                    currentX = this.calculateCompactTreeLayout(child, level + 1, currentX, levelHeight, nodeSpacing);
+                    currentX += childSpacing;
                 }
+                
+                return currentX - childSpacing;
             }
 
             calculateTreeLayout(node, level, index, levelHeight, minSpacing) {
@@ -1260,14 +1251,18 @@
                 const bounds = this.calculateTrieBounds();
                 
                 // Add padding to ensure all nodes are visible
-                const padding = 100;
+                const padding = 150;
                 const minX = bounds.minX - padding;
                 const minY = bounds.minY - padding;
                 
-                // Adjust all positions to ensure they're positive and have proper spacing
+                // Center the trie horizontally
+                const trieWidth = bounds.maxX - bounds.minX;
+                const centerOffset = (trieWidth + 2 * padding) / 2;
+                
+                // Adjust all positions to ensure they're positive and centered
                 for (const [nodeId, position] of this.nodePositions) {
                     this.nodePositions.set(nodeId, {
-                        x: position.x - minX + padding,
+                        x: position.x - minX + centerOffset - trieWidth / 2,
                         y: position.y - minY + padding
                     });
                 }
