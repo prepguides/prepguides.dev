@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Sorting with Code Execution Sync</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="code-highlighting.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .visualization-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-weight: 500;
+            color: #555;
+        }
+
+        select, input[type="number"], input[type="range"] {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .visualization {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: #fafafa;
+            position: relative;
+        }
+
+        .array-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 2px;
+            align-items: end;
+        }
+
+        .bar {
+            background: #007bff;
+            border: 1px solid #0056b3;
+            transition: all 0.3s ease;
+            min-width: 20px;
+            border-radius: 2px 2px 0 0;
+        }
+
+        .bar.comparing {
+            background: #ffc107;
+            border-color: #e0a800;
+        }
+
+        .bar.swapping {
+            background: #dc3545;
+            border-color: #c82333;
+        }
+
+        .bar.sorted {
+            background: #28a745;
+            border-color: #1e7e34;
+        }
+
+        .bar.pivot {
+            background: #6f42c1;
+            border-color: #5a32a3;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #007bff;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #007bff;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .algorithm-info {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .algorithm-info h4 {
+            margin: 0 0 8px 0;
+            color: #1976d2;
+            font-size: 1.1rem;
+        }
+
+        .complexity-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .complexity-item {
+            background: white;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid #bbdefb;
+        }
+
+        .complexity-type {
+            font-size: 12px;
+            color: #1976d2;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .complexity-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1976d2;
+            font-family: 'Fira Code', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Enhanced Sorting Algorithms</h1>
+            <p>Interactive visualization with synchronized code execution</p>
+        </div>
+
+        <div class="visualization-container">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="algorithmSelect">Algorithm:</label>
+                    <select id="algorithmSelect" onchange="updateAlgorithmInfo()">
+                        <option value="bubbleSort">Bubble Sort</option>
+                        <option value="selectionSort">Selection Sort</option>
+                        <option value="insertionSort">Insertion Sort</option>
+                        <option value="mergeSort">Merge Sort</option>
+                        <option value="quickSort">Quick Sort</option>
+                        <option value="heapSort">Heap Sort</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="arraySize">Size:</label>
+                    <input type="number" id="arraySize" value="20" min="5" max="50">
+                </div>
+                
+                <button class="btn-primary" onclick="generateArray()">Generate Array</button>
+                <button class="btn-success" onclick="startSorting()">Start Sorting</button>
+                <button class="btn-danger" onclick="stopSorting()">Stop</button>
+                <button class="btn-warning" onclick="resetArray()">Reset</button>
+                
+                <div class="control-group">
+                    <label for="speedSlider">Speed:</label>
+                    <input type="range" id="speedSlider" min="1" max="10" value="5" onchange="updateSpeed()">
+                </div>
+            </div>
+
+            <div class="algorithm-info" id="algorithmInfo">
+                <h4>Bubble Sort</h4>
+                <p>Bubble Sort is a simple sorting algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order.</p>
+                <div class="complexity-info">
+                    <div class="complexity-item">
+                        <div class="complexity-type">Time Complexity</div>
+                        <div class="complexity-value">O(n²)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-type">Space Complexity</div>
+                        <div class="complexity-value">O(1)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visualization" id="visualization">
+                <div class="array-container" id="arrayContainer"></div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="comparisons">0</div>
+                    <div class="stat-label">Comparisons</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="swaps">0</div>
+                    <div class="stat-label">Swaps</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="iterations">0</div>
+                    <div class="stat-label">Iterations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="timeElapsed">0ms</div>
+                    <div class="stat-label">Time</div>
+                </div>
+            </div>
+
+            <div id="messageArea"></div>
+        </div>
+
+        <!-- Code Execution Synchronization -->
+        <div class="code-execution-container">
+            <div class="code-panel go">
+                <h3>Go Implementation</h3>
+                <div id="goCodeBlock" class="code-block" data-language="go"></div>
+            </div>
+            <div class="code-panel java">
+                <h3>Java Implementation</h3>
+                <div id="javaCodeBlock" class="code-block" data-language="java"></div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="performance-panel">
+            <h3>Performance Analysis</h3>
+            <div class="metrics-grid">
+                <div class="metric-card comparisons">
+                    <div class="metric-label">Total Comparisons</div>
+                    <div class="metric-value" id="totalComparisons">0</div>
+                </div>
+                <div class="metric-card swaps">
+                    <div class="metric-label">Total Swaps</div>
+                    <div class="metric-value" id="totalSwaps">0</div>
+                </div>
+                <div class="metric-card operations">
+                    <div class="metric-label">Operations</div>
+                    <div class="metric-value" id="totalOperations">0</div>
+                </div>
+                <div class="metric-card duration">
+                    <div class="metric-label">Duration (ms)</div>
+                    <div class="metric-value" id="totalDuration">0</div>
+                </div>
+            </div>
+            
+            <div class="complexity-analysis">
+                <h4>Complexity Analysis</h4>
+                <div class="complexity-grid">
+                    <div class="complexity-item">
+                        <div class="complexity-type">Time Complexity</div>
+                        <div class="complexity-value" id="timeComplexity">O(n²)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-type">Space Complexity</div>
+                        <div class="complexity-value" id="spaceComplexity">O(1)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Execution Controls -->
+        <div class="execution-controls">
+            <button class="control-button primary" onclick="startCodeExecution()">
+                ▶️ Start Execution
+            </button>
+            <button class="control-button secondary" onclick="pauseCodeExecution()">
+                ⏸️ Pause
+            </button>
+            <button class="control-button danger" onclick="stopCodeExecution()">
+                ⏹️ Stop
+            </button>
+            
+            <div class="speed-control">
+                <label for="executionSpeed">Speed:</label>
+                <input type="range" id="executionSpeed" min="100" max="2000" value="1000" 
+                       onchange="updateExecutionSpeed()" class="speed-slider">
+            </div>
+        </div>
+
+        <div class="execution-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text" id="progressText">Ready to execute</div>
+        </div>
+    </div>
+
+    <script src="code-execution-sync.js"></script>
+    <script>
+        // Enhanced Sorting Visualization with Code Execution Sync
+        class EnhancedSortingVisualization {
+            constructor() {
+                this.array = [];
+                this.originalArray = [];
+                this.isSorting = false;
+                this.currentAlgorithm = 'bubbleSort';
+                this.comparisons = 0;
+                this.swaps = 0;
+                this.iterations = 0;
+                this.startTime = 0;
+                this.codeSync = new CodeExecutionSync();
+                
+                this.initializeCodeBlocks();
+                this.setupEventListeners();
+                this.generateArray();
+            }
+
+            initializeCodeBlocks() {
+                // Go code for sorting algorithms
+                const goCode = `func (sa *SortingAlgorithms) BubbleSort(arr []int) SortingStats {
+    stats := SortingStats{}
+    start := time.Now()
+    
+    n := len(arr)
+    arrCopy := make([]int, n)
+    copy(arrCopy, arr)
+    
+    for i := 0; i < n-1; i++ {
+        swapped := false
+        for j := 0; j < n-i-1; j++ {
+            stats.Comparisons++
+            if arrCopy[j] > arrCopy[j+1] {
+                arrCopy[j], arrCopy[j+1] = arrCopy[j+1], arrCopy[j]
+                stats.Swaps++
+                swapped = true
+            }
+        }
+        if !swapped {
+            break
+        }
+    }
+    
+    stats.TimeElapsed = time.Since(start)
+    return stats
+}
+
+func (sa *SortingAlgorithms) QuickSort(arr []int) SortingStats {
+    stats := SortingStats{}
+    start := time.Now()
+    
+    arrCopy := make([]int, len(arr))
+    copy(arrCopy, arr)
+    
+    sa.quickSortHelper(arrCopy, 0, len(arrCopy)-1, &stats)
+    
+    stats.TimeElapsed = time.Since(start)
+    return stats
+}
+
+func (sa *SortingAlgorithms) quickSortHelper(arr []int, low, high int, stats *SortingStats) {
+    if low < high {
+        pi := sa.partition(arr, low, high, stats)
+        sa.quickSortHelper(arr, low, pi-1, stats)
+        sa.quickSortHelper(arr, pi+1, high, stats)
+    }
+}`;
+
+                // Java code for sorting algorithms
+                const javaCode = `public SortingStats bubbleSort(int[] arr) {
+    SortingStats stats = new SortingStats();
+    long startTime = System.nanoTime();
+    
+    int n = arr.length;
+    int[] arrCopy = Arrays.copyOf(arr, arr.length);
+    
+    for (int i = 0; i < n - 1; i++) {
+        boolean swapped = false;
+        for (int j = 0; j < n - i - 1; j++) {
+            stats.comparisons++;
+            if (arrCopy[j] > arrCopy[j + 1]) {
+                swap(arrCopy, j, j + 1);
+                stats.swaps++;
+                swapped = true;
+            }
+        }
+        if (!swapped) {
+            break;
+        }
+    }
+    
+    stats.timeElapsed = System.nanoTime() - startTime;
+    return stats;
+}
+
+public SortingStats quickSort(int[] arr) {
+    SortingStats stats = new SortingStats();
+    long startTime = System.nanoTime();
+    
+    int[] arrCopy = Arrays.copyOf(arr, arr.length);
+    quickSortHelper(arrCopy, 0, arrCopy.length - 1, stats);
+    
+    stats.timeElapsed = System.nanoTime() - startTime;
+    return stats;
+}
+
+private void quickSortHelper(int[] arr, int low, int high, SortingStats stats) {
+    if (low < high) {
+        int pi = partition(arr, low, high, stats);
+        quickSortHelper(arr, low, pi - 1, stats);
+        quickSortHelper(arr, pi + 1, high, stats);
+    }
+}`;
+
+                // Create code blocks
+                const goCodeBlock = this.codeSync.createCodeBlock(goCode, 'go');
+                const javaCodeBlock = this.codeSync.createCodeBlock(javaCode, 'java');
+                
+                document.getElementById('goCodeBlock').appendChild(goCodeBlock);
+                document.getElementById('javaCodeBlock').appendChild(javaCodeBlock);
+
+                // Register code blocks
+                this.codeSync.registerCodeBlock('go', goCodeBlock, [
+                    { line: 1, description: 'Bubble sort method definition' },
+                    { line: 2, description: 'Initialize statistics' },
+                    { line: 3, description: 'Start timing' },
+                    { line: 5, description: 'Get array length' },
+                    { line: 6, description: 'Create array copy' },
+                    { line: 7, description: 'Copy original array' },
+                    { line: 9, description: 'Outer loop for passes' },
+                    { line: 10, description: 'Initialize swap flag' },
+                    { line: 11, description: 'Inner loop for comparisons' },
+                    { line: 12, description: 'Increment comparison counter' },
+                    { line: 13, description: 'Compare adjacent elements' },
+                    { line: 14, description: 'Swap elements' },
+                    { line: 15, description: 'Increment swap counter' },
+                    { line: 16, description: 'Set swap flag' },
+                    { line: 20, description: 'Check if no swaps occurred' },
+                    { line: 21, description: 'Early termination' },
+                    { line: 26, description: 'Calculate elapsed time' },
+                    { line: 27, description: 'Return statistics' }
+                ]);
+
+                this.codeSync.registerCodeBlock('java', javaCodeBlock, [
+                    { line: 1, description: 'Bubble sort method definition' },
+                    { line: 2, description: 'Initialize statistics' },
+                    { line: 3, description: 'Start timing' },
+                    { line: 5, description: 'Get array length' },
+                    { line: 6, description: 'Create array copy' },
+                    { line: 8, description: 'Outer loop for passes' },
+                    { line: 9, description: 'Initialize swap flag' },
+                    { line: 10, description: 'Inner loop for comparisons' },
+                    { line: 11, description: 'Increment comparison counter' },
+                    { line: 12, description: 'Compare adjacent elements' },
+                    { line: 13, description: 'Swap elements' },
+                    { line: 14, description: 'Increment swap counter' },
+                    { line: 15, description: 'Set swap flag' },
+                    { line: 19, description: 'Check if no swaps occurred' },
+                    { line: 20, description: 'Early termination' },
+                    { line: 25, description: 'Calculate elapsed time' },
+                    { line: 26, description: 'Return statistics' }
+                ]);
+            }
+
+            setupEventListeners() {
+                // Listen for execution completion
+                document.addEventListener('codeExecutionComplete', (event) => {
+                    this.onExecutionComplete(event.detail);
+                });
+            }
+
+            generateArray() {
+                const size = parseInt(document.getElementById('arraySize').value);
+                this.array = [];
+                for (let i = 0; i < size; i++) {
+                    this.array.push(Math.floor(Math.random() * 100) + 1);
+                }
+                this.originalArray = [...this.array];
+                this.renderArray();
+                this.resetStats();
+            }
+
+            renderArray() {
+                const container = document.getElementById('arrayContainer');
+                container.innerHTML = '';
+                
+                const maxValue = Math.max(...this.array);
+                const containerHeight = 350;
+                
+                this.array.forEach((value, index) => {
+                    const bar = document.createElement('div');
+                    bar.className = 'bar';
+                    bar.style.height = `${(value / maxValue) * containerHeight}px`;
+                    bar.style.width = `${Math.max(20, 400 / this.array.length)}px`;
+                    bar.setAttribute('data-value', value);
+                    bar.setAttribute('data-index', index);
+                    container.appendChild(bar);
+                });
+            }
+
+            async startSorting() {
+                if (this.isSorting) return;
+                
+                this.isSorting = true;
+                this.startTime = performance.now();
+                this.resetStats();
+                
+                const algorithm = document.getElementById('algorithmSelect').value;
+                this.currentAlgorithm = algorithm;
+                
+                await this.executeSortingAlgorithm(algorithm);
+                this.isSorting = false;
+            }
+
+            async executeSortingAlgorithm(algorithm) {
+                const executionSteps = this.generateExecutionSteps(algorithm);
+                await this.codeSync.startExecution(algorithm, executionSteps);
+            }
+
+            generateExecutionSteps(algorithm) {
+                const steps = [];
+                
+                switch (algorithm) {
+                    case 'bubbleSort':
+                        steps.push(
+                            {
+                                id: 'bubble_start',
+                                codeBlocks: { go: [1, 2, 3], java: [1, 2, 3] },
+                                type: 'executing',
+                                description: 'Starting bubble sort',
+                                metrics: { operations: 1 }
+                            },
+                            {
+                                id: 'bubble_outer_loop',
+                                codeBlocks: { go: [9], java: [8] },
+                                type: 'executing',
+                                description: 'Outer loop iteration',
+                                metrics: { operations: 1 }
+                            },
+                            {
+                                id: 'bubble_inner_loop',
+                                codeBlocks: { go: [11], java: [10] },
+                                type: 'executing',
+                                description: 'Inner loop iteration',
+                                metrics: { operations: 1 }
+                            },
+                            {
+                                id: 'bubble_compare',
+                                codeBlocks: { go: [12, 13], java: [11, 12] },
+                                type: 'comparing',
+                                description: 'Comparing adjacent elements',
+                                metrics: { comparisons: 1 }
+                            },
+                            {
+                                id: 'bubble_swap',
+                                codeBlocks: { go: [14, 15, 16], java: [13, 14, 15] },
+                                type: 'swapping',
+                                description: 'Swapping elements',
+                                metrics: { swaps: 1 }
+                            }
+                        );
+                        break;
+                        
+                    case 'quickSort':
+                        steps.push(
+                            {
+                                id: 'quick_start',
+                                codeBlocks: { go: [30, 31, 32], java: [28, 29, 30] },
+                                type: 'executing',
+                                description: 'Starting quick sort',
+                                metrics: { operations: 1 }
+                            },
+                            {
+                                id: 'quick_partition',
+                                codeBlocks: { go: [35, 36, 37], java: [33, 34, 35] },
+                                type: 'executing',
+                                description: 'Partitioning array',
+                                metrics: { operations: 1 }
+                            },
+                            {
+                                id: 'quick_recursive',
+                                codeBlocks: { go: [38, 39], java: [36, 37] },
+                                type: 'executing',
+                                description: 'Recursive calls',
+                                metrics: { operations: 1 }
+                            }
+                        );
+                        break;
+                }
+                
+                return steps;
+            }
+
+            resetStats() {
+                this.comparisons = 0;
+                this.swaps = 0;
+                this.iterations = 0;
+                this.updateStats();
+            }
+
+            updateStats() {
+                document.getElementById('comparisons').textContent = this.comparisons;
+                document.getElementById('swaps').textContent = this.swaps;
+                document.getElementById('iterations').textContent = this.iterations;
+                
+                if (this.startTime > 0) {
+                    const elapsed = Math.round(performance.now() - this.startTime);
+                    document.getElementById('timeElapsed').textContent = `${elapsed}ms`;
+                }
+            }
+
+            onExecutionComplete(detail) {
+                const metrics = detail.metrics;
+                document.getElementById('totalComparisons').textContent = metrics.comparisons;
+                document.getElementById('totalSwaps').textContent = metrics.swaps;
+                document.getElementById('totalOperations').textContent = metrics.operations;
+                document.getElementById('totalDuration').textContent = Math.round(metrics.duration);
+                
+                this.showMessage('Sorting completed successfully!', 'success');
+            }
+
+            showMessage(text, type) {
+                const messageArea = document.getElementById('messageArea');
+                const message = document.createElement('div');
+                message.className = `message ${type}`;
+                message.textContent = text;
+                messageArea.appendChild(message);
+                
+                setTimeout(() => {
+                    message.remove();
+                }, 3000);
+            }
+        }
+
+        // Global variables and functions
+        let sortingVisualization;
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            sortingVisualization = new EnhancedSortingVisualization();
+        });
+
+        // Global functions for UI interaction
+        function generateArray() {
+            sortingVisualization.generateArray();
+        }
+
+        function startSorting() {
+            sortingVisualization.startSorting();
+        }
+
+        function stopSorting() {
+            sortingVisualization.isSorting = false;
+            sortingVisualization.codeSync.stopExecution();
+        }
+
+        function resetArray() {
+            sortingVisualization.array = [...sortingVisualization.originalArray];
+            sortingVisualization.renderArray();
+            sortingVisualization.resetStats();
+        }
+
+        function updateSpeed() {
+            const speed = document.getElementById('speedSlider').value;
+            sortingVisualization.codeSync.setExecutionSpeed(2000 - (speed * 200));
+        }
+
+        function updateAlgorithmInfo() {
+            const algorithm = document.getElementById('algorithmSelect').value;
+            const info = document.getElementById('algorithmInfo');
+            
+            const algorithmInfo = {
+                bubbleSort: {
+                    name: 'Bubble Sort',
+                    description: 'Bubble Sort is a simple sorting algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order.',
+                    timeComplexity: 'O(n²)',
+                    spaceComplexity: 'O(1)'
+                },
+                quickSort: {
+                    name: 'Quick Sort',
+                    description: 'Quick Sort is a divide-and-conquer algorithm that picks a pivot element and partitions the array around the pivot.',
+                    timeComplexity: 'O(n log n) average, O(n²) worst',
+                    spaceComplexity: 'O(log n) average, O(n) worst'
+                },
+                mergeSort: {
+                    name: 'Merge Sort',
+                    description: 'Merge Sort is a divide-and-conquer algorithm that divides the array into two halves, sorts them, and then merges them.',
+                    timeComplexity: 'O(n log n)',
+                    spaceComplexity: 'O(n)'
+                }
+            };
+            
+            const selected = algorithmInfo[algorithm] || algorithmInfo.bubbleSort;
+            
+            info.innerHTML = `
+                <h4>${selected.name}</h4>
+                <p>${selected.description}</p>
+                <div class="complexity-info">
+                    <div class="complexity-item">
+                        <div class="complexity-type">Time Complexity</div>
+                        <div class="complexity-value">${selected.timeComplexity}</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-type">Space Complexity</div>
+                        <div class="complexity-value">${selected.spaceComplexity}</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('timeComplexity').textContent = selected.timeComplexity;
+            document.getElementById('spaceComplexity').textContent = selected.spaceComplexity;
+        }
+
+        function startCodeExecution() {
+            sortingVisualization.codeSync.startExecution('sortingDemo', []);
+        }
+
+        function pauseCodeExecution() {
+            sortingVisualization.codeSync.pauseExecution();
+        }
+
+        function stopCodeExecution() {
+            sortingVisualization.codeSync.stopExecution();
+        }
+
+        function updateExecutionSpeed() {
+            const speed = document.getElementById('executionSpeed').value;
+            sortingVisualization.codeSync.setExecutionSpeed(parseInt(speed));
+        }
+    </script>
+</body>
+</html>

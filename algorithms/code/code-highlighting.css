@@ -1,0 +1,432 @@
+/**
+ * Code Highlighting Styles for Algorithm Execution Synchronization
+ */
+
+/* Code Block Container */
+.code-execution-container {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.code-panel {
+    flex: 1;
+    min-width: 0;
+}
+
+.code-panel h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.code-panel h3::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #6c757d;
+}
+
+.code-panel.go h3::before {
+    background: #00add8;
+}
+
+.code-panel.java h3::before {
+    background: #ed8b00;
+}
+
+/* Code Block Styling */
+.code-block {
+    background: #1e1e1e;
+    border-radius: 6px;
+    padding: 16px;
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-x: auto;
+    border: 1px solid #333;
+    position: relative;
+}
+
+.code-block::before {
+    content: attr(data-language);
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+/* Line Styling */
+.line {
+    display: flex;
+    align-items: center;
+    padding: 2px 0;
+    transition: all 0.3s ease;
+    border-radius: 3px;
+    margin: 1px 0;
+}
+
+.line-number {
+    display: inline-block;
+    width: 40px;
+    text-align: right;
+    margin-right: 16px;
+    color: #6c757d;
+    font-size: 12px;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.line-content {
+    flex: 1;
+    color: #d4d4d4;
+    white-space: pre;
+}
+
+/* Highlighting States */
+.line.highlighted {
+    background: rgba(255, 255, 255, 0.1);
+    animation: highlightPulse 0.5s ease-in-out;
+}
+
+.line.highlight-executing {
+    background: rgba(0, 123, 255, 0.2);
+    border-left: 3px solid #007bff;
+    padding-left: 8px;
+}
+
+.line.highlight-comparing {
+    background: rgba(255, 193, 7, 0.2);
+    border-left: 3px solid #ffc107;
+    padding-left: 8px;
+}
+
+.line.highlight-swapping {
+    background: rgba(220, 53, 69, 0.2);
+    border-left: 3px solid #dc3545;
+    padding-left: 8px;
+}
+
+.line.highlight-inserting {
+    background: rgba(40, 167, 69, 0.2);
+    border-left: 3px solid #28a745;
+    padding-left: 8px;
+}
+
+.line.highlight-deleting {
+    background: rgba(220, 53, 69, 0.2);
+    border-left: 3px solid #dc3545;
+    padding-left: 8px;
+}
+
+.line.highlight-searching {
+    background: rgba(111, 66, 193, 0.2);
+    border-left: 3px solid #6f42c1;
+    padding-left: 8px;
+}
+
+/* Animation */
+@keyframes highlightPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+/* Performance Metrics Panel */
+.performance-panel {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+}
+
+.performance-panel h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.performance-panel h3::before {
+    content: '📊';
+    font-size: 1.1rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.metric-card {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 12px;
+    border-left: 4px solid #007bff;
+}
+
+.metric-card.comparisons {
+    border-left-color: #ffc107;
+}
+
+.metric-card.swaps {
+    border-left-color: #dc3545;
+}
+
+.metric-card.operations {
+    border-left-color: #28a745;
+}
+
+.metric-card.duration {
+    border-left-color: #6f42c1;
+}
+
+.metric-label {
+    font-size: 12px;
+    color: #6c757d;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.metric-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #495057;
+}
+
+/* Complexity Analysis */
+.complexity-analysis {
+    background: #e3f2fd;
+    border-radius: 6px;
+    padding: 16px;
+    margin-top: 16px;
+}
+
+.complexity-analysis h4 {
+    margin: 0 0 12px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1976d2;
+}
+
+.complexity-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.complexity-item {
+    background: white;
+    border-radius: 4px;
+    padding: 12px;
+    border: 1px solid #bbdefb;
+}
+
+.complexity-type {
+    font-size: 12px;
+    color: #1976d2;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.complexity-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1976d2;
+    font-family: 'Fira Code', monospace;
+}
+
+/* Execution Controls */
+.execution-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin: 20px 0;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.control-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.control-button.primary {
+    background: #007bff;
+    color: white;
+}
+
+.control-button.primary:hover {
+    background: #0056b3;
+}
+
+.control-button.secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.control-button.secondary:hover {
+    background: #545b62;
+}
+
+.control-button.danger {
+    background: #dc3545;
+    color: white;
+}
+
+.control-button.danger:hover {
+    background: #c82333;
+}
+
+.control-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.speed-control label {
+    font-size: 14px;
+    color: #495057;
+    font-weight: 500;
+}
+
+.speed-slider {
+    width: 120px;
+}
+
+/* Progress Bar */
+.execution-progress {
+    margin: 16px 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #007bff, #28a745);
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 4px;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .code-execution-container {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .complexity-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .execution-controls {
+        flex-wrap: wrap;
+    }
+    
+    .speed-control {
+        margin-left: 0;
+        margin-top: 8px;
+    }
+}
+
+/* Syntax Highlighting for Go */
+.code-block[data-language="go"] .line-content {
+    color: #d4d4d4;
+}
+
+.code-block[data-language="go"] .keyword {
+    color: #569cd6;
+}
+
+.code-block[data-language="go"] .string {
+    color: #ce9178;
+}
+
+.code-block[data-language="go"] .comment {
+    color: #6a9955;
+}
+
+.code-block[data-language="go"] .function {
+    color: #dcdcaa;
+}
+
+/* Syntax Highlighting for Java */
+.code-block[data-language="java"] .line-content {
+    color: #d4d4d4;
+}
+
+.code-block[data-language="java"] .keyword {
+    color: #569cd6;
+}
+
+.code-block[data-language="java"] .string {
+    color: #ce9178;
+}
+
+.code-block[data-language="java"] .comment {
+    color: #6a9955;
+}
+
+.code-block[data-language="java"] .class {
+    color: #4ec9b0;
+}
+
+.code-block[data-language="java"] .method {
+    color: #dcdcaa;
+}
