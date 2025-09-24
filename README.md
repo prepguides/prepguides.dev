@@ -9,7 +9,11 @@ Visit [prepguides.dev](https://prepguides.dev) to explore interactive diagrams a
 ## 🚀 What's Included
 
 ### Interactive Learning Tools
-- **Sorting Algorithms Visualizer** - Real-time visualization of 6 sorting algorithms with performance metrics
+- **Algorithm Visualizations** - 4 interactive algorithm visualizations with real-time performance metrics
+  - **Sorting Algorithms** - 6 sorting algorithms (Bubble, Selection, Insertion, Merge, Quick, Heap)
+  - **Binary Search Tree** - Insert, delete, search, and traversal operations
+  - **BFS/DFS Graph Traversal** - Breadth-first and depth-first search algorithms
+  - **Trie Operations** - Prefix tree with insert, search, and delete operations
 - **Kubernetes Request Flow** - Complete bidirectional network flow with step-by-step explanations
 - **OSI 7-Layer Model** - Fundamental networking concepts with detailed layer information
 - **Interview Questions** - Curated questions for each diagram topic
@@ -80,13 +84,18 @@ cd prepguides.dev
 
 ```
 ├── index.html              # Main navigation hub
-├── algorithms.html         # Sorting algorithms visualizer
+├── algorithms.html         # Algorithm visualizations index
 ├── kubernetes.html         # K8s request flow diagram
 ├── networking.html         # OSI model diagram
 ├── databases.html          # Database concepts (coming soon)
 ├── microservices.html      # Service architecture (coming soon)
 ├── system-design.html      # Scalability patterns (coming soon)
-└── public/diagrams/        # Your custom HTML/SVG files
+└── algorithms/             # Interactive algorithm visualizations
+    ├── sorting.html        # 6 sorting algorithms
+    ├── binary-search-tree.html  # BST operations
+    ├── bfs-dfs-graph-traversal.html  # Graph traversal
+    └── trie-operations.html     # Trie data structure
+└── public/diagrams/        # Static diagrams and resources
     ├── algorithms/
     ├── kubernetes/
     ├── networking/
@@ -118,11 +127,30 @@ We welcome contributions! Here's how you can help:
 
 ## 📈 Roadmap
 
-### Coming Soon
+### Phase 1 - Essential (In Progress - 4/5 Complete)
+- ✅ **Sorting Algorithms** - 6 sorting algorithms with performance metrics
+- ✅ **Binary Search Tree** - Complete BST operations and traversals
+- ✅ **BFS/DFS Graph Traversal** - Graph traversal algorithms
+- ✅ **Trie Operations** - Prefix tree with D3.js visualization
+- 🔄 **Dijkstra's Algorithm** - Shortest path finding (coming next)
+
+### Phase 2 - Important (Planned)
+- **Segment Tree** - Range queries and tree construction
+- **KMP String Matching** - Pattern matching with failure function
+- **Topological Sort** - DAG ordering and dependency resolution
+- **Union-Find** - Disjoint sets with path compression
+
+### Phase 3 - Advanced (Planned)
+- **A* Pathfinding** - Heuristic search with grid visualization
+- **Red-Black Tree** - Self-balancing tree with color properties
+- **Maximum Flow** - Network flow with capacity constraints
+- **Convex Hull** - Computational geometry algorithms
+- **B-Tree Operations** - Multi-way trees for database indexing
+
+### Other Topics
 - **Database Diagrams** - Replication, sharding, and indexing
 - **Microservices Architecture** - Service mesh and API gateways
 - **System Design Patterns** - Caching, load balancing, and scaling
-- **More Algorithms** - Graph algorithms and data structures
 - **Interactive Quizzes** - Test your knowledge
 
 ### Future Features
