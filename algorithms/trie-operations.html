@@ -194,9 +194,7 @@
             position: relative;
             min-width: 100%;
             min-height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: block;
         }
 
         .trie-container::-webkit-scrollbar {
@@ -812,9 +810,13 @@
                 const centerX = bounds.minX + (bounds.maxX - bounds.minX) / 2;
                 const centerY = bounds.minY + (bounds.maxY - bounds.minY) / 2;
                 
-                // Set content wrapper size to accommodate the trie
-                contentWrapper.style.width = `${Math.max(bounds.maxX - bounds.minX + 200, container.clientWidth)}px`;
-                contentWrapper.style.height = `${Math.max(bounds.maxY - bounds.minY + 200, container.clientHeight)}px`;
+                // Set content wrapper size to accommodate the trie with proper padding
+                const trieWidth = bounds.maxX - bounds.minX;
+                const trieHeight = bounds.maxY - bounds.minY;
+                const padding = 200;
+                
+                contentWrapper.style.width = `${Math.max(trieWidth + padding, container.clientWidth)}px`;
+                contentWrapper.style.height = `${Math.max(trieHeight + padding, container.clientHeight)}px`;
                 
                 // Render edges first (so they appear behind nodes)
                 this.renderEdges(contentWrapper);
@@ -822,55 +824,63 @@
                 // Render nodes
                 this.renderNodes(contentWrapper);
                 
-                // Center the trie in the viewport
-                this.centerTrieInViewport(container, centerX, centerY);
+                // Center the trie in the viewport after a short delay to ensure rendering is complete
+                setTimeout(() => {
+                    this.centerTrieInViewport(container, centerX, centerY);
+                }, 100);
             }
 
             calculatePositions() {
                 this.nodePositions.clear();
                 this.edgePositions.clear();
                 
-                const startX = 200;
-                const startY = 80;
-                const levelHeight = 100;
-                const nodeSpacing = 150;
+                // Use a more flexible positioning system
+                const levelHeight = 120;
+                const minNodeSpacing = 100;
                 
-                // Position root node
-                this.nodePositions.set(this.root.id, { x: startX, y: startY });
+                // First pass: calculate all node positions using a tree layout algorithm
+                this.calculateTreeLayout(this.root, 0, 0, levelHeight, minNodeSpacing);
                 
-                // Position other nodes using BFS with better spacing
-                const queue = [{ node: this.root, level: 0, index: 0, parentX: startX }];
-                const levelNodes = new Map();
+                // Second pass: adjust positions to prevent overlaps and ensure visibility
+                this.adjustPositionsForVisibility();
+            }
+
+            calculateTreeLayout(node, level, index, levelHeight, minSpacing) {
+                if (!node) return;
                 
-                while (queue.length > 0) {
-                    const { node, level, index, parentX } = queue.shift();
-                    
-                    if (level > 0) {
-                        const levelCount = levelNodes.get(level) || 0;
-                        levelNodes.set(level, levelCount + 1);
-                        
-                        // Better positioning algorithm to prevent overlaps
-                        const totalNodesAtLevel = this.countNodesAtLevel(this.root, level);
-                        const spacing = Math.max(nodeSpacing, 800 / totalNodesAtLevel);
-                        const startOffset = -(totalNodesAtLevel - 1) * spacing / 2;
-                        
-                        const x = startX + startOffset + levelCount * spacing;
-                        const y = startY + level * levelHeight;
-                        
-                        this.nodePositions.set(node.id, { x, y });
-                    }
-                    
-                    // Add children to queue
-                    let childIndex = 0;
-                    for (const [char, child] of node.children) {
-                        queue.push({ 
-                            node: child, 
-                            level: level + 1, 
-                            index: index * 10 + childIndex,
-                            parentX: this.nodePositions.get(node.id)?.x || startX
-                        });
-                        childIndex++;
-                    }
+                // Calculate position for this node
+                const totalNodesAtLevel = this.countNodesAtLevel(this.root, level);
+                const spacing = Math.max(minSpacing, 1200 / Math.max(totalNodesAtLevel, 1));
+                const startOffset = -(totalNodesAtLevel - 1) * spacing / 2;
+                
+                const x = startOffset + index * spacing;
+                const y = level * levelHeight;
+                
+                this.nodePositions.set(node.id, { x, y });
+                
+                // Recursively position children
+                let childIndex = 0;
+                for (const [char, child] of node.children) {
+                    this.calculateTreeLayout(child, level + 1, childIndex, levelHeight, minSpacing);
+                    childIndex++;
+                }
+            }
+
+            adjustPositionsForVisibility() {
+                // Calculate the bounds of all positioned nodes
+                const bounds = this.calculateTrieBounds();
+                
+                // Add padding to ensure all nodes are visible
+                const padding = 100;
+                const minX = bounds.minX - padding;
+                const minY = bounds.minY - padding;
+                
+                // Adjust all positions to ensure they're positive and have proper spacing
+                for (const [nodeId, position] of this.nodePositions) {
+                    this.nodePositions.set(nodeId, {
+                        x: position.x - minX + padding,
+                        y: position.y - minY + padding
+                    });
                 }
             }
             
@@ -893,6 +903,24 @@
                 }
                 
                 return count;
+            }
+
+            getMaxLevel(root) {
+                if (!root || root.children.size === 0) return 0;
+                
+                let maxLevel = 0;
+                const queue = [{ node: root, level: 0 }];
+                
+                while (queue.length > 0) {
+                    const { node, level } = queue.shift();
+                    maxLevel = Math.max(maxLevel, level);
+                    
+                    for (const [char, child] of node.children) {
+                        queue.push({ node: child, level: level + 1 });
+                    }
+                }
+                
+                return maxLevel;
             }
 
             calculateTrieBounds() {
@@ -919,13 +947,26 @@
             centerTrieInViewport(container, centerX, centerY) {
                 // Calculate the scroll position to center the trie
                 const containerRect = container.getBoundingClientRect();
+                const contentWrapper = container.querySelector('.trie-content');
+                
+                if (!contentWrapper) return;
+                
+                // Calculate the center position within the content wrapper
+                const contentWidth = contentWrapper.offsetWidth;
+                const contentHeight = contentWrapper.offsetHeight;
+                
+                // Calculate scroll position to center the trie
                 const scrollLeft = centerX - containerRect.width / 2;
                 const scrollTop = centerY - containerRect.height / 2;
                 
+                // Ensure scroll position is within bounds
+                const maxScrollLeft = Math.max(0, contentWidth - containerRect.width);
+                const maxScrollTop = Math.max(0, contentHeight - containerRect.height);
+                
                 // Smooth scroll to center the trie
                 container.scrollTo({
-                    left: Math.max(0, scrollLeft),
-                    top: Math.max(0, scrollTop),
+                    left: Math.max(0, Math.min(scrollLeft, maxScrollLeft)),
+                    top: Math.max(0, Math.min(scrollTop, maxScrollTop)),
                     behavior: 'smooth'
                 });
             }
