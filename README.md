@@ -9,11 +9,13 @@ Visit [prepguides.dev](https://prepguides.dev) to explore interactive diagrams a
 ## 🚀 What's Included
 
 ### Interactive Learning Tools
-- **Algorithm Visualizations** - 4 interactive algorithm visualizations with real-time performance metrics
+- **Algorithm Visualizations** - 6 interactive algorithm visualizations with real-time performance metrics
   - **Sorting Algorithms** - 6 sorting algorithms (Bubble, Selection, Insertion, Merge, Quick, Heap)
   - **Binary Search Tree** - Insert, delete, search, and traversal operations
   - **BFS/DFS Graph Traversal** - Breadth-first and depth-first search algorithms
   - **Trie Operations** - Prefix tree with insert, search, and delete operations
+  - **Dijkstra's Algorithm** - Shortest path finding in weighted graphs
+  - **Dynamic Programming** - Knapsack and Longest Common Subsequence problems
 - **Kubernetes Request Flow** - Complete bidirectional network flow with step-by-step explanations
 - **OSI 7-Layer Model** - Fundamental networking concepts with detailed layer information
 - **Interview Questions** - Curated questions for each diagram topic

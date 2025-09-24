@@ -4,7 +4,7 @@
 This document outlines the planned algorithm visualizations for PrepGuides.dev, organized into three phases based on interview frequency and complexity.
 
 ## 📋 Phase 1 - Essential (High Priority)
-*Target: Complete by end of Q1 2025* - **4/5 Complete (80%)**
+*Target: Complete by end of Q1 2025* - **6/7 Complete (86%)**
 
 ### 1. ✅ Binary Search Tree Operations - **COMPLETED**
 - **Visualization**: Interactive BST with insert, delete, search operations
@@ -20,12 +20,12 @@ This document outlines the planned algorithm visualizations for PrepGuides.dev, 
 - **Files**: `algorithms/bfs-dfs-graph-traversal.html`
 - **Status**: ✅ Live and functional
 
-### 3. 🔄 Dijkstra's Algorithm - **NEXT PRIORITY**
+### 3. ✅ Dijkstra's Algorithm - **COMPLETED**
 - **Visualization**: Weighted graph with shortest path finding
 - **Features**: Distance updates, priority queue, path reconstruction
 - **Interview Focus**: Greedy algorithms, shortest path problems
-- **Files**: `algorithms/dijkstra.html`
-- **Status**: 🔄 Ready to implement
+- **Files**: `algorithms/dijkstra-algorithm.html`
+- **Status**: ✅ Live and functional
 
 ### 4. ✅ Sorting Algorithms - **COMPLETED**
 - **Visualization**: 6 sorting algorithms with real-time performance metrics
@@ -41,17 +41,19 @@ This document outlines the planned algorithm visualizations for PrepGuides.dev, 
 - **Files**: `algorithms/trie-operations.html`
 - **Status**: ✅ Live and functional
 
-### 6. Dynamic Programming (Knapsack, LCS)
+### 6. ✅ Dynamic Programming (Knapsack, LCS) - **COMPLETED**
 - **Visualization**: DP table filling, decision tree, optimal substructure
 - **Features**: Table animation, recursive tree, memoization visualization
 - **Interview Focus**: DP patterns, optimization problems
 - **Files**: `algorithms/dynamic-programming.html`
+- **Status**: ✅ Live and functional
 
-### 7. AVL Tree Rotations
+### 7. 🔄 AVL Tree Rotations - **NEXT PRIORITY**
 - **Visualization**: Tree balancing with rotation animations
 - **Features**: Balance factor display, rotation types, height maintenance
 - **Interview Focus**: Self-balancing trees, rotation mechanics
 - **Files**: `algorithms/avl-tree.html`
+- **Status**: 🔄 Ready to implement
 
 ## 📋 Phase 2 - Important (Medium Priority)
 *Target: Complete by end of Q2 2025*
