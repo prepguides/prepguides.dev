@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Sync Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>Code Synchronization Test</h1>
+    
+    <div class="test-container">
+        <h2>Test 1: BST Visualization</h2>
+        <button class="test-button" onclick="testBST()">Test BST</button>
+        <div id="bst-result" class="test-result" style="display: none;"></div>
+    </div>
+    
+    <div class="test-container">
+        <h2>Test 2: Sorting Visualization</h2>
+        <button class="test-button" onclick="testSorting()">Test Sorting</button>
+        <div id="sorting-result" class="test-result" style="display: none;"></div>
+    </div>
+    
+    <div class="test-container">
+        <h2>Test 3: Code Execution Sync</h2>
+        <button class="test-button" onclick="testCodeSync()">Test Code Sync</button>
+        <div id="codesync-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <script>
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `test-result ${type}`;
+            element.innerHTML = message;
+        }
+
+        function testBST() {
+            fetch('http://localhost:8000/algorithms/binary-search-tree.html')
+                .then(response => {
+                    if (response.ok) {
+                        showResult('bst-result', '✅ BST page loads successfully (HTTP 200)', 'success');
+                    } else {
+                        showResult('bst-result', `❌ BST page failed to load (HTTP ${response.status})`, 'error');
+                    }
+                })
+                .catch(error => {
+                    showResult('bst-result', `❌ BST page error: ${error.message}`, 'error');
+                });
+        }
+
+        function testSorting() {
+            fetch('http://localhost:8000/algorithms/sorting.html')
+                .then(response => {
+                    if (response.ok) {
+                        showResult('sorting-result', '✅ Sorting page loads successfully (HTTP 200)', 'success');
+                    } else {
+                        showResult('sorting-result', `❌ Sorting page failed to load (HTTP ${response.status})`, 'error');
+                    }
+                })
+                .catch(error => {
+                    showResult('sorting-result', `❌ Sorting page error: ${error.message}`, 'error');
+                });
+        }
+
+        function testCodeSync() {
+            fetch('http://localhost:8000/algorithms/code/code-execution-sync.js')
+                .then(response => {
+                    if (response.ok) {
+                        showResult('codesync-result', '✅ Code execution sync script loads successfully (HTTP 200)', 'success');
+                    } else {
+                        showResult('codesync-result', `❌ Code execution sync script failed to load (HTTP ${response.status})`, 'error');
+                    }
+                })
+                .catch(error => {
+                    showResult('codesync-result', `❌ Code execution sync script error: ${error.message}`, 'error');
+                });
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testBST();
+                testSorting();
+                testCodeSync();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

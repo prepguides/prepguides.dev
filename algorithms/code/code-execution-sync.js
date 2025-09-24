@@ -60,10 +60,11 @@ class CodeExecutionSync {
             const lineElement = document.createElement('div');
             lineElement.className = 'code-line';
             lineElement.setAttribute('data-line', index + 1);
-            lineElement.textContent = line;
+            lineElement.textContent = line || ' '; // Handle empty lines
             codeContainer.appendChild(lineElement);
         });
         
+        console.log(`Created code block for ${language} with ${lines.length} lines`);
         return codeContainer;
     }
 
@@ -298,39 +299,6 @@ class CodeExecutionSync {
         document.dispatchEvent(event);
     }
 
-    /**
-     * Create a code block element with syntax highlighting
-     * @param {string} code - The code content
-     * @param {string} language - Programming language
-     * @returns {HTMLElement} Formatted code element
-     */
-    createCodeBlock(code, language = 'javascript') {
-        const codeElement = document.createElement('div');
-        codeElement.className = 'code-block';
-        codeElement.setAttribute('data-language', language);
-
-        const lines = code.split('\n');
-        lines.forEach((line, index) => {
-            const lineElement = document.createElement('div');
-            lineElement.className = 'line';
-            lineElement.setAttribute('data-line', index + 1);
-            lineElement.innerHTML = `<span class="line-number">${index + 1}</span><span class="line-content">${this.escapeHtml(line)}</span>`;
-            codeElement.appendChild(lineElement);
-        });
-
-        return codeElement;
-    }
-
-    /**
-     * Escape HTML characters
-     * @param {string} text - Text to escape
-     * @returns {string} Escaped text
-     */
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
 
     /**
      * Generate complexity analysis
