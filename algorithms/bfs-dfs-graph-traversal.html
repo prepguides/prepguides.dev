@@ -544,10 +544,10 @@
                 const graph = Array(nodeCount).fill().map(() => []);
                 const nodes = [];
                 
-                // Generate node positions
+                // Generate node positions in a circle
                 for (let i = 0; i < nodeCount; i++) {
                     const angle = (2 * Math.PI * i) / nodeCount;
-                    const radius = 150;
+                    const radius = Math.min(150, 200 - nodeCount * 5); // Adjust radius based on node count
                     const centerX = 400;
                     const centerY = 200;
                     
@@ -559,23 +559,30 @@
                     });
                 }
 
-                // Create edges (ensure connectivity)
+                // Ensure connectivity with a cycle
                 for (let i = 0; i < nodeCount; i++) {
                     const next = (i + 1) % nodeCount;
-                    graph[i].push(next);
-                    graph[next].push(i);
+                    if (!graph[i].includes(next)) {
+                        graph[i].push(next);
+                        graph[next].push(i);
+                    }
                 }
 
-                // Add random edges
-                const additionalEdges = Math.floor(nodeCount * 0.3);
-                for (let i = 0; i < additionalEdges; i++) {
+                // Add additional edges to create a more interesting graph
+                const additionalEdges = Math.min(Math.floor(nodeCount * 0.4), nodeCount - 1);
+                let edgesAdded = 0;
+                let attempts = 0;
+                
+                while (edgesAdded < additionalEdges && attempts < nodeCount * 2) {
                     const from = Math.floor(Math.random() * nodeCount);
                     const to = Math.floor(Math.random() * nodeCount);
                     
                     if (from !== to && !graph[from].includes(to)) {
                         graph[from].push(to);
                         graph[to].push(from);
+                        edgesAdded++;
                     }
+                    attempts++;
                 }
 
                 this.nodes = nodes;

@@ -631,21 +631,20 @@
                 const value = parseInt(this.valueInput.value);
 
                 try {
+                    if (isNaN(value) || value < 1 || value > 99) {
+                        this.showError('Please enter a valid number between 1 and 99');
+                        return;
+                    }
+                    
                     switch (operation) {
                         case 'insert':
-                            if (value && value >= 1 && value <= 99) {
-                                await this.insert(value);
-                            }
+                            await this.insert(value);
                             break;
                         case 'delete':
-                            if (value && value >= 1 && value <= 99) {
-                                await this.delete(value);
-                            }
+                            await this.delete(value);
                             break;
                         case 'search':
-                            if (value && value >= 1 && value <= 99) {
-                                await this.search(value);
-                            }
+                            await this.search(value);
                             break;
                         case 'traverse':
                             await this.traverse();
@@ -920,6 +919,30 @@
 
             async sleep(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
+            }
+            
+            showError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #ef4444;
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    z-index: 1000;
+                    font-weight: 500;
+                `;
+                errorDiv.textContent = message;
+                document.body.appendChild(errorDiv);
+                
+                setTimeout(() => {
+                    if (errorDiv.parentNode) {
+                        errorDiv.parentNode.removeChild(errorDiv);
+                    }
+                }, 3000);
             }
 
             resetStats() {

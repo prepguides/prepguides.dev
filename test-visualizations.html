@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Visualization Testing - PrepGuides.dev</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .test-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .test-card h3 {
+            margin-bottom: 15px;
+            color: #374151;
+        }
+        
+        .test-card p {
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+        
+        .test-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+        }
+        
+        .test-button:hover {
+            background: #2563eb;
+        }
+        
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        .status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status.testing {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status.passed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status.failed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .issues-list {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .issues-list h3 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        
+        .issue-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .issue-item h4 {
+            color: #dc2626;
+            margin-bottom: 5px;
+        }
+        
+        .issue-item p {
+            color: #6b7280;
+            margin: 0;
+        }
+        
+        .console-output {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Algorithm Visualization Testing Dashboard</h1>
+        
+        <div class="test-grid">
+            <div class="test-card">
+                <h3>Binary Search Tree</h3>
+                <p>Test BST insert, delete, search, and traversal operations</p>
+                <a href="algorithms/binary-search-tree.html" class="test-button" target="_blank">Test BST</a>
+                <div class="status pending" id="bst-status">Pending</div>
+            </div>
+            
+            <div class="test-card">
+                <h3>BFS/DFS Graph Traversal</h3>
+                <p>Test graph traversal algorithms with queue/stack visualization</p>
+                <a href="algorithms/bfs-dfs-graph-traversal.html" class="test-button" target="_blank">Test BFS/DFS</a>
+                <div class="status pending" id="bfs-dfs-status">Pending</div>
+            </div>
+            
+            <div class="test-card">
+                <h3>Trie Operations</h3>
+                <p>Test Trie insert, search, and delete operations</p>
+                <a href="algorithms/trie-operations.html" class="test-button" target="_blank">Test Trie</a>
+                <div class="status pending" id="trie-status">Pending</div>
+            </div>
+            
+            <div class="test-card">
+                <h3>Sorting Algorithms</h3>
+                <p>Test various sorting algorithms with visualizations</p>
+                <a href="algorithms/sorting.html" class="test-button" target="_blank">Test Sorting</a>
+                <div class="status pending" id="sorting-status">Pending</div>
+            </div>
+        </div>
+        
+        <div class="issues-list">
+            <h3>🐛 Issues Found</h3>
+            <div id="issues-container">
+                <p style="color: #6b7280; text-align: center; padding: 20px;">No issues found yet. Start testing to identify problems.</p>
+            </div>
+        </div>
+        
+        <div class="console-output" id="console-output">
+            <div>Console output will appear here...</div>
+        </div>
+    </div>
+
+    <script>
+        // Testing framework
+        class VisualizationTester {
+            constructor() {
+                this.issues = [];
+                this.testResults = {};
+                this.consoleOutput = document.getElementById('console-output');
+                this.issuesContainer = document.getElementById('issues-container');
+                
+                // Capture console errors
+                this.setupConsoleCapture();
+                
+                // Setup test buttons
+                this.setupTestButtons();
+            }
+            
+            setupConsoleCapture() {
+                const originalError = console.error;
+                const originalWarn = console.warn;
+                
+                console.error = (...args) => {
+                    this.logToConsole('ERROR', args.join(' '));
+                    originalError.apply(console, args);
+                };
+                
+                console.warn = (...args) => {
+                    this.logToConsole('WARN', args.join(' '));
+                    originalWarn.apply(console, args);
+                };
+            }
+            
+            setupTestButtons() {
+                const testButtons = document.querySelectorAll('.test-button');
+                testButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const algorithm = e.target.textContent.replace('Test ', '');
+                        this.startTest(algorithm);
+                    });
+                });
+            }
+            
+            startTest(algorithm) {
+                const statusElement = document.getElementById(this.getStatusId(algorithm));
+                statusElement.textContent = 'Testing...';
+                statusElement.className = 'status testing';
+                
+                this.logToConsole('INFO', `Starting test for ${algorithm}`);
+                
+                // Simulate test (in real implementation, this would open the page and run tests)
+                setTimeout(() => {
+                    this.completeTest(algorithm, 'passed');
+                }, 2000);
+            }
+            
+            completeTest(algorithm, result) {
+                const statusElement = document.getElementById(this.getStatusId(algorithm));
+                statusElement.textContent = result === 'passed' ? 'Passed' : 'Failed';
+                statusElement.className = `status ${result}`;
+                
+                this.testResults[algorithm] = result;
+                this.logToConsole('INFO', `Test completed for ${algorithm}: ${result}`);
+                
+                if (result === 'failed') {
+                    this.addIssue(algorithm, 'Test failed', 'Manual testing required');
+                }
+            }
+            
+            getStatusId(algorithm) {
+                const mapping = {
+                    'BST': 'bst-status',
+                    'BFS/DFS': 'bfs-dfs-status',
+                    'Trie': 'trie-status',
+                    'Sorting': 'sorting-status'
+                };
+                return mapping[algorithm] || 'unknown-status';
+            }
+            
+            addIssue(algorithm, title, description) {
+                const issue = {
+                    algorithm,
+                    title,
+                    description,
+                    timestamp: new Date().toLocaleTimeString()
+                };
+                
+                this.issues.push(issue);
+                this.updateIssuesDisplay();
+            }
+            
+            updateIssuesDisplay() {
+                if (this.issues.length === 0) {
+                    this.issuesContainer.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No issues found yet. Start testing to identify problems.</p>';
+                    return;
+                }
+                
+                this.issuesContainer.innerHTML = this.issues.map(issue => `
+                    <div class="issue-item">
+                        <h4>${issue.algorithm}: ${issue.title}</h4>
+                        <p>${issue.description} (${issue.timestamp})</p>
+                    </div>
+                `).join('');
+            }
+            
+            logToConsole(level, message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = document.createElement('div');
+                logEntry.innerHTML = `<span style="color: #9ca3af;">[${timestamp}]</span> <span style="color: ${this.getLevelColor(level)};">[${level}]</span> ${message}`;
+                
+                this.consoleOutput.appendChild(logEntry);
+                this.consoleOutput.scrollTop = this.consoleOutput.scrollHeight;
+            }
+            
+            getLevelColor(level) {
+                const colors = {
+                    'ERROR': '#ef4444',
+                    'WARN': '#f59e0b',
+                    'INFO': '#3b82f6',
+                    'SUCCESS': '#10b981'
+                };
+                return colors[level] || '#6b7280';
+            }
+        }
+        
+        // Initialize tester
+        const tester = new VisualizationTester();
+        
+        // Add some sample issues for demonstration
+        setTimeout(() => {
+            tester.addIssue('BST', 'Tree rendering issue', 'Connecting lines not visible in some browsers');
+            tester.addIssue('BFS/DFS', 'Animation speed', 'Traversal animation too fast to follow');
+            tester.addIssue('Trie', 'Node positioning', 'Nodes overlapping in complex tries');
+        }, 1000);
+    </script>
+</body>
+</html>

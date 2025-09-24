@@ -1,0 +1,163 @@
+{
+  "timestamp": "2025-09-24T16:48:33.682Z",
+  "duration": 3,
+  "summary": {
+    "totalPassed": 32,
+    "totalFailed": 0,
+    "successRate": 100
+  },
+  "details": {
+    "bst": {
+      "passed": 7,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "BST: Search for existing value (5)",
+          "passed": true
+        },
+        {
+          "name": "BST: Search for existing value (3)",
+          "passed": true
+        },
+        {
+          "name": "BST: Search for non-existing value (10)",
+          "passed": true
+        },
+        {
+          "name": "BST: Inorder traversal",
+          "passed": true
+        },
+        {
+          "name": "BST: Delete existing value",
+          "passed": true
+        },
+        {
+          "name": "BST: Other values still exist after delete",
+          "passed": true
+        },
+        {
+          "name": "BST: Height calculation",
+          "passed": true
+        }
+      ]
+    },
+    "graph": {
+      "passed": 6,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "Graph: Is connected",
+          "passed": true
+        },
+        {
+          "name": "Graph: BFS visits all nodes",
+          "passed": true
+        },
+        {
+          "name": "Graph: BFS starts from correct node",
+          "passed": true
+        },
+        {
+          "name": "Graph: DFS visits all nodes",
+          "passed": true
+        },
+        {
+          "name": "Graph: DFS starts from correct node",
+          "passed": true
+        },
+        {
+          "name": "Graph: BFS from different start",
+          "passed": true
+        }
+      ]
+    },
+    "trie": {
+      "passed": 12,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "Trie: Search existing word (cat)",
+          "passed": true
+        },
+        {
+          "name": "Trie: Search existing word (car)",
+          "passed": true
+        },
+        {
+          "name": "Trie: Search non-existing word (ca)",
+          "passed": true
+        },
+        {
+          "name": "Trie: Search non-existing word (cats)",
+          "passed": true
+        },
+        {
+          "name": "Trie: Prefix search (ca)",
+          "passed": true
+        },
+        {
+          "name": "Trie: Prefix search (car)",
+          "passed": true
+        },
+        {
+          "name": "Trie: Prefix search non-existing",
+          "passed": true
+        },
+        {
+          "name": "Trie: Delete existing word",
+          "passed": true
+        },
+        {
+          "name": "Trie: Other words still exist after delete",
+          "passed": true
+        },
+        {
+          "name": "Trie: Get all words includes cat",
+          "passed": true
+        },
+        {
+          "name": "Trie: Get all words includes card",
+          "passed": true
+        },
+        {
+          "name": "Trie: Get all words excludes deleted word",
+          "passed": true
+        }
+      ]
+    },
+    "sorting": {
+      "passed": 7,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "Sorting: Bubble sort",
+          "passed": true
+        },
+        {
+          "name": "Sorting: Selection sort",
+          "passed": true
+        },
+        {
+          "name": "Sorting: Insertion sort",
+          "passed": true
+        },
+        {
+          "name": "Sorting: Merge sort",
+          "passed": true
+        },
+        {
+          "name": "Sorting: Quick sort",
+          "passed": true
+        },
+        {
+          "name": "Sorting: Empty array",
+          "passed": true
+        },
+        {
+          "name": "Sorting: Single element",
+          "passed": true
+        }
+      ]
+    }
+  }
+}
