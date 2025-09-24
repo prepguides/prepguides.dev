@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced BST with Code Execution Sync</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="code-highlighting.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .visualization-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-weight: 500;
+            color: #555;
+        }
+
+        input[type="number"], input[type="range"] {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .visualization {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #007bff;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #007bff;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Enhanced Binary Search Tree</h1>
+            <p>Interactive visualization with synchronized code execution</p>
+        </div>
+
+        <div class="visualization-container">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="valueInput">Value:</label>
+                    <input type="number" id="valueInput" placeholder="Enter value" min="1" max="999">
+                </div>
+                <button class="btn-primary" onclick="insertValue()">Insert</button>
+                <button class="btn-success" onclick="searchValue()">Search</button>
+                <button class="btn-danger" onclick="deleteValue()">Delete</button>
+                <button class="btn-warning" onclick="clearTree()">Clear</button>
+                <button class="btn-secondary" onclick="generateRandom()">Random</button>
+                
+                <div class="control-group">
+                    <label for="speedSlider">Speed:</label>
+                    <input type="range" id="speedSlider" min="1" max="10" value="5" onchange="updateSpeed()">
+                </div>
+            </div>
+
+            <div class="visualization" id="visualization"></div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="nodeCount">0</div>
+                    <div class="stat-label">Nodes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="height">0</div>
+                    <div class="stat-label">Height</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="comparisons">0</div>
+                    <div class="stat-label">Comparisons</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="operations">0</div>
+                    <div class="stat-label">Operations</div>
+                </div>
+            </div>
+
+            <div id="messageArea"></div>
+        </div>
+
+        <!-- Code Execution Synchronization -->
+        <div class="code-execution-container">
+            <div class="code-panel go">
+                <h3>Go Implementation</h3>
+                <div id="goCodeBlock" class="code-block" data-language="go"></div>
+            </div>
+            <div class="code-panel java">
+                <h3>Java Implementation</h3>
+                <div id="javaCodeBlock" class="code-block" data-language="java"></div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="performance-panel">
+            <h3>Performance Analysis</h3>
+            <div class="metrics-grid">
+                <div class="metric-card comparisons">
+                    <div class="metric-label">Comparisons</div>
+                    <div class="metric-value" id="totalComparisons">0</div>
+                </div>
+                <div class="metric-card operations">
+                    <div class="metric-label">Operations</div>
+                    <div class="metric-value" id="totalOperations">0</div>
+                </div>
+                <div class="metric-card duration">
+                    <div class="metric-label">Duration (ms)</div>
+                    <div class="metric-value" id="totalDuration">0</div>
+                </div>
+            </div>
+            
+            <div class="complexity-analysis">
+                <h4>Complexity Analysis</h4>
+                <div class="complexity-grid">
+                    <div class="complexity-item">
+                        <div class="complexity-type">Time Complexity</div>
+                        <div class="complexity-value">O(log n) average, O(n) worst</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div class="complexity-type">Space Complexity</div>
+                        <div class="complexity-value">O(log n) average, O(n) worst</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Execution Controls -->
+        <div class="execution-controls">
+            <button class="control-button primary" onclick="startCodeExecution()">
+                ▶️ Start Execution
+            </button>
+            <button class="control-button secondary" onclick="pauseCodeExecution()">
+                ⏸️ Pause
+            </button>
+            <button class="control-button danger" onclick="stopCodeExecution()">
+                ⏹️ Stop
+            </button>
+            
+            <div class="speed-control">
+                <label for="executionSpeed">Speed:</label>
+                <input type="range" id="executionSpeed" min="100" max="2000" value="1000" 
+                       onchange="updateExecutionSpeed()" class="speed-slider">
+            </div>
+        </div>
+
+        <div class="execution-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text" id="progressText">Ready to execute</div>
+        </div>
+    </div>
+
+    <script src="code-execution-sync.js"></script>
+    <script>
+        // Enhanced BST Visualization with Code Execution Sync
+        class EnhancedBSTVisualization {
+            constructor() {
+                this.tree = null;
+                this.nodes = [];
+                this.links = [];
+                this.comparisons = 0;
+                this.operations = 0;
+                this.codeSync = new CodeExecutionSync();
+                this.isExecuting = false;
+                
+                this.initializeVisualization();
+                this.initializeCodeBlocks();
+                this.setupEventListeners();
+            }
+
+            initializeVisualization() {
+                const svg = d3.select('#visualization')
+                    .append('svg')
+                    .attr('width', '100%')
+                    .attr('height', '100%');
+
+                this.g = svg.append('g');
+                
+                // Add zoom behavior
+                const zoom = d3.zoom()
+                    .scaleExtent([0.1, 3])
+                    .on('zoom', (event) => {
+                        this.g.attr('transform', event.transform);
+                    });
+                
+                svg.call(zoom);
+            }
+
+            initializeCodeBlocks() {
+                // Go code for BST operations
+                const goCode = `type TreeNode struct {
+    Value int
+    Left  *TreeNode
+    Right *TreeNode
+}
+
+func (bst *BinarySearchTree) Insert(value int) {
+    bst.Root = bst.insertNode(bst.Root, value)
+}
+
+func (bst *BinarySearchTree) insertNode(node *TreeNode, value int) *TreeNode {
+    if node == nil {
+        return &TreeNode{Value: value}
+    }
+    
+    if value < node.Value {
+        node.Left = bst.insertNode(node.Left, value)
+    } else if value > node.Value {
+        node.Right = bst.insertNode(node.Right, value)
+    }
+    
+    return node
+}
+
+func (bst *BinarySearchTree) Search(value int) bool {
+    return bst.searchNode(bst.Root, value)
+}
+
+func (bst *BinarySearchTree) searchNode(node *TreeNode, value int) bool {
+    if node == nil {
+        return false
+    }
+    
+    if value == node.Value {
+        return true
+    }
+    
+    if value < node.Value {
+        return bst.searchNode(node.Left, value)
+    }
+    return bst.searchNode(node.Right, value)
+}`;
+
+                // Java code for BST operations
+                const javaCode = `public class TreeNode {
+    public int value;
+    public TreeNode left;
+    public TreeNode right;
+    
+    public TreeNode(int value) {
+        this.value = value;
+    }
+}
+
+public void insert(int value) {
+    root = insertNode(root, value);
+}
+
+private TreeNode insertNode(TreeNode node, int value) {
+    if (node == null) {
+        return new TreeNode(value);
+    }
+    
+    if (value < node.value) {
+        node.left = insertNode(node.left, value);
+    } else if (value > node.value) {
+        node.right = insertNode(node.right, value);
+    }
+    
+    return node;
+}
+
+public boolean search(int value) {
+    return searchNode(root, value);
+}
+
+private boolean searchNode(TreeNode node, int value) {
+    if (node == null) {
+        return false;
+    }
+    
+    if (value == node.value) {
+        return true;
+    }
+    
+    if (value < node.value) {
+        return searchNode(node.left, value);
+    }
+    return searchNode(node.right, value);
+}`;
+
+                // Create code blocks
+                const goCodeBlock = this.codeSync.createCodeBlock(goCode, 'go');
+                const javaCodeBlock = this.codeSync.createCodeBlock(javaCode, 'java');
+                
+                document.getElementById('goCodeBlock').appendChild(goCodeBlock);
+                document.getElementById('javaCodeBlock').appendChild(javaCodeBlock);
+
+                // Register code blocks
+                this.codeSync.registerCodeBlock('go', goCodeBlock, [
+                    { line: 1, description: 'TreeNode structure definition' },
+                    { line: 7, description: 'Insert method entry point' },
+                    { line: 11, description: 'Insert node helper method' },
+                    { line: 12, description: 'Check if node is null' },
+                    { line: 13, description: 'Create new node' },
+                    { line: 16, description: 'Compare values for left insertion' },
+                    { line: 17, description: 'Recursive left insertion' },
+                    { line: 18, description: 'Compare values for right insertion' },
+                    { line: 19, description: 'Recursive right insertion' },
+                    { line: 24, description: 'Search method entry point' },
+                    { line: 28, description: 'Search node helper method' },
+                    { line: 29, description: 'Check if node is null' },
+                    { line: 33, description: 'Check if value found' },
+                    { line: 37, description: 'Compare for left search' },
+                    { line: 38, description: 'Recursive left search' },
+                    { line: 40, description: 'Recursive right search' }
+                ]);
+
+                this.codeSync.registerCodeBlock('java', javaCodeBlock, [
+                    { line: 1, description: 'TreeNode class definition' },
+                    { line: 2, description: 'Value field' },
+                    { line: 3, description: 'Left child reference' },
+                    { line: 4, description: 'Right child reference' },
+                    { line: 6, description: 'Constructor' },
+                    { line: 7, description: 'Set value' },
+                    { line: 12, description: 'Insert method entry point' },
+                    { line: 16, description: 'Insert node helper method' },
+                    { line: 17, description: 'Check if node is null' },
+                    { line: 18, description: 'Create new node' },
+                    { line: 21, description: 'Compare values for left insertion' },
+                    { line: 22, description: 'Recursive left insertion' },
+                    { line: 23, description: 'Compare values for right insertion' },
+                    { line: 24, description: 'Recursive right insertion' },
+                    { line: 29, description: 'Search method entry point' },
+                    { line: 33, description: 'Search node helper method' },
+                    { line: 34, description: 'Check if node is null' },
+                    { line: 38, description: 'Check if value found' },
+                    { line: 42, description: 'Compare for left search' },
+                    { line: 43, description: 'Recursive left search' },
+                    { line: 45, description: 'Recursive right search' }
+                ]);
+            }
+
+            setupEventListeners() {
+                // Listen for execution completion
+                document.addEventListener('codeExecutionComplete', (event) => {
+                    this.onExecutionComplete(event.detail);
+                });
+
+                // Enter key for input
+                document.getElementById('valueInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        insertValue();
+                    }
+                });
+            }
+
+            async insertValue(value) {
+                if (this.isExecuting) return;
+                
+                this.isExecuting = true;
+                this.operations++;
+                this.updateStats();
+
+                const executionSteps = [
+                    {
+                        id: 'insert_start',
+                        codeBlocks: {
+                            go: [7, 11],
+                            java: [12, 16]
+                        },
+                        type: 'executing',
+                        description: 'Starting insert operation',
+                        metrics: { operations: 1 }
+                    },
+                    {
+                        id: 'insert_check_null',
+                        codeBlocks: {
+                            go: [12],
+                            java: [17]
+                        },
+                        type: 'comparing',
+                        description: 'Checking if node is null',
+                        metrics: { comparisons: 1 }
+                    },
+                    {
+                        id: 'insert_create_node',
+                        codeBlocks: {
+                            go: [13],
+                            java: [18]
+                        },
+                        type: 'inserting',
+                        description: 'Creating new node',
+                        metrics: { operations: 1 }
+                    },
+                    {
+                        id: 'insert_compare',
+                        codeBlocks: {
+                            go: [16, 18],
+                            java: [21, 23]
+                        },
+                        type: 'comparing',
+                        description: 'Comparing values for insertion',
+                        metrics: { comparisons: 1 }
+                    }
+                ];
+
+                await this.codeSync.startExecution('bstInsert', executionSteps);
+                this.isExecuting = false;
+            }
+
+            async searchValue(value) {
+                if (this.isExecuting) return;
+                
+                this.isExecuting = true;
+                this.operations++;
+                this.updateStats();
+
+                const executionSteps = [
+                    {
+                        id: 'search_start',
+                        codeBlocks: {
+                            go: [24, 28],
+                            java: [29, 33]
+                        },
+                        type: 'executing',
+                        description: 'Starting search operation',
+                        metrics: { operations: 1 }
+                    },
+                    {
+                        id: 'search_check_null',
+                        codeBlocks: {
+                            go: [29],
+                            java: [34]
+                        },
+                        type: 'comparing',
+                        description: 'Checking if node is null',
+                        metrics: { comparisons: 1 }
+                    },
+                    {
+                        id: 'search_found',
+                        codeBlocks: {
+                            go: [33],
+                            java: [38]
+                        },
+                        type: 'searching',
+                        description: 'Checking if value found',
+                        metrics: { comparisons: 1 }
+                    },
+                    {
+                        id: 'search_compare',
+                        codeBlocks: {
+                            go: [37, 40],
+                            java: [42, 45]
+                        },
+                        type: 'comparing',
+                        description: 'Comparing values for search direction',
+                        metrics: { comparisons: 1 }
+                    }
+                ];
+
+                await this.codeSync.startExecution('bstSearch', executionSteps);
+                this.isExecuting = false;
+            }
+
+            updateStats() {
+                document.getElementById('nodeCount').textContent = this.nodes.length;
+                document.getElementById('height').textContent = this.calculateHeight();
+                document.getElementById('comparisons').textContent = this.comparisons;
+                document.getElementById('operations').textContent = this.operations;
+            }
+
+            calculateHeight() {
+                // Simplified height calculation
+                return Math.ceil(Math.log2(this.nodes.length + 1)) - 1;
+            }
+
+            onExecutionComplete(detail) {
+                const metrics = detail.metrics;
+                document.getElementById('totalComparisons').textContent = metrics.comparisons;
+                document.getElementById('totalOperations').textContent = metrics.operations;
+                document.getElementById('totalDuration').textContent = Math.round(metrics.duration);
+                
+                this.showMessage('Execution completed successfully!', 'success');
+            }
+
+            showMessage(text, type) {
+                const messageArea = document.getElementById('messageArea');
+                const message = document.createElement('div');
+                message.className = `message ${type}`;
+                message.textContent = text;
+                messageArea.appendChild(message);
+                
+                setTimeout(() => {
+                    message.remove();
+                }, 3000);
+            }
+        }
+
+        // Global variables and functions
+        let bstVisualization;
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            bstVisualization = new EnhancedBSTVisualization();
+        });
+
+        // Global functions for UI interaction
+        function insertValue() {
+            const value = parseInt(document.getElementById('valueInput').value);
+            if (isNaN(value)) {
+                bstVisualization.showMessage('Please enter a valid number', 'error');
+                return;
+            }
+            bstVisualization.insertValue(value);
+        }
+
+        function searchValue() {
+            const value = parseInt(document.getElementById('valueInput').value);
+            if (isNaN(value)) {
+                bstVisualization.showMessage('Please enter a valid number', 'error');
+                return;
+            }
+            bstVisualization.searchValue(value);
+        }
+
+        function deleteValue() {
+            const value = parseInt(document.getElementById('valueInput').value);
+            if (isNaN(value)) {
+                bstVisualization.showMessage('Please enter a valid number', 'error');
+                return;
+            }
+            // Implementation for delete
+        }
+
+        function clearTree() {
+            bstVisualization.tree = null;
+            bstVisualization.nodes = [];
+            bstVisualization.links = [];
+            bstVisualization.comparisons = 0;
+            bstVisualization.operations = 0;
+            bstVisualization.updateStats();
+            bstVisualization.showMessage('Tree cleared', 'info');
+        }
+
+        function generateRandom() {
+            const count = Math.floor(Math.random() * 10) + 5;
+            for (let i = 0; i < count; i++) {
+                const value = Math.floor(Math.random() * 100) + 1;
+                bstVisualization.insertValue(value);
+            }
+        }
+
+        function updateSpeed() {
+            const speed = document.getElementById('speedSlider').value;
+            bstVisualization.codeSync.setExecutionSpeed(2000 - (speed * 200));
+        }
+
+        function startCodeExecution() {
+            bstVisualization.codeSync.startExecution('bstDemo', []);
+        }
+
+        function pauseCodeExecution() {
+            bstVisualization.codeSync.pauseExecution();
+        }
+
+        function stopCodeExecution() {
+            bstVisualization.codeSync.stopExecution();
+        }
+
+        function updateExecutionSpeed() {
+            const speed = document.getElementById('executionSpeed').value;
+            bstVisualization.codeSync.setExecutionSpeed(parseInt(speed));
+        }
+    </script>
+</body>
+</html>

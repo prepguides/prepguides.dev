@@ -156,6 +156,48 @@ All algorithm visualizations now use D3.js for:
 - **Code Style**: Consistent formatting and naming conventions
 - **Benchmarking**: Performance comparison and analysis
 
+## 🔄 Code-Execution Synchronization Framework
+
+### ✅ Foundation Complete
+- **Code Execution Sync**: `algorithms/code/code-execution-sync.js`
+  - Side-by-side code highlighting during algorithm execution
+  - Multi-language support (Go and Java)
+  - Step-by-step execution with visual feedback
+  - Synchronized highlighting across multiple code blocks
+
+- **Visual Integration**: `algorithms/code/code-highlighting.css`
+  - Real-time code highlighting synchronized with algorithm steps
+  - Multiple highlight types (executing, comparing, swapping, inserting, deleting)
+  - Smooth animations and transitions
+  - Responsive design for all screen sizes
+
+- **Performance Metrics**: `algorithms/code/performance-analyzer.js`
+  - Comprehensive performance analysis with complexity analysis
+  - Real-time statistics (comparisons, swaps, operations, duration)
+  - Benchmarking capabilities with statistical analysis
+  - Algorithm comparison and recommendations
+
+### 🎯 Enhanced Visualizations
+- **Enhanced BST**: `algorithms/code/enhanced-bst-visualization.html`
+  - Binary Search Tree with integrated code execution sync
+  - Real-time code highlighting during operations
+  - Performance metrics and complexity analysis
+  - Interactive controls and speed adjustment
+
+- **Enhanced Sorting**: `algorithms/code/enhanced-sorting-visualization.html`
+  - Sorting algorithms with synchronized code execution
+  - Multiple algorithm support (Bubble, Quick, Merge, etc.)
+  - Visual array representation with highlighting
+  - Comprehensive performance analysis
+
+### 📋 Framework Features
+- **Multi-Language Code Blocks**: Go and Java implementations side-by-side
+- **Execution Controls**: Play, pause, stop, and speed control
+- **Progress Tracking**: Real-time progress bars and step indicators
+- **Performance Dashboard**: Comprehensive metrics and analysis
+- **Complexity Analysis**: Theoretical vs. actual performance comparison
+- **Benchmarking Suite**: Statistical analysis and algorithm comparison
+
 ## 📝 Notes
 
 - All algorithms use consistent styling and interaction patterns
