@@ -1,0 +1,139 @@
+name: Simple Auto Merge
+
+on:
+  pull_request_review:
+    types: [submitted]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  # Auto-merge on review approval
+  auto-merge:
+    if: |
+      github.event_name == 'pull_request_review' &&
+      github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Auto merge PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            
+            if (pr.mergeable) {
+              const mergeResult = await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                merge_method: 'merge',
+                commit_title: `Auto-merge: ${pr.title}`,
+                commit_message: `Approved by @${context.payload.review.user.login}\n\nPR: #${context.payload.pull_request.number}`
+              });
+              
+              console.log('✅ PR merged successfully:', mergeResult.data.sha);
+              
+              // Comment on the PR
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: `🚀 **Auto-merged!** 
+                
+                This PR has been automatically merged to main after receiving approval from @${context.payload.review.user.login}.
+                
+                ✅ **Status**: Merged and deployed
+                🔗 **Commit**: \`${mergeResult.data.sha}\`
+                📅 **Merged at**: ${new Date().toISOString()}
+                
+                Thank you for your contribution! 🎉`
+              });
+            } else {
+              console.log('❌ PR is not mergeable');
+              throw new Error('PR cannot be merged');
+            }
+
+  # Self-approval via comment
+  self-approval:
+    if: |
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '/approve') &&
+      github.event.comment.user.login == github.event.issue.user.login
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Self-approve and merge
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
+            // Check if PR follows naming convention
+            const branchName = pr.head.ref;
+            const validPrefixes = ['feature/', 'fix/', 'docs/', 'improve/'];
+            const hasValidPrefix = validPrefixes.some(prefix => branchName.startsWith(prefix));
+            
+            if (!hasValidPrefix) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: `❌ **Self-Approval Rejected**
+                
+                This PR cannot be self-approved because it doesn't follow the naming convention.
+                
+                **Requirements:**
+                - Branch must start with: \`feature/\`, \`fix/\`, \`docs/\`, or \`improve/\`
+                
+                **Current Branch**: \`${branchName}\`
+                
+                Please ensure your PR follows the naming convention before self-approving.`
+              });
+              throw new Error('Invalid branch naming convention');
+            }
+            
+            if (pr.mergeable) {
+              const mergeResult = await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                merge_method: 'merge',
+                commit_title: `Self-approved merge: ${pr.title}`,
+                commit_message: `Self-approved by @${context.actor}\n\nPR: #${context.issue.number}`
+              });
+              
+              console.log('✅ PR merged successfully:', mergeResult.data.sha);
+              
+              // Comment on the PR
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: `🚀 **Self-Approved and Auto-Merged!** 
+                
+                This PR has been automatically merged to main after self-approval by @${context.actor}.
+                
+                ✅ **Status**: Merged and deployed
+                🔗 **Commit**: \`${mergeResult.data.sha}\`
+                📅 **Merged at**: ${new Date().toISOString()}
+                
+                Thank you for your contribution! 🎉`
+              });
+            } else {
+              console.log('❌ PR is not mergeable');
+              throw new Error('PR cannot be merged');
+            }
