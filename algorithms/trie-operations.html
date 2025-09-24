@@ -1185,44 +1185,77 @@
                 this.edgePositions.clear();
                 
                 // Use a proper tree layout algorithm
-                const levelHeight = 120;
-                const nodeSpacing = 150;
+                const levelHeight = 100;
+                const nodeSpacing = 120;
                 
-                // Calculate positions using a breadth-first approach
-                this.calculateBreadthFirstLayout(levelHeight, nodeSpacing);
+                // Calculate positions using a proper tree layout
+                this.calculateTreeLayout();
                 
-                // Ensure no overlaps and proper spacing
-                this.adjustPositionsForVisibility();
+                // Center the entire tree
+                this.centerTree();
             }
 
-            calculateBreadthFirstLayout(levelHeight, nodeSpacing) {
-                // Use a more compact tree layout algorithm
-                this.calculateCompactTreeLayout(this.root, 0, 0, levelHeight, nodeSpacing);
+            calculateTreeLayout() {
+                // First pass: calculate subtree widths
+                this.calculateSubtreeWidths(this.root);
+                
+                // Second pass: position nodes
+                this.positionNodes(this.root, 0, 0);
             }
 
-            calculateCompactTreeLayout(node, level, x, levelHeight, nodeSpacing) {
+            calculateSubtreeWidths(node) {
+                if (!node) return 0;
+                
+                if (node.children.size === 0) {
+                    node.subtreeWidth = 1;
+                    return 1;
+                }
+                
+                let totalWidth = 0;
+                for (const [char, child] of node.children) {
+                    totalWidth += this.calculateSubtreeWidths(child);
+                }
+                
+                node.subtreeWidth = Math.max(totalWidth, node.children.size);
+                return node.subtreeWidth;
+            }
+
+            positionNodes(node, level, x) {
                 if (!node) return x;
                 
                 // Position the current node
-                this.nodePositions.set(node.id, { x, y: level * levelHeight });
+                this.nodePositions.set(node.id, { x, y: level * 100 });
                 
                 if (node.children.size === 0) {
-                    return x;
+                    return x + 1;
                 }
                 
-                // Calculate positions for children
-                const children = Array.from(node.children.values());
-                const childSpacing = Math.max(nodeSpacing, 100); // Minimum spacing
-                
-                // Start positioning children from the left
-                let currentX = x - (children.length - 1) * childSpacing / 2;
-                
-                for (const child of children) {
-                    currentX = this.calculateCompactTreeLayout(child, level + 1, currentX, levelHeight, nodeSpacing);
-                    currentX += childSpacing;
+                // Position children
+                let currentX = x;
+                for (const [char, child] of node.children) {
+                    currentX = this.positionNodes(child, level + 1, currentX);
                 }
                 
-                return currentX - childSpacing;
+                return currentX;
+            }
+
+            centerTree() {
+                // Calculate bounds
+                const bounds = this.calculateTrieBounds();
+                const treeWidth = bounds.maxX - bounds.minX;
+                const treeHeight = bounds.maxY - bounds.minY;
+                
+                // Calculate center offset
+                const centerX = treeWidth / 2;
+                const centerY = treeHeight / 2;
+                
+                // Apply centering offset to all nodes
+                for (const [nodeId, position] of this.nodePositions) {
+                    this.nodePositions.set(nodeId, {
+                        x: position.x - bounds.minX - centerX + 400, // Center at x=400
+                        y: position.y - bounds.minY + 100 // Start at y=100
+                    });
+                }
             }
 
             calculateTreeLayout(node, level, index, levelHeight, minSpacing) {
