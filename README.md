@@ -80,6 +80,12 @@ cd prepguides.dev
 3. **Update navigation** in `index.html`
 4. **Deploy to Vercel** - automatic deployment on push
 
+### Documentation and Testing
+- **Documentation**: All project docs are organized in the `docs/` directory
+- **Testing**: Test files and resources are in the `tests/` directory
+- **Development**: Follow the workflow in `docs/development/DEVELOPMENT_WORKFLOW.md`
+- **Algorithm Development**: Use the template in `docs/algorithm/ALGORITHM_TEMPLATE.html`
+
 ## 🎨 Content Structure
 
 ```
@@ -90,11 +96,19 @@ cd prepguides.dev
 ├── databases.html          # Database concepts (coming soon)
 ├── microservices.html      # Service architecture (coming soon)
 ├── system-design.html      # Scalability patterns (coming soon)
-└── algorithms/             # Interactive algorithm visualizations
-    ├── sorting.html        # 6 sorting algorithms
-    ├── binary-search-tree.html  # BST operations
-    ├── bfs-dfs-graph-traversal.html  # Graph traversal
-    └── trie-operations.html     # Trie data structure
+├── algorithms/             # Interactive algorithm visualizations
+│   ├── sorting.html        # 6 sorting algorithms
+│   ├── binary-search-tree.html  # BST operations
+│   ├── bfs-dfs-graph-traversal.html  # Graph traversal
+│   └── trie-operations.html     # Trie data structure
+├── docs/                   # Project documentation
+│   ├── algorithm/          # Algorithm development docs
+│   ├── development/        # Development workflow docs
+│   ├── testing/           # Testing documentation
+│   └── reports/           # Issue reports and fixes
+├── tests/                  # Testing files and resources
+│   ├── core/              # Core algorithm tests
+│   └── visualization/     # UI and visualization tests
 └── public/diagrams/        # Static diagrams and resources
     ├── algorithms/
     ├── kubernetes/
