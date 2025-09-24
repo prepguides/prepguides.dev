@@ -748,7 +748,7 @@
                 await this.highlightPath([...word], 'highlighted');
                 await this.delay(this.animationSpeed);
                 
-                this.renderTrie();
+                this.updateTrieDisplay();
                 this.updateWordList();
             }
 
@@ -807,7 +807,7 @@
                     return false;
                 }
                 
-                this.renderTrie();
+                this.updateTrieDisplay();
                 this.updateWordList();
                 return true;
             }
@@ -818,9 +818,14 @@
                     el.classList.remove('current', 'highlighted');
                 });
                 
-                // This is a simplified version - in a full implementation,
-                // you'd track the actual path through the trie structure
-                this.renderTrie();
+                // Add highlighting to current path nodes
+                for (let i = 0; i < path.length; i++) {
+                    const char = path[i];
+                    const nodeElement = document.querySelector(`[data-char="${char}"]`);
+                    if (nodeElement) {
+                        nodeElement.classList.add(state);
+                    }
+                }
             }
 
             renderTrie() {
@@ -1050,6 +1055,8 @@
                     nodeElement.textContent = node.char || 'ROOT';
                     nodeElement.style.left = `${position.x - 30}px`;
                     nodeElement.style.top = `${position.y - 30}px`;
+                    nodeElement.setAttribute('data-char', node.char || 'ROOT');
+                    nodeElement.setAttribute('data-node-id', node.id);
                     
                     if (node === this.root) {
                         nodeElement.classList.add('root');
@@ -1132,7 +1139,7 @@
             clearTrie() {
                 this.root = new TrieNode('ROOT');
                 this.words.clear();
-                this.renderTrie();
+                this.renderTrie(); // Use full render for clear operation
                 this.updateWordList();
                 this.updateStepInfo('Trie Cleared', 'All words have been removed from the trie');
             }
@@ -1164,6 +1171,80 @@
                 // Re-render the trie to reset the view
                 this.renderTrie();
                 this.updateStepInfo('View Reset', 'Trie view has been reset to default position');
+            }
+
+            updateTrieDisplay() {
+                // Check if trie is empty
+                if (this.root.children.size === 0) {
+                    const container = document.getElementById('trieContainer');
+                    container.innerHTML = '<div style="text-align: center; padding: 50px; color: #6b7280; font-size: 1.2rem;">Trie is empty. Insert some words to see the visualization.</div>';
+                    return;
+                }
+
+                const container = document.getElementById('trieContainer');
+                const existingContent = container.querySelector('.trie-content');
+                
+                if (!existingContent) {
+                    // If no existing content, do full render
+                    this.renderTrie();
+                    return;
+                }
+
+                // Update positions for new/changed nodes
+                this.calculatePositions();
+                
+                // Calculate new bounds
+                const bounds = this.calculateTrieBounds();
+                const trieWidth = bounds.maxX - bounds.minX;
+                const trieHeight = bounds.maxY - bounds.minY;
+                
+                // Get container dimensions
+                const containerRect = container.getBoundingClientRect();
+                const containerWidth = containerRect.width - 40;
+                const containerHeight = containerRect.height - 40;
+                
+                // Calculate new content wrapper size
+                const padding = Math.max(200, Math.max(containerWidth, containerHeight) * 0.5);
+                const contentWidth = Math.max(trieWidth + padding * 2, containerWidth);
+                const contentHeight = Math.max(trieHeight + padding * 2, containerHeight);
+                
+                // Update content wrapper size if needed
+                if (existingContent.offsetWidth !== contentWidth || existingContent.offsetHeight !== contentHeight) {
+                    existingContent.style.width = `${contentWidth}px`;
+                    existingContent.style.height = `${contentHeight}px`;
+                }
+                
+                // Center the trie within the content wrapper
+                const centerX = contentWidth / 2;
+                const centerY = contentHeight / 2;
+                const trieCenterX = bounds.minX + trieWidth / 2;
+                const trieCenterY = bounds.minY + trieHeight / 2;
+                
+                // Calculate offset to center the trie
+                const offsetX = centerX - trieCenterX;
+                const offsetY = centerY - trieCenterY;
+                
+                // Apply offset to all node positions
+                for (const [nodeId, position] of this.nodePositions) {
+                    this.nodePositions.set(nodeId, {
+                        x: position.x + offsetX,
+                        y: position.y + offsetY
+                    });
+                }
+                
+                // Clear existing content
+                existingContent.innerHTML = '';
+                
+                // Render edges first
+                this.renderEdges(existingContent);
+                
+                // Render nodes
+                this.renderNodes(existingContent);
+                
+                // Center the trie in the viewport smoothly
+                setTimeout(() => {
+                    this.centerTrieInViewport(container, centerX, centerY);
+                }, 50);
             }
 
             addDragFunctionality(container) {
