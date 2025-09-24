@@ -768,6 +768,17 @@
                 await this.highlightPath([...word], 'highlighted');
                 await this.delay(this.animationSpeed);
                 
+                // Ensure proper centering after word insertion
+                setTimeout(() => {
+                    const container = document.getElementById('trieContainer');
+                    const contentWrapper = container.querySelector('.trie-content');
+                    if (contentWrapper) {
+                        this.centerTrieInViewport(container, 
+                            contentWrapper.offsetWidth / 2, 
+                            contentWrapper.offsetHeight / 2);
+                    }
+                }, 200);
+                
                 this.updateWordList();
             }
 
@@ -916,11 +927,15 @@
                     return;
                 }
                 
-                // Calculate position for the new node
+                // Recalculate all positions to ensure proper layout
                 this.calculatePositions();
                 const position = this.nodePositions.get(newNode.id);
                 
-                if (!position) return;
+                if (!position) {
+                    // If position calculation failed, do full render
+                    this.renderTrie();
+                    return;
+                }
                 
                 // Create the new node element
                 const nodeElement = document.createElement('div');
@@ -947,6 +962,13 @@
                 
                 // Create edge to parent
                 await this.addEdgeToDisplay(parentNode, newNode, char);
+                
+                // Re-center the trie after adding the node
+                setTimeout(() => {
+                    this.centerTrieInViewport(container, 
+                        contentWrapper.offsetWidth / 2, 
+                        contentWrapper.offsetHeight / 2);
+                }, 100);
             }
 
             async addEdgeToDisplay(parentNode, childNode, char) {
@@ -1174,17 +1196,17 @@
             }
 
             calculateBreadthFirstLayout(levelHeight, nodeSpacing) {
-                const queue = [{ node: this.root, level: 0, index: 0, parentX: 0 }];
+                const queue = [{ node: this.root, level: 0, index: 0 }];
                 const nodesAtLevel = new Map();
                 
                 // First pass: collect all nodes by level
                 while (queue.length > 0) {
-                    const { node, level, index, parentX } = queue.shift();
+                    const { node, level, index } = queue.shift();
                     
                     if (!nodesAtLevel.has(level)) {
                         nodesAtLevel.set(level, []);
                     }
-                    nodesAtLevel.get(level).push({ node, index, parentX });
+                    nodesAtLevel.get(level).push({ node, index });
                     
                     // Add children to queue
                     let childIndex = 0;
@@ -1192,14 +1214,13 @@
                         queue.push({ 
                             node: child, 
                             level: level + 1, 
-                            index: childIndex, 
-                            parentX: parentX + (index * nodeSpacing)
+                            index: childIndex
                         });
                         childIndex++;
                     }
                 }
                 
-                // Second pass: position nodes at each level
+                // Second pass: position nodes at each level with proper centering
                 for (const [level, nodes] of nodesAtLevel) {
                     const totalNodes = nodes.length;
                     const startX = -(totalNodes - 1) * nodeSpacing / 2;
