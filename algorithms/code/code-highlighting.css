@@ -72,30 +72,18 @@
 }
 
 /* Line Styling */
-.line {
-    display: flex;
-    align-items: center;
-    padding: 2px 0;
+.code-line {
+    display: block;
+    padding: 4px 8px;
     transition: all 0.3s ease;
     border-radius: 3px;
     margin: 1px 0;
-}
-
-.line-number {
-    display: inline-block;
-    width: 40px;
-    text-align: right;
-    margin-right: 16px;
-    color: #6c757d;
-    font-size: 12px;
-    user-select: none;
-    flex-shrink: 0;
-}
-
-.line-content {
-    flex: 1;
     color: #d4d4d4;
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 1.5;
     white-space: pre;
+    min-height: 20px;
 }
 
 /* Highlighting States */

@@ -624,6 +624,9 @@
                 <button class="control-button secondary" onclick="pauseCodeExecution()">
                     ⏸️ Pause
                 </button>
+                <button class="control-button secondary" onclick="resumeCodeExecution()">
+                    ▶️ Resume
+                </button>
                 <button class="control-button danger" onclick="stopCodeExecution()">
                     ⏹️ Stop
                 </button>
@@ -1796,6 +1799,12 @@ private void inOrder(TreeNode node, List<Integer> result) {
         function pauseCodeExecution() {
             if (window.bstVisualizer && window.bstVisualizer.codeSync) {
                 window.bstVisualizer.codeSync.pauseExecution();
+            }
+        }
+
+        function resumeCodeExecution() {
+            if (window.bstVisualizer && window.bstVisualizer.codeSync) {
+                window.bstVisualizer.codeSync.resumeExecution();
             }
         }
 
