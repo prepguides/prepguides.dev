@@ -191,8 +191,9 @@ class CodeExecutionSync {
         const element = codeBlock.element;
         const highlightedLines = element.querySelectorAll('.highlighted-code-line');
         highlightedLines.forEach(line => {
-            line.classList.remove('highlighted-code-line', 'highlight-execution', 'highlight-comparison', 
-                                 'highlight-swap', 'highlight-insert', 'highlight-delete');
+            line.classList.remove('highlighted-code-line', 'highlight-executing', 'highlight-comparing', 
+                                 'highlight-swapping', 'highlight-inserting', 'highlight-deleting', 
+                                 'highlight-searching', 'highlight-traversing', 'highlight-default');
         });
         codeBlock.currentHighlight = null;
     }
@@ -405,18 +406,6 @@ class CodeExecutionSync {
         this.executionSpeed = speed;
     }
 
-    /**
-     * Clear all highlights from all code blocks
-     */
-    clearAllHighlights() {
-        this.codeBlocks.forEach((block, id) => {
-            const lines = block.element.querySelectorAll('.code-line');
-            lines.forEach(line => {
-                line.classList.remove('highlighted-code-line', 'highlight-execution', 'highlight-comparison', 'highlight-swap', 'highlight-insert', 'highlight-delete');
-            });
-            block.currentHighlight = null;
-        });
-    }
 
     /**
      * Update progress display

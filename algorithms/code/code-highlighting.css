@@ -99,44 +99,56 @@
 }
 
 /* Highlighting States */
-.line.highlighted {
+.code-line.highlighted-code-line {
     background: rgba(255, 255, 255, 0.1);
     animation: highlightPulse 0.5s ease-in-out;
 }
 
-.line.highlight-executing {
+.code-line.highlight-executing {
     background: rgba(0, 123, 255, 0.2);
     border-left: 3px solid #007bff;
     padding-left: 8px;
 }
 
-.line.highlight-comparing {
+.code-line.highlight-comparing {
     background: rgba(255, 193, 7, 0.2);
     border-left: 3px solid #ffc107;
     padding-left: 8px;
 }
 
-.line.highlight-swapping {
+.code-line.highlight-swapping {
     background: rgba(220, 53, 69, 0.2);
     border-left: 3px solid #dc3545;
     padding-left: 8px;
 }
 
-.line.highlight-inserting {
+.code-line.highlight-inserting {
     background: rgba(40, 167, 69, 0.2);
     border-left: 3px solid #28a745;
     padding-left: 8px;
 }
 
-.line.highlight-deleting {
+.code-line.highlight-deleting {
     background: rgba(220, 53, 69, 0.2);
     border-left: 3px solid #dc3545;
     padding-left: 8px;
 }
 
-.line.highlight-searching {
+.code-line.highlight-searching {
     background: rgba(111, 66, 193, 0.2);
     border-left: 3px solid #6f42c1;
+    padding-left: 8px;
+}
+
+.code-line.highlight-traversing {
+    background: rgba(23, 162, 184, 0.2);
+    border-left: 3px solid #17a2b8;
+    padding-left: 8px;
+}
+
+.code-line.highlight-default {
+    background: rgba(108, 117, 125, 0.2);
+    border-left: 3px solid #6c757d;
     padding-left: 8px;
 }
 
