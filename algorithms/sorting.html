@@ -469,7 +469,7 @@
             .content {
                 padding: 20px;
             }
-            
+
             .control-group {
                 flex-direction: column;
                 align-items: stretch;
@@ -553,7 +553,7 @@
             <div class="algorithm-info" id="algorithmInfo">
                 <h4>Bubble Sort</h4>
                 <p>Bubble Sort repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order. Time Complexity: O(n²), Space Complexity: O(1)</p>
-            </div>
+                    </div>
 
             <!-- Code Execution Synchronization -->
             <div class="code-execution-container">
@@ -592,15 +592,15 @@
                 <div class="complexity-analysis">
                     <h4>Complexity Analysis</h4>
                     <div class="complexity-grid">
-                        <div class="complexity-item">
+                    <div class="complexity-item">
                             <div class="complexity-type">Time Complexity</div>
                             <div class="complexity-value" id="timeComplexity">O(n²)</div>
-                        </div>
-                        <div class="complexity-item">
+                    </div>
+                    <div class="complexity-item">
                             <div class="complexity-type">Space Complexity</div>
                             <div class="complexity-value" id="spaceComplexity">O(1)</div>
-                        </div>
                     </div>
+                </div>
                 </div>
             </div>
 
@@ -650,14 +650,14 @@
                 this.height = 400;
                 this.margin = { top: 20, right: 20, bottom: 40, left: 20 };
                 
-                // Code execution synchronization
-                this.codeSync = new CodeExecutionSync();
-                this.initializeCodeBlocks();
-                this.setupCodeEventListeners();
-                
                 this.initializeElements();
                 this.setupEventListeners();
                 this.generateArray();
+
+                // Code execution synchronization (after DOM elements are ready)
+                this.codeSync = new CodeExecutionSync();
+                this.initializeCodeBlocks();
+                this.setupCodeEventListeners();
             }
 
             initializeElements() {
@@ -799,7 +799,7 @@
                 // Reset array to original state
                 this.array = [...this.originalArray];
                 this.renderArray();
-
+                
                 try {
                     switch (this.currentAlgorithm) {
                         case 'bubble':
@@ -964,7 +964,7 @@
                     this.array[k] = rightArr[j];
                     j++;
                     k++;
-                    this.renderArray();
+                this.renderArray();
                 }
             }
 
@@ -1606,6 +1606,136 @@ private static void merge(int[] arr, int[] left, int[] right) {
 }`;
                         break;
                         
+                    case 'selection':
+                        goCode = `func SelectionSort(arr []int) {
+    n := len(arr)
+    for i := 0; i < n-1; i++ {
+        minIdx := i
+        for j := i + 1; j < n; j++ {
+            if arr[j] < arr[minIdx] {
+                minIdx = j
+            }
+        }
+        arr[i], arr[minIdx] = arr[minIdx], arr[i]
+    }
+}`;
+                        
+                        javaCode = `public static void selectionSort(int[] arr) {
+    int n = arr.length;
+    for (int i = 0; i < n - 1; i++) {
+        int minIdx = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIdx]) {
+                minIdx = j;
+            }
+        }
+        int temp = arr[i];
+        arr[i] = arr[minIdx];
+        arr[minIdx] = temp;
+    }
+}`;
+                        break;
+                        
+                    case 'insertion':
+                        goCode = `func InsertionSort(arr []int) {
+    for i := 1; i < len(arr); i++ {
+        key := arr[i]
+        j := i - 1
+        for j >= 0 && arr[j] > key {
+            arr[j+1] = arr[j]
+            j--
+        }
+        arr[j+1] = key
+    }
+}`;
+                        
+                        javaCode = `public static void insertionSort(int[] arr) {
+    for (int i = 1; i < arr.length; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}`;
+                        break;
+                        
+                    case 'heap':
+                        goCode = `func HeapSort(arr []int) {
+    n := len(arr)
+    
+    // Build max heap
+    for i := n/2 - 1; i >= 0; i-- {
+        heapify(arr, n, i)
+    }
+    
+    // Extract elements from heap
+    for i := n - 1; i > 0; i-- {
+        arr[0], arr[i] = arr[i], arr[0]
+        heapify(arr, i, 0)
+    }
+}
+
+func heapify(arr []int, n, i int) {
+    largest := i
+    left := 2*i + 1
+    right := 2*i + 2
+    
+    if left < n && arr[left] > arr[largest] {
+        largest = left
+    }
+    
+    if right < n && arr[right] > arr[largest] {
+        largest = right
+    }
+    
+    if largest != i {
+        arr[i], arr[largest] = arr[largest], arr[i]
+        heapify(arr, n, largest)
+    }
+}`;
+                        
+                        javaCode = `public static void heapSort(int[] arr) {
+    int n = arr.length;
+    
+    // Build max heap
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        heapify(arr, n, i);
+    }
+    
+    // Extract elements from heap
+    for (int i = n - 1; i > 0; i--) {
+        int temp = arr[0];
+        arr[0] = arr[i];
+        arr[i] = temp;
+        heapify(arr, i, 0);
+    }
+}
+
+private static void heapify(int[] arr, int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+    
+    if (left < n && arr[left] > arr[largest]) {
+        largest = left;
+    }
+    
+    if (right < n && arr[right] > arr[largest]) {
+        largest = right;
+    }
+    
+    if (largest != i) {
+        int temp = arr[i];
+        arr[i] = arr[largest];
+        arr[largest] = temp;
+        heapify(arr, n, largest);
+    }
+}`;
+                        break;
+                        
                     default:
                         goCode = `// Select an algorithm to see its implementation`;
                         javaCode = `// Select an algorithm to see its implementation`;
@@ -1663,6 +1793,45 @@ private static void merge(int[] arr, int[] left, int[] right) {
                         { line: 10, description: 'Recursively sort left half' },
                         { line: 11, description: 'Recursively sort right half' },
                         { line: 12, description: 'Merge sorted halves' }
+                    ],
+                    selection: [
+                        { line: 1, description: 'Selection Sort function definition' },
+                        { line: 2, description: 'Get array length' },
+                        { line: 3, description: 'Outer loop for each position' },
+                        { line: 4, description: 'Assume current position is minimum' },
+                        { line: 5, description: 'Inner loop to find minimum' },
+                        { line: 6, description: 'Compare with current minimum' },
+                        { line: 7, description: 'Update minimum index' },
+                        { line: 10, description: 'Swap minimum with current position' }
+                    ],
+                    insertion: [
+                        { line: 1, description: 'Insertion Sort function definition' },
+                        { line: 2, description: 'Start from second element' },
+                        { line: 3, description: 'Store current element as key' },
+                        { line: 4, description: 'Initialize comparison index' },
+                        { line: 5, description: 'Move elements greater than key' },
+                        { line: 6, description: 'Shift element to right' },
+                        { line: 7, description: 'Move to previous position' },
+                        { line: 9, description: 'Insert key in correct position' }
+                    ],
+                    heap: [
+                        { line: 1, description: 'Heap Sort function definition' },
+                        { line: 2, description: 'Get array length' },
+                        { line: 4, description: 'Build max heap from bottom up' },
+                        { line: 5, description: 'Heapify each non-leaf node' },
+                        { line: 8, description: 'Extract elements from heap' },
+                        { line: 9, description: 'Move max element to end' },
+                        { line: 10, description: 'Reduce heap size' },
+                        { line: 11, description: 'Heapify root element' },
+                        { line: 15, description: 'Heapify function definition' },
+                        { line: 16, description: 'Assume current node is largest' },
+                        { line: 17, description: 'Calculate left child index' },
+                        { line: 18, description: 'Calculate right child index' },
+                        { line: 20, description: 'Check if left child is larger' },
+                        { line: 24, description: 'Check if right child is larger' },
+                        { line: 28, description: 'If largest is not current node' },
+                        { line: 29, description: 'Swap with largest child' },
+                        { line: 30, description: 'Recursively heapify affected subtree' }
                     ]
                 };
                 
@@ -1672,8 +1841,12 @@ private static void merge(int[] arr, int[] left, int[] right) {
 
         // Global functions for code execution controls
         function startCodeExecution() {
+            console.log('startCodeExecution called for sorting');
             if (window.sortingVisualizer) {
+                console.log('Sorting visualizer found, calling startSortingWithCodeSync');
                 window.sortingVisualizer.startSortingWithCodeSync();
+            } else {
+                console.log('Sorting visualizer not found');
             }
         }
 

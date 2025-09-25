@@ -27,6 +27,7 @@ class CodeExecutionSync {
      * @param {Array} steps - Array of step objects with line numbers and descriptions
      */
     registerCodeBlock(id, element, steps) {
+        console.log(`Registering code block: ${id}`, element, steps);
         this.codeBlocks.set(id, {
             element: element,
             steps: steps,
@@ -59,10 +60,11 @@ class CodeExecutionSync {
             const lineElement = document.createElement('div');
             lineElement.className = 'code-line';
             lineElement.setAttribute('data-line', index + 1);
-            lineElement.textContent = line;
+            lineElement.textContent = line || ' '; // Handle empty lines
             codeContainer.appendChild(lineElement);
         });
         
+        console.log(`Created code block for ${language} with ${lines.length} lines`);
         return codeContainer;
     }
 
@@ -86,6 +88,8 @@ class CodeExecutionSync {
         this.performanceMetrics.operations = 0;
 
         console.log(`Starting ${algorithmId} execution with ${this.totalSteps} steps`);
+        console.log('Available code blocks:', Array.from(this.codeBlocks.keys()));
+        console.log('Execution steps:', executionSteps);
 
         try {
             for (let i = 0; i < executionSteps.length; i++) {
@@ -121,9 +125,12 @@ class CodeExecutionSync {
      * @param {Object} step - The current execution step
      */
     async highlightStep(step) {
+        console.log('Highlighting step:', step);
         for (const [id, codeBlock] of this.codeBlocks) {
+            console.log(`Checking code block ${id}:`, step.codeBlocks && step.codeBlocks[id]);
             if (step.codeBlocks && step.codeBlocks[id]) {
                 const lineNumbers = step.codeBlocks[id];
+                console.log(`Highlighting lines ${lineNumbers} in ${id} with type ${step.type}`);
                 this.highlightLines(id, lineNumbers, step.type || 'default');
             }
         }
@@ -137,7 +144,12 @@ class CodeExecutionSync {
      */
     highlightLines(codeBlockId, lineNumbers, type = 'default') {
         const codeBlock = this.codeBlocks.get(codeBlockId);
-        if (!codeBlock) return;
+        if (!codeBlock) {
+            console.log(`Code block ${codeBlockId} not found`);
+            return;
+        }
+
+        console.log(`Highlighting lines ${lineNumbers} in ${codeBlockId} with type ${type}`);
 
         // Clear previous highlights
         this.clearHighlight(codeBlockId);
@@ -146,11 +158,16 @@ class CodeExecutionSync {
         const element = codeBlock.element;
         const lines = element.querySelectorAll('.code-line');
         
+        console.log(`Found ${lines.length} lines in code block ${codeBlockId}`);
+        
         lineNumbers.forEach(lineNum => {
             if (lines[lineNum - 1]) {
                 const line = lines[lineNum - 1];
                 line.classList.add('highlighted-code-line', `highlight-${type}`);
                 codeBlock.currentHighlight = lineNum;
+                console.log(`Highlighted line ${lineNum} in ${codeBlockId}`);
+            } else {
+                console.log(`Line ${lineNum} not found in ${codeBlockId}`);
             }
         });
 
@@ -282,39 +299,6 @@ class CodeExecutionSync {
         document.dispatchEvent(event);
     }
 
-    /**
-     * Create a code block element with syntax highlighting
-     * @param {string} code - The code content
-     * @param {string} language - Programming language
-     * @returns {HTMLElement} Formatted code element
-     */
-    createCodeBlock(code, language = 'javascript') {
-        const codeElement = document.createElement('div');
-        codeElement.className = 'code-block';
-        codeElement.setAttribute('data-language', language);
-
-        const lines = code.split('\n');
-        lines.forEach((line, index) => {
-            const lineElement = document.createElement('div');
-            lineElement.className = 'line';
-            lineElement.setAttribute('data-line', index + 1);
-            lineElement.innerHTML = `<span class="line-number">${index + 1}</span><span class="line-content">${this.escapeHtml(line)}</span>`;
-            codeElement.appendChild(lineElement);
-        });
-
-        return codeElement;
-    }
-
-    /**
-     * Escape HTML characters
-     * @param {string} text - Text to escape
-     * @returns {string} Escaped text
-     */
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
 
     /**
      * Generate complexity analysis
