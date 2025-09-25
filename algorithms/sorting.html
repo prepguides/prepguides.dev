@@ -612,6 +612,9 @@
                 <button class="control-button secondary" onclick="pauseCodeExecution()">
                     ⏸️ Pause
                 </button>
+                <button class="control-button secondary" onclick="resumeCodeExecution()">
+                    ▶️ Resume
+                </button>
                 <button class="control-button danger" onclick="stopCodeExecution()">
                     ⏹️ Stop
                 </button>
@@ -1853,6 +1856,12 @@ private static void heapify(int[] arr, int n, int i) {
         function pauseCodeExecution() {
             if (window.sortingVisualizer && window.sortingVisualizer.codeSync) {
                 window.sortingVisualizer.codeSync.pauseExecution();
+            }
+        }
+
+        function resumeCodeExecution() {
+            if (window.sortingVisualizer && window.sortingVisualizer.codeSync) {
+                window.sortingVisualizer.codeSync.resumeExecution();
             }
         }
 

@@ -82,6 +82,7 @@ class CodeExecutionSync {
         this.isExecuting = true;
         this.currentStep = 0;
         this.totalSteps = executionSteps.length;
+        this.executionSteps = executionSteps; // Store steps for resume functionality
         this.performanceMetrics.startTime = performance.now();
         this.performanceMetrics.comparisons = 0;
         this.performanceMetrics.swaps = 0;
@@ -93,6 +94,12 @@ class CodeExecutionSync {
 
         try {
             for (let i = 0; i < executionSteps.length; i++) {
+                // Check if execution was paused or stopped
+                if (!this.isExecuting) {
+                    console.log('Execution paused or stopped');
+                    break;
+                }
+                
                 this.currentStep = i;
                 const step = executionSteps[i];
                 
@@ -239,27 +246,6 @@ class CodeExecutionSync {
         this.executionSpeed = Math.max(100, speed); // Minimum 100ms
     }
 
-    /**
-     * Pause execution
-     */
-    pauseExecution() {
-        this.isExecuting = false;
-    }
-
-    /**
-     * Resume execution
-     */
-    resumeExecution() {
-        this.isExecuting = true;
-    }
-
-    /**
-     * Stop execution
-     */
-    stopExecution() {
-        this.isExecuting = false;
-        this.clearAllHighlights();
-    }
 
     /**
      * Get execution progress
@@ -380,6 +366,61 @@ class CodeExecutionSync {
             this.executionTimer = null;
         }
         this.updateProgress('Paused');
+    }
+
+    /**
+     * Resume the current execution
+     */
+    resumeExecution() {
+        if (!this.isExecuting && this.currentStep < this.totalSteps) {
+            this.isExecuting = true;
+            this.updateProgress('Resumed');
+            // Continue execution from current step
+            this.continueExecution();
+        }
+    }
+
+    /**
+     * Continue execution from current step
+     */
+    async continueExecution() {
+        if (!this.isExecuting) return;
+        
+        try {
+            for (let i = this.currentStep; i < this.totalSteps; i++) {
+                // Check if execution was paused or stopped
+                if (!this.isExecuting) {
+                    console.log('Execution paused or stopped');
+                    break;
+                }
+                
+                this.currentStep = i;
+                const step = this.executionSteps[i];
+                
+                // Highlight code blocks
+                await this.highlightStep(step);
+                
+                // Execute step callback if registered
+                if (this.stepCallbacks.has(step.id)) {
+                    await this.stepCallbacks.get(step.id)(step);
+                }
+                
+                // Update performance metrics
+                this.updatePerformanceMetrics(step);
+                
+                // Wait for specified duration
+                await this.delay(this.executionSpeed);
+            }
+        } catch (error) {
+            console.error('Execution error:', error);
+        } finally {
+            if (this.currentStep >= this.totalSteps) {
+                this.isExecuting = false;
+                this.performanceMetrics.endTime = performance.now();
+                this.clearAllHighlights();
+                this.onExecutionComplete();
+            }
+        }
     }
 
     /**
