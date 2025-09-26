@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BST Debug</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-info { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        svg { border: 1px solid #ccc; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>BST Structure Debug</h1>
+    <div id="debugInfo" class="debug-info"></div>
+    <svg id="treeSvg" width="800" height="400"></svg>
+    <button onclick="testBST()">Test BST Structure</button>
+
+    <script>
+        class BSTNode {
+            constructor(value) {
+                this.value = value;
+                this.left = null;
+                this.right = null;
+                this.id = Math.random().toString(36).substr(2, 9);
+            }
+        }
+
+        function insertNodeSync(node, value) {
+            if (value < node.value) {
+                if (node.left) {
+                    insertNodeSync(node.left, value);
+                } else {
+                    node.left = new BSTNode(value);
+                }
+            } else if (value > node.value) {
+                if (node.right) {
+                    insertNodeSync(node.right, value);
+                } else {
+                    node.right = new BSTNode(value);
+                }
+            }
+        }
+
+        function testBST() {
+            // Create a test BST with the problematic values
+            const root = new BSTNode(4);
+            insertNodeSync(root, 1);
+            insertNodeSync(root, 22);
+            insertNodeSync(root, 14);
+            insertNodeSync(root, 11);
+            insertNodeSync(root, 13);
+            insertNodeSync(root, 12); // This should go left of 13
+            insertNodeSync(root, 37);
+            insertNodeSync(root, 30);
+            insertNodeSync(root, 27);
+            insertNodeSync(root, 33);
+            insertNodeSync(root, 49);
+
+            // Debug: Print the tree structure
+            let debugInfo = '<h3>BST Structure:</h3>';
+            function printTree(node, depth = 0) {
+                if (!node) return;
+                const indent = '  '.repeat(depth);
+                debugInfo += `${indent}${node.value}<br>`;
+                if (node.left) {
+                    debugInfo += `${indent}├── Left: `;
+                    printTree(node.left, depth + 1);
+                }
+                if (node.right) {
+                    debugInfo += `${indent}└── Right: `;
+                    printTree(node.right, depth + 1);
+                }
+            }
+            printTree(root);
+            document.getElementById('debugInfo').innerHTML = debugInfo;
+
+            // Render the tree
+            renderTree(root);
+        }
+
+        function renderTree(root) {
+            const svg = d3.select('#treeSvg');
+            svg.selectAll('*').remove();
+
+            if (!root) return;
+
+            // Convert BST to D3 hierarchy format
+            const rootData = d3.hierarchy(root, d => [d.left, d.right].filter(Boolean));
+            
+            // Debug: Log the hierarchy structure
+            console.log('BST Hierarchy:', rootData);
+            rootData.each(d => {
+                console.log(`Node ${d.data.value}: left=${d.data.left?.value || 'null'}, right=${d.data.right?.value || 'null'}`);
+            });
+
+            // Create tree layout
+            const treeLayout = d3.tree()
+                .nodeSize([80, 80]);
+
+            treeLayout(rootData);
+
+            // Calculate bounds
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            rootData.each(d => {
+                minX = Math.min(minX, d.x);
+                maxX = Math.max(maxX, d.x);
+                minY = Math.min(minY, d.y);
+                maxY = Math.max(maxY, d.y);
+            });
+
+            const treeWidth = maxX - minX;
+            const treeHeight = maxY - minY;
+
+            // Center the tree
+            const translateX = (800 / 2) - (minX + treeWidth / 2);
+            const translateY = 50 - minY;
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${translateX},${translateY})`);
+
+            // Links
+            g.selectAll('.link')
+                .data(rootData.links())
+                .join('path')
+                .attr('class', 'link')
+                .attr('d', d3.linkVertical()
+                    .x(d => d.x)
+                    .y(d => d.y))
+                .attr('fill', 'none')
+                .attr('stroke', '#999')
+                .attr('stroke-width', 2);
+
+            // Nodes
+            const nodes = g.selectAll('.node')
+                .data(rootData.descendants())
+                .join('g')
+                .attr('class', 'node')
+                .attr('transform', d => `translate(${d.x},${d.y})`);
+
+            nodes.append('circle')
+                .attr('r', 20)
+                .attr('fill', '#fff')
+                .attr('stroke', '#333')
+                .attr('stroke-width', 2);
+
+            nodes.append('text')
+                .text(d => d.data.value)
+                .attr('text-anchor', 'middle')
+                .attr('dy', '0.31em')
+                .attr('font-size', '14px')
+                .attr('font-weight', 'bold');
+        }
+    </script>
+</body>
+</html>
