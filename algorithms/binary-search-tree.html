@@ -1035,6 +1035,13 @@
 
                 // Convert BST to D3 hierarchy format
                 const rootData = d3.hierarchy(this.root, d => [d.left, d.right].filter(Boolean));
+                
+                // Debug: Log the hierarchy structure
+                console.log('BST Hierarchy:', rootData);
+                rootData.each(d => {
+                    console.log(`Node ${d.data.value}: left=${d.data.left?.value || 'null'}, right=${d.data.right?.value || 'null'}`);
+                });
+                
                 this.treeLayout(rootData);
 
                 // Calculate bounds of the tree
@@ -1105,8 +1112,34 @@
                     }
                 });
                 
+                // Debug: Verify BST structure
+                console.log('Generated BST structure:');
+                this.verifyBSTStructure(this.root);
+                
                 this.renderTree();
                 this.resetStats();
+            }
+
+            verifyBSTStructure(node, path = '') {
+                if (!node) return;
+                
+                console.log(`${path}Node ${node.value}:`);
+                if (node.left) {
+                    if (node.left.value >= node.value) {
+                        console.error(`❌ BST VIOLATION: Left child ${node.left.value} >= parent ${node.value}`);
+                    } else {
+                        console.log(`  ✓ Left: ${node.left.value}`);
+                    }
+                    this.verifyBSTStructure(node.left, path + '  ');
+                }
+                if (node.right) {
+                    if (node.right.value <= node.value) {
+                        console.error(`❌ BST VIOLATION: Right child ${node.right.value} <= parent ${node.value}`);
+                    } else {
+                        console.log(`  ✓ Right: ${node.right.value}`);
+                    }
+                    this.verifyBSTStructure(node.right, path + '  ');
+                }
             }
 
             insertNodeSync(node, value) {
