@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "type": "content-addition",
+  "metadata": {
+    "title": "Test Workflow Fix",
+    "description": "Testing that PR workflow generates updated HTML pages automatically",
+    "author": "prepguides",
+    "submissionDate": "2025-01-27",
+    "category": "networking",
+    "subtopic": "test-guide"
+  },
+  "content": {
+    "id": "test-workflow-guide",
+    "title": "Test Workflow Fix",
+    "description": "Testing that PR workflow generates updated HTML pages automatically without manual commits",
+    "repo": "prepguides/go-interviews",
+    "path": "README.md",
+    "type": "guide",
+    "status": "active"
+  },
+  "validation": {
+    "repoAccessible": true,
+    "fileExists": true,
+    "contentValid": true,
+    "categoryValid": true
+  }
+}
