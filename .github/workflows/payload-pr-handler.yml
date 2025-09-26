@@ -158,6 +158,15 @@ jobs:
         echo "🏗️ Generating site preview with merged content..."
         node scripts/update-navigation.js
         echo "✅ Site preview generated successfully"
+        
+        # Verify the HTML files were updated
+        echo "🔍 Verifying updated HTML files..."
+        if grep -q "Operator Guide\|Go Patterns" kubernetes.html algorithms.html; then
+          echo "✅ HTML files updated with new content"
+        else
+          echo "❌ HTML files not updated properly"
+          exit 1
+        fi
 
     - name: Upload preview artifacts
       uses: actions/upload-artifact@v4
