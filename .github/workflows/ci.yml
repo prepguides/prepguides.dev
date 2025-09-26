@@ -1,0 +1,150 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ 'feature/*', 'fix/*', 'docs/*', 'refactor/*' ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Validate HTML files
+        run: |
+          echo "🔍 Validating HTML files..."
+          find . -name "*.html" -not -path "./.git/*" -not -path "./node_modules/*" | while read file; do
+            echo "Checking: $file"
+            # Basic HTML validation - check for proper structure
+            if ! grep -q "<!DOCTYPE html>" "$file"; then
+              echo "❌ Missing DOCTYPE in $file"
+              exit 1
+            fi
+            if ! grep -q "<html" "$file"; then
+              echo "❌ Missing <html> tag in $file"
+              exit 1
+            fi
+            if ! grep -q "</html>" "$file"; then
+              echo "❌ Missing </html> closing tag in $file"
+              exit 1
+            fi
+          done
+          echo "✅ HTML validation passed"
+      
+      - name: Check for broken links
+        run: |
+          echo "🔍 Checking for broken internal links..."
+          # This is a basic check - in production you might want more sophisticated link checking
+          find . -name "*.html" -not -path "./.git/*" | while read file; do
+            # Check for relative links that might be broken
+            grep -o 'href="[^"]*"' "$file" | grep -v 'http' | grep -v 'mailto:' | while read link; do
+              link_path=$(echo "$link" | sed 's/href="//;s/"//')
+              if [[ "$link_path" == /* ]]; then
+                # Absolute path - check if file exists
+                if [[ ! -f ".$link_path" ]]; then
+                  echo "⚠️  Potential broken link in $file: $link_path"
+                fi
+              fi
+            done
+          done
+          echo "✅ Link check completed"
+      
+      - name: Validate file structure
+        run: |
+          echo "🔍 Validating project structure..."
+          
+          # Check that required directories exist
+          required_dirs=("algorithms" "kubernetes" "networking" "docs" "tests")
+          for dir in "${required_dirs[@]}"; do
+            if [[ ! -d "$dir" ]]; then
+              echo "❌ Required directory missing: $dir"
+              exit 1
+            fi
+          done
+          
+          # Check that main index file exists
+          if [[ ! -f "index.html" ]]; then
+            echo "❌ Main index.html file missing"
+            exit 1
+          fi
+          
+          echo "✅ Project structure validation passed"
+      
+      - name: Check for sensitive information
+        run: |
+          echo "🔍 Checking for sensitive information..."
+          
+          # Check for potential API keys, passwords, etc.
+          if grep -r -i "api[_-]key\|password\|secret\|token" --include="*.html" --include="*.js" --include="*.css" . | grep -v ".git" | grep -v "node_modules"; then
+            echo "⚠️  Potential sensitive information found. Please review."
+            echo "✅ This is just a warning, not a blocking error."
+          else
+            echo "✅ No sensitive information detected"
+          fi
+
+  test-algorithms:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'algorithm') || contains(github.event.pull_request.title, 'algorithm')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Test algorithm visualizations
+        run: |
+          echo "🧪 Testing algorithm visualizations..."
+          
+          # Check that algorithm files exist and have proper structure
+          algorithm_files=(
+            "algorithms/sorting.html"
+            "algorithms/binary-search-tree.html"
+            "algorithms/bfs-dfs-graph-traversal.html"
+            "algorithms/trie-operations.html"
+            "algorithms/dijkstra-algorithm.html"
+            "algorithms/dynamic-programming.html"
+          )
+          
+          for file in "${algorithm_files[@]}"; do
+            if [[ -f "$file" ]]; then
+              echo "✅ Found: $file"
+              # Basic validation - check for required elements
+              if ! grep -q "D3.js\|d3" "$file"; then
+                echo "⚠️  $file might be missing D3.js integration"
+              fi
+            else
+              echo "❌ Missing algorithm file: $file"
+              exit 1
+            fi
+          done
+          
+          echo "✅ Algorithm visualization tests passed"
+
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Security scan
+        run: |
+          echo "🔒 Running security scan..."
+          
+          # Check for common security issues in HTML files
+          find . -name "*.html" -not -path "./.git/*" | while read file; do
+            # Check for inline scripts that might be unsafe
+            if grep -q "javascript:" "$file"; then
+              echo "⚠️  Potential security issue in $file: javascript: protocol found"
+            fi
+            
+            # Check for external script sources
+            if grep -q "src=\"http://" "$file"; then
+              echo "⚠️  External HTTP script in $file - consider using HTTPS"
+            fi
+          done
+          
+          echo "✅ Security scan completed"
