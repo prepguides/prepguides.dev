@@ -1,35 +1,30 @@
 # Vercel Deployment Setup Guide
 
-## 🔧 **Required GitHub Secrets**
+## 🔧 **GitHub-Vercel Integration**
 
-To enable Vercel deployment, you need to add these secrets to your GitHub repository:
+This workflow uses GitHub's built-in Vercel integration, which means:
+- ✅ **No manual secrets required** - Uses `GITHUB_TOKEN` automatically
+- ✅ **Automatic authentication** - GitHub handles Vercel connection
+- ✅ **Built-in deployment tracking** - GitHub shows deployment stats
 
-### 1. **VERCEL_TOKEN**
-- Go to [Vercel Dashboard](https://vercel.com/account/tokens)
-- Create a new token with appropriate permissions
-- Copy the token value
+## 🚀 **How It Works**
 
-### 2. **VERCEL_ORG_ID**
-- Go to [Vercel Dashboard](https://vercel.com/account)
-- Copy your Organization ID from the URL or settings
+The deployment workflow:
+1. **Uses `GITHUB_TOKEN`** - Automatically provided by GitHub Actions
+2. **Leverages GitHub-Vercel integration** - No additional setup needed
+3. **Deploys to Vercel** - Using the connected Vercel project
+4. **Shows deployment stats** - In GitHub's repository overview
 
-### 3. **VERCEL_PROJECT_ID**
-- Go to your project in Vercel Dashboard
-- Copy the Project ID from the project settings
+## 📋 **Setup Requirements**
 
-## 📋 **How to Add Secrets to GitHub**
+**Minimal setup needed:**
+1. Ensure Vercel app is connected to your GitHub repository
+2. The workflow will use GitHub's built-in Vercel integration
+3. No manual secrets or tokens required
 
-1. Go to your GitHub repository
-2. Click **Settings** → **Secrets and variables** → **Actions**
-3. Click **New repository secret**
-4. Add each secret:
-   - Name: `VERCEL_TOKEN`, Value: `[your-vercel-token]`
-   - Name: `VERCEL_ORG_ID`, Value: `[your-org-id]`
-   - Name: `VERCEL_PROJECT_ID`, Value: `[your-project-id]`
+## 🎯 **Expected Results**
 
-## 🚀 **Expected Results**
-
-Once secrets are configured:
+Once the GitHub-Vercel integration is active:
 - ✅ Vercel deployments will work automatically
 - ✅ GitHub will show deployment stats and counts
 - ✅ Site will be deployed to: `https://prepguides-dev.vercel.app`
@@ -37,8 +32,8 @@ Once secrets are configured:
 
 ## 🔍 **Troubleshooting**
 
-If deployments still fail:
-1. Verify all three secrets are correctly set
-2. Check Vercel token permissions
-3. Ensure project exists in Vercel dashboard
-4. Check GitHub Actions logs for specific error messages
+If deployments fail:
+1. Check if Vercel app is connected to your GitHub repository
+2. Verify the repository has the correct permissions in Vercel
+3. Check GitHub Actions logs for specific error messages
+4. Ensure the Vercel project exists and is properly configured
