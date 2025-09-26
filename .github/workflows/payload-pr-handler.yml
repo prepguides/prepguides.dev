@@ -159,14 +159,47 @@ jobs:
         node scripts/update-navigation.js
         echo "✅ Site preview generated successfully"
         
-        # Verify the HTML files were updated
+        # Verify the HTML files were updated with new content
         echo "🔍 Verifying updated HTML files..."
-        if grep -q "Operator Guide\|Go Patterns" kubernetes.html algorithms.html; then
-          echo "✅ HTML files updated with new content"
-        else
-          echo "❌ HTML files not updated properly"
-          exit 1
-        fi
+        node -e "
+          const fs = require('fs');
+          const config = JSON.parse(fs.readFileSync('content-config.json', 'utf8'));
+          
+          // Get all new content titles from the merged config
+          const newContentTitles = [];
+          for (const category of Object.values(config.categories)) {
+            for (const subtopic of Object.values(category.subtopics)) {
+              for (const content of subtopic.content) {
+                if (content.status === 'active') {
+                  newContentTitles.push(content.title);
+                }
+              }
+            }
+          }
+          
+          // Check if any HTML files contain the new content
+          const htmlFiles = ['index.html', 'kubernetes.html', 'algorithms.html', 'networking.html', 'databases.html', 'microservices.html', 'system-design.html'];
+          let foundContent = 0;
+          
+          for (const htmlFile of htmlFiles) {
+            if (fs.existsSync(htmlFile)) {
+              const content = fs.readFileSync(htmlFile, 'utf8');
+              for (const title of newContentTitles) {
+                if (content.includes(title)) {
+                  foundContent++;
+                  break;
+                }
+              }
+            }
+          }
+          
+          if (foundContent > 0) {
+            console.log('✅ HTML files updated with new content');
+          } else {
+            console.log('❌ HTML files not updated properly');
+            process.exit(1);
+          }
+        "
 
     - name: Upload preview artifacts
       uses: actions/upload-artifact@v4
