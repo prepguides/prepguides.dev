@@ -20,6 +20,7 @@ jobs:
         with:
           vercel-token: ${{ secrets.GITHUB_TOKEN }}
           working-directory: ./
+          vercel-args: '--yes'
       
       - name: Deployment Status
         run: |
@@ -40,7 +41,7 @@ jobs:
         with:
           vercel-token: ${{ secrets.GITHUB_TOKEN }}
           working-directory: ./
-          vercel-args: '--prod=false'
+          vercel-args: '--prod=false --yes'
       
       - name: Preview Deployment Status
         run: |
