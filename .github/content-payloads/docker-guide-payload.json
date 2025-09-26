@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "type": "content-addition",
+  "metadata": {
+    "title": "Docker Best Practices Guide",
+    "description": "Comprehensive guide to Docker best practices and optimization",
+    "author": "prepguides",
+    "submissionDate": "2025-01-27",
+    "category": "kubernetes",
+    "subtopic": "docker-guide"
+  },
+  "content": {
+    "id": "docker-best-practices",
+    "title": "Docker Best Practices Guide",
+    "description": "Comprehensive guide to Docker best practices, optimization techniques, and production deployment strategies",
+    "repo": "prepguides/docker-guide",
+    "path": "README.md",
+    "type": "guide",
+    "status": "active"
+  },
+  "validation": {
+    "repoAccessible": true,
+    "fileExists": true,
+    "contentValid": true,
+    "categoryValid": true
+  }
+}
