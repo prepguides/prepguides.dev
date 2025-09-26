@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "type": "content-addition",
+  "metadata": {
+    "title": "Go Patterns and Examples",
+    "description": "Comprehensive collection of Go patterns, concurrency examples, and best practices",
+    "author": "prepguides",
+    "submissionDate": "2025-01-27",
+    "category": "algorithms",
+    "subtopic": "go-patterns"
+  },
+  "content": {
+    "id": "go-patterns-guide",
+    "title": "Go Patterns and Examples",
+    "description": "Comprehensive collection of Go patterns, concurrency examples, interfaces, and best practices for technical interviews",
+    "repo": "prepguides/go-interviews",
+    "path": "patterns/README.md",
+    "type": "guide",
+    "status": "active"
+  },
+  "validation": {
+    "repoAccessible": true,
+    "fileExists": true,
+    "contentValid": true,
+    "categoryValid": true
+  }
+}

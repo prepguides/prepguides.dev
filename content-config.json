@@ -26,22 +26,6 @@
             }
           ]
         },
-        "security-guide": {
-          "name": "Security Guide",
-          "description": "Comprehensive guide to Kubernetes security best practices, RBAC, network policies, and cluster hardening",
-          "content": [
-            {
-              "id": "k8s-security-guide",
-              "title": "Kubernetes Security Best Practices",
-              "description": "Comprehensive guide to Kubernetes security best practices, RBAC, network policies, and cluster hardening",
-              "repo": "kubernetes/website",
-              "path": "content/en/docs/concepts/security/",
-              "type": "guide",
-              "status": "active",
-              "addedDate": "2025-01-27"
-            }
-          ]
-        },
         "operator-guide": {
           "name": "Operator Guide",
           "description": "Comprehensive guide to building and managing Kubernetes operators",
@@ -96,6 +80,22 @@
               "path": "algorithms/binary-search-tree.html",
               "addedDate": "2025-01-15",
               "status": "active"
+            }
+          ]
+        },
+        "go-patterns": {
+          "name": "Go Patterns",
+          "description": "Comprehensive collection of Go patterns, concurrency examples, interfaces, and best practices for technical interviews",
+          "content": [
+            {
+              "id": "go-patterns-guide",
+              "title": "Go Patterns and Examples",
+              "description": "Comprehensive collection of Go patterns, concurrency examples, interfaces, and best practices for technical interviews",
+              "repo": "prepguides/go-interviews",
+              "path": "patterns/README.md",
+              "type": "guide",
+              "status": "active",
+              "addedDate": "2025-01-27"
             }
           ]
         }
