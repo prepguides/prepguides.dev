@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "type": "content-addition",
+  "metadata": {
+    "title": "Kubernetes Security Best Practices",
+    "description": "Comprehensive guide to Kubernetes security best practices and hardening",
+    "author": "prepguides",
+    "submissionDate": "2025-01-27",
+    "category": "kubernetes",
+    "subtopic": "security-guide"
+  },
+  "content": {
+    "id": "k8s-security-guide",
+    "title": "Kubernetes Security Best Practices",
+    "description": "Comprehensive guide to Kubernetes security best practices, RBAC, network policies, and cluster hardening",
+    "repo": "kubernetes/website",
+    "path": "content/en/docs/concepts/security/",
+    "type": "guide",
+    "status": "active"
+  },
+  "validation": {
+    "repoAccessible": true,
+    "fileExists": true,
+    "contentValid": true,
+    "categoryValid": true
+  }
+}

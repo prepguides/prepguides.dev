@@ -26,16 +26,16 @@
             }
           ]
         },
-        "docker-guide": {
-          "name": "Docker Guide",
-          "description": "Comprehensive guide to Docker best practices, optimization techniques, and production deployment strategies",
+        "security-guide": {
+          "name": "Security Guide",
+          "description": "Comprehensive guide to Kubernetes security best practices, RBAC, network policies, and cluster hardening",
           "content": [
             {
-              "id": "docker-best-practices",
-              "title": "Docker Best Practices Guide",
-              "description": "Comprehensive guide to Docker best practices, optimization techniques, and production deployment strategies",
-              "repo": "prepguides/docker-guide",
-              "path": "README.md",
+              "id": "k8s-security-guide",
+              "title": "Kubernetes Security Best Practices",
+              "description": "Comprehensive guide to Kubernetes security best practices, RBAC, network policies, and cluster hardening",
+              "repo": "kubernetes/website",
+              "path": "content/en/docs/concepts/security/",
               "type": "guide",
               "status": "active",
               "addedDate": "2025-01-27"
