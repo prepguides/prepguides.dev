@@ -13,8 +13,8 @@
     "id": "kubernetes-operator-guide",
     "title": "Kubernetes Operator Guide",
     "description": "Comprehensive guide to building and managing Kubernetes operators with practical examples and best practices",
-    "repo": "kubernetes/website",
-    "path": "content/en/docs/concepts/overview/README.md",
+    "repo": "prepguides/go-interviews",
+    "path": "operator/README.md",
     "type": "guide",
     "status": "active"
   },
