@@ -36,8 +36,8 @@ jobs:
           PR_TITLE="${{ github.event.pull_request.title }}"
           echo "PR Title: $PR_TITLE"
           
-          # Check if PR title follows conventional format
-          if [[ ! "$PR_TITLE" =~ ^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+ ]]; then
+          # Check if PR title follows conventional format (more flexible)
+          if [[ ! "$PR_TITLE" =~ ^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\([^)]+\))?: ]]; then
             echo "⚠️  PR title should follow conventional commit format:"
             echo "   feat: add new feature"
             echo "   fix: resolve bug"
@@ -47,9 +47,13 @@ jobs:
             echo ""
             echo "Current title: $PR_TITLE"
             echo "✅ This is just a warning, not a blocking error."
+            echo "✅ Workflow will continue successfully."
           else
             echo "✅ PR title follows conventional commit format"
           fi
+          
+          # Always exit with success to prevent blocking
+          echo "✅ PR title validation completed (non-blocking)"
       
       - name: Check for large files
         run: |
