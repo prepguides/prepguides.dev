@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Algorithms - PrepGuides.dev</title>
-    <meta name="description" content="Interactive algorithm visualizations for technical interview preparation">
+    <meta name="description" content="Interactive algorithm visualizations for technical interview preparation with code implementations">
     <style>
         * {
             margin: 0;
@@ -13,8 +13,8 @@
         }
 
         :root {
-            --primary: #6366f1;
-            --secondary: #8b5cf6;
+            --primary: #8b5cf6;
+            --secondary: #a855f7;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
@@ -71,120 +71,15 @@
             font-size: 3rem;
             font-weight: 800;
             margin-bottom: 1rem;
-            position: relative;
-            z-index: 1;
         }
 
         .subtitle {
             font-size: 1.2rem;
             opacity: 0.9;
-            position: relative;
-            z-index: 1;
         }
 
         .content {
             padding: 40px;
-        }
-
-        .algorithms-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .algorithm-card {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .algorithm-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .algorithm-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-
-        .algorithm-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-
-        .algorithm-description {
-            color: #6b7280;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        .algorithm-features {
-            list-style: none;
-            padding: 0;
-        }
-
-        .algorithm-features li {
-            padding: 4px 0;
-            color: #6b7280;
-            font-size: 0.9rem;
-        }
-
-        .algorithm-features li:before {
-            content: "✓ ";
-            color: var(--success);
-            font-weight: bold;
-        }
-
-        .phase-section {
-            margin-bottom: 40px;
-        }
-
-        .phase-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .phase-description {
-            text-align: center;
-            color: #6b7280;
-            margin-bottom: 30px;
-            font-size: 1.1rem;
-        }
-
-        .coming-soon {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 40px;
-            text-align: center;
-            border: 2px dashed #e5e7eb;
-        }
-
-        .coming-soon h3 {
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-
-        .coming-soon p {
-            color: #6b7280;
         }
 
         .stats {
@@ -215,6 +110,91 @@
             font-weight: 500;
         }
 
+        .algorithms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .algorithm-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .algorithm-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .algorithm-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .algorithm-description {
+            color: #6b7280;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .algorithm-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .algorithm-features li {
+            padding: 5px 0;
+            color: #6b7280;
+        }
+
+        .algorithm-features li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .access-button {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .access-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .coming-soon {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .coming-soon h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2rem;
@@ -234,201 +214,132 @@
     <div class="main-container">
         <header>
             <a href="index.html" class="back-button">← Back to Home</a>
-            <h1>Algorithm Visualizations</h1>
-            <p class="subtitle">Interactive visualizations for technical interview preparation</p>
+            <h1>🔢 Algorithms</h1>
+            <p class="subtitle">Interactive algorithm visualizations with code implementations</p>
         </header>
 
         <div class="content">
             <div class="stats">
                 <div class="stat-card">
                     <div class="stat-value">6</div>
-                    <div class="stat-label">Available Algorithms</div>
+                    <div class="stat-label">Algorithm Visualizations</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">15</div>
-                    <div class="stat-label">Planned Algorithms</div>
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">Programming Languages</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">3</div>
-                    <div class="stat-label">Development Phases</div>
+                    <div class="stat-value">12+</div>
+                    <div class="stat-label">Code Implementations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">Test Coverage</div>
                 </div>
             </div>
 
-            <div class="phase-section">
-                <h2 class="phase-title">Phase 1 - Essential</h2>
-                <p class="phase-description">High-priority algorithms frequently asked in technical interviews</p>
-                
-                <div class="algorithms-grid">
-                    <a href="algorithms/sorting.html" class="algorithm-card">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #a855f7);">
-                            🔢
-                        </div>
-                        <h3 class="algorithm-title">Sorting Algorithms</h3>
-                        <p class="algorithm-description">Interactive visualization of 6 sorting algorithms with real-time performance metrics</p>
-                        <ul class="algorithm-features">
-                            <li>Bubble Sort, Selection Sort, Insertion Sort</li>
-                            <li>Merge Sort, Quick Sort, Heap Sort</li>
-                            <li>Real-time comparisons and swaps</li>
-                            <li>Adjustable array size and speed</li>
-                        </ul>
-                    </a>
+            <div class="algorithms-grid">
+                <div class="algorithm-card" onclick="window.location.href='algorithms/sorting.html'">
+                    <h3 class="algorithm-title">Sorting Algorithms</h3>
+                    <p class="algorithm-description">
+                        Visualize 6 sorting algorithms with real-time performance metrics and step-by-step execution.
+                    </p>
+                    <ul class="algorithm-features">
+                        <li>Bubble, Selection, Insertion, Merge, Quick, Heap Sort</li>
+                        <li>Real-time comparisons and swaps tracking</li>
+                        <li>Adjustable array size and animation speed</li>
+                        <li>Go and Java implementations</li>
+                        <li>Performance complexity analysis</li>
+                    </ul>
+                    <a href="algorithms/sorting.html" class="access-button">View Sorting →</a>
+                </div>
 
-                    <a href="algorithms/binary-search-tree.html" class="algorithm-card">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
-                            🌳
-                        </div>
-                        <h3 class="algorithm-title">Binary Search Tree</h3>
-                        <p class="algorithm-description">Interactive BST with insert, search, and traversal operations</p>
-                        <ul class="algorithm-features">
-                            <li>Insert, Delete, Search operations</li>
-                            <li>4 traversal types (inorder, preorder, postorder, level-order)</li>
-                            <li>Visual node highlighting and animations</li>
-                            <li>Performance metrics and statistics</li>
-                        </ul>
-                    </a>
+                <div class="algorithm-card" onclick="window.location.href='algorithms/binary-search-tree.html'">
+                    <h3 class="algorithm-title">Binary Search Tree</h3>
+                    <p class="algorithm-description">
+                        Interactive BST operations with visual traversal animations and code highlighting.
+                    </p>
+                    <ul class="algorithm-features">
+                        <li>Insert, delete, search operations</li>
+                        <li>In-order, pre-order, post-order traversals</li>
+                        <li>Step-by-step visual animations</li>
+                        <li>Go and Java implementations</li>
+                        <li>Code execution synchronization</li>
+                    </ul>
+                    <a href="algorithms/binary-search-tree.html" class="access-button">View BST →</a>
+                </div>
 
-                    <a href="algorithms/bfs-dfs-graph-traversal.html" class="algorithm-card">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                            🕸️
-                        </div>
-                        <h3 class="algorithm-title">BFS/DFS Graph Traversal</h3>
-                        <p class="algorithm-description">Interactive visualization of Breadth-First Search and Depth-First Search algorithms</p>
-                        <ul class="algorithm-features">
-                            <li>Switch between BFS and DFS algorithms</li>
-                            <li>Animated graph traversal with queue/stack visualization</li>
-                            <li>Customizable graph size and start node</li>
-                            <li>Step-by-step algorithm explanation</li>
-                        </ul>
-                    </a>
+                <div class="algorithm-card" onclick="window.location.href='algorithms/bfs-dfs-graph-traversal.html'">
+                    <h3 class="algorithm-title">BFS/DFS Graph Traversal</h3>
+                    <p class="algorithm-description">
+                        Breadth-first and depth-first search algorithms with interactive graph visualization.
+                    </p>
+                    <ul class="algorithm-features">
+                        <li>Interactive graph generation</li>
+                        <li>BFS and DFS traversal animations</li>
+                        <li>Path highlighting and step tracking</li>
+                        <li>Go and Java implementations</li>
+                        <li>Performance metrics</li>
+                    </ul>
+                    <a href="algorithms/bfs-dfs-graph-traversal.html" class="access-button">View Graph Traversal →</a>
+                </div>
 
-                    <a href="algorithms/dijkstra-algorithm.html" class="algorithm-card">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
-                            🎯
-                        </div>
-                        <h3 class="algorithm-title">Dijkstra's Algorithm</h3>
-                        <p class="algorithm-description">Interactive visualization of shortest path finding in weighted graphs</p>
-                        <ul class="algorithm-features">
-                            <li>Weighted graph with shortest path finding</li>
-                            <li>Distance updates and priority queue visualization</li>
-                            <li>Path reconstruction and highlighting</li>
-                            <li>Customizable start and end nodes</li>
-                        </ul>
-                    </a>
+                <div class="algorithm-card" onclick="window.location.href='algorithms/trie-operations.html'">
+                    <h3 class="algorithm-title">Trie Operations</h3>
+                    <p class="algorithm-description">
+                        Prefix tree data structure with insert, search, and delete operations visualization.
+                    </p>
+                    <ul class="algorithm-features">
+                        <li>Insert, search, delete operations</li>
+                        <li>Prefix matching and autocomplete</li>
+                        <li>Interactive tree visualization</li>
+                        <li>Go and Java implementations</li>
+                        <li>Memory usage tracking</li>
+                    </ul>
+                    <a href="algorithms/trie-operations.html" class="access-button">View Trie →</a>
+                </div>
 
-                    <a href="algorithms/dynamic-programming.html" class="algorithm-card">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
-                            📊
-                        </div>
-                        <h3 class="algorithm-title">Dynamic Programming</h3>
-                        <p class="algorithm-description">Interactive visualization of DP algorithms including Knapsack and LCS</p>
-                        <ul class="algorithm-features">
-                            <li>0/1 Knapsack problem with DP table</li>
-                            <li>Longest Common Subsequence (LCS)</li>
-                            <li>Step-by-step DP table filling</li>
-                            <li>Optimal solution path highlighting</li>
-                        </ul>
-                    </a>
+                <div class="algorithm-card" onclick="window.location.href='algorithms/dijkstra-algorithm.html'">
+                    <h3 class="algorithm-title">Dijkstra's Algorithm</h3>
+                    <p class="algorithm-description">
+                        Shortest path finding algorithm for weighted graphs with step-by-step visualization.
+                    </p>
+                    <ul class="algorithm-features">
+                        <li>Weighted graph visualization</li>
+                        <li>Shortest path calculation</li>
+                        <li>Distance updates animation</li>
+                        <li>Go and Java implementations</li>
+                        <li>Complexity analysis</li>
+                    </ul>
+                    <a href="algorithms/dijkstra-algorithm.html" class="access-button">View Dijkstra →</a>
+                </div>
+
+                <div class="algorithm-card" onclick="window.location.href='algorithms/dynamic-programming.html'">
+                    <h3 class="algorithm-title">Dynamic Programming</h3>
+                    <p class="algorithm-description">
+                        Knapsack and Longest Common Subsequence problems with memoization visualization.
+                    </p>
+                    <ul class="algorithm-features">
+                        <li>0/1 Knapsack problem</li>
+                        <li>Longest Common Subsequence</li>
+                        <li>Memoization table visualization</li>
+                        <li>Go and Java implementations</li>
+                        <li>Optimization strategies</li>
+                    </ul>
+                    <a href="algorithms/dynamic-programming.html" class="access-button">View DP →</a>
                 </div>
             </div>
 
-            <div class="phase-section">
-                <h2 class="phase-title">Phase 2 - Important</h2>
-                <p class="phase-description">Medium-priority algorithms with high interview frequency</p>
-                
-                <div class="algorithms-grid">
-                    <a href="algorithms/trie-operations.html" class="algorithm-card">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #a855f7);">
-                            📝
-                        </div>
-                        <h3 class="algorithm-title">Trie Operations</h3>
-                        <p class="algorithm-description">Interactive visualization of Trie (Prefix Tree) data structure operations</p>
-                        <ul class="algorithm-features">
-                            <li>Insert, Search, and Delete operations</li>
-                            <li>Real-time trie construction and visualization</li>
-                            <li>Prefix-based word storage and retrieval</li>
-                            <li>Common use cases and interview questions</li>
-                        </ul>
-                    </a>
-
-                    <div class="algorithm-card coming-soon">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
-                            📏
-                        </div>
-                        <h3>Segment Tree</h3>
-                        <p>Coming Soon - Range queries and tree construction</p>
-                    </div>
-
-                    <div class="algorithm-card coming-soon">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                            🔍
-                        </div>
-                        <h3>KMP String Matching</h3>
-                        <p>Coming Soon - Pattern matching with failure function</p>
-                    </div>
-
-                    <div class="algorithm-card coming-soon">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
-                            📋
-                        </div>
-                        <h3>Topological Sort</h3>
-                        <p>Coming Soon - DAG ordering and dependency resolution</p>
-                    </div>
-
-                    <div class="algorithm-card coming-soon">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
-                            🔗
-                        </div>
-                        <h3>Union-Find</h3>
-                        <p>Coming Soon - Disjoint sets with path compression</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="phase-section">
-                <h2 class="phase-title">Phase 3 - Advanced</h2>
-                <p class="phase-description">Comprehensive coverage of advanced algorithms</p>
-                
-                <div class="algorithms-grid">
-                    <div class="algorithm-card coming-soon">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #a855f7);">
-                            ⭐
-                        </div>
-                        <h3>A* Pathfinding</h3>
-                        <p>Coming Soon - Heuristic search with grid visualization</p>
-                    </div>
-
-                    <div class="algorithm-card coming-soon">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
-                            🔴
-                        </div>
-                        <h3>Red-Black Tree</h3>
-                        <p>Coming Soon - Self-balancing tree with color properties</p>
-                    </div>
-
-                    <div class="algorithm-card coming-soon">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                            🌊
-                        </div>
-                        <h3>Maximum Flow</h3>
-                        <p>Coming Soon - Network flow with capacity constraints</p>
-                    </div>
-
-                    <div class="algorithm-card coming-soon">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
-                            🔺
-                        </div>
-                        <h3>Convex Hull</h3>
-                        <p>Coming Soon - Computational geometry algorithms</p>
-                    </div>
-
-                    <div class="algorithm-card coming-soon">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
-                            📚
-                        </div>
-                        <h3>B-Tree Operations</h3>
-                        <p>Coming Soon - Multi-way trees for database indexing</p>
-                    </div>
-                </div>
+            <div class="coming-soon">
+                <h3>More Algorithms Coming Soon</h3>
+                <p>We're working on additional algorithm visualizations including:</p>
+                <ul style="list-style: none; margin-top: 15px;">
+                    <li>• AVL Tree Rotations</li>
+                    <li>• Segment Tree</li>
+                    <li>• KMP String Matching</li>
+                    <li>• Topological Sort</li>
+                    <li>• Union-Find (Disjoint Sets)</li>
+                </ul>
             </div>
         </div>
     </div>

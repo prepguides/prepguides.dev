@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Pre-commit hook to prevent direct commits to main branch
+# This script should be copied to .git/hooks/pre-commit
+
+echo "🔍 Running pre-commit checks..."
+
+# Get the current branch name
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+# Check if we're on main branch
+if [ "$current_branch" = "main" ]; then
+    echo "❌ ERROR: Direct commits to main branch are not allowed!"
+    echo ""
+    echo "🚫 This repository enforces a feature branch workflow."
+    echo "📋 Please follow these steps:"
+    echo "   1. Create a feature branch: git checkout -b feature/your-feature-name"
+    echo "   2. Make your changes and commit them"
+    echo "   3. Push the feature branch: git push origin feature/your-feature-name"
+    echo "   4. Create a Pull Request to merge into main"
+    echo ""
+    echo "🔒 Direct commits to main are blocked to maintain code quality and review process."
+    exit 1
+fi
+
+# Check if we're on a feature branch
+if [[ "$current_branch" =~ ^(feature|fix|docs|refactor|test|chore)/ ]]; then
+    echo "✅ Committing to feature branch: $current_branch"
+else
+    echo "⚠️  WARNING: You're committing to branch '$current_branch'"
+    echo "💡 Consider using a feature branch for new work:"
+    echo "   git checkout -b feature/your-feature-name"
+    echo ""
+    read -p "Continue with commit? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "❌ Commit cancelled"
+        exit 1
+    fi
+fi
+
+# Check for large files
+echo "🔍 Checking for large files..."
+large_files=$(find . -type f -size +10M -not -path "./.git/*" -not -path "./node_modules/*")
+if [ -n "$large_files" ]; then
+    echo "❌ Large files detected (>10MB):"
+    echo "$large_files"
+    echo "Please remove or add to .gitignore"
+    exit 1
+fi
+
+# Check for sensitive information
+echo "🔍 Checking for sensitive information..."
+if grep -r -i "api[_-]key\|password\|secret\|token" --include="*.html" --include="*.js" --include="*.css" . | grep -v ".git" | grep -v "node_modules" | grep -v ".github"; then
+    echo "⚠️  Potential sensitive information found. Please review before committing."
+    echo "Continue anyway? (y/N): "
+    read -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "❌ Commit cancelled"
+        exit 1
+    fi
+fi
+
+echo "✅ Pre-commit checks passed"
+exit 0
