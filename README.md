@@ -77,9 +77,9 @@ cd prepguides.dev
 ```
 
 ### Adding Your Own Content
-1. **Add visualizations** to the appropriate topic folder (e.g., `algorithms/`, `kubernetes/`)
+1. **Add HTML files** to the `public/diagrams/` directory
 2. **Create new pages** following the existing structure
-3. **Update navigation** in the relevant index page
+3. **Update navigation** in `index.html`
 4. **Deploy to Vercel** - automatic deployment on push
 
 ### Documentation and Testing
@@ -93,35 +93,16 @@ cd prepguides.dev
 ```
 ├── index.html              # Main navigation hub
 ├── algorithms.html         # Algorithm visualizations index
-├── kubernetes.html         # Kubernetes index page
-├── networking.html         # Networking index page
-├── databases.html          # Database index page (coming soon)
-├── microservices.html      # Microservices index page (coming soon)
-├── system-design.html      # System design index page (coming soon)
-├── algorithms/             # All algorithm content
-│   ├── index.html          # Algorithm index page
+├── kubernetes.html         # K8s request flow diagram
+├── networking.html         # OSI model diagram
+├── databases.html          # Database concepts (coming soon)
+├── microservices.html      # Service architecture (coming soon)
+├── system-design.html      # Scalability patterns (coming soon)
+├── algorithms/             # Interactive algorithm visualizations
 │   ├── sorting.html        # 6 sorting algorithms
 │   ├── binary-search-tree.html  # BST operations
 │   ├── bfs-dfs-graph-traversal.html  # Graph traversal
-│   ├── trie-operations.html     # Trie data structure
-│   ├── dijkstra-algorithm.html  # Shortest path algorithm
-│   ├── dynamic-programming.html # DP problems
-│   └── code/               # Code implementations
-│       ├── go/             # Go implementations
-│       ├── java/           # Java implementations
-│       ├── tests/          # Test suites
-│       └── [framework files]
-├── kubernetes/             # All Kubernetes content
-│   ├── request-flow.html   # Interactive K8s visualization
-│   ├── request-flow.svg    # Static diagram
-│   └── request-flow-description.md
-├── networking/             # All networking content
-│   ├── osi-model.html      # Interactive OSI visualization
-│   ├── osi-layers.svg      # Static diagram
-│   └── osi-layers-description.md
-├── databases/              # Database content (future)
-├── microservices/          # Microservices content (future)
-├── system-design/          # System design content (future)
+│   └── trie-operations.html     # Trie data structure
 ├── docs/                   # Project documentation
 │   ├── algorithm/          # Algorithm development docs
 │   ├── development/        # Development workflow docs
@@ -130,7 +111,11 @@ cd prepguides.dev
 ├── tests/                  # Testing files and resources
 │   ├── core/              # Core algorithm tests
 │   └── visualization/     # UI and visualization tests
-└── public/                 # Static assets (images, icons, etc.)
+└── public/diagrams/        # Static diagrams and resources
+    ├── algorithms/
+    ├── kubernetes/
+    ├── networking/
+    └── ...
 ```
 
 ## 🚀 Deployment
