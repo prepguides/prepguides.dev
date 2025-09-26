@@ -158,9 +158,34 @@ function updateIndexHtml(config) {
   const stats = generateStatistics(config);
   
   // Replace category cards section
-  const categoryCardsRegex = /<div class="categories">([\s\S]*?)<\/div>/;
-  const newCategoriesSection = `<div class="categories">\n${categoriesHtml}\n            </div>`;
-  indexContent = indexContent.replace(categoryCardsRegex, newCategoriesSection);
+  // Find the first occurrence of categories div and replace everything until the next major section
+  const categoriesStart = indexContent.indexOf('<div class="categories">');
+  
+  if (categoriesStart !== -1) {
+    // Find the end by looking for the next major section (like statistics or footer)
+    let endPatterns = [
+      '<div class="statistics">',
+      '<div class="quick-links">',
+      '<footer>',
+      '</body>',
+      '</html>'
+    ];
+    
+    let actualEnd = indexContent.length;
+    for (const pattern of endPatterns) {
+      const patternIndex = indexContent.indexOf(pattern, categoriesStart);
+      if (patternIndex !== -1 && patternIndex < actualEnd) {
+        actualEnd = patternIndex;
+      }
+    }
+    
+    // Replace everything from categories start to the end
+    const beforeCategories = indexContent.substring(0, categoriesStart);
+    const afterCategories = indexContent.substring(actualEnd);
+    const newCategoriesSection = `<div class="categories">\n${categoriesHtml}\n            </div>`;
+    
+    indexContent = beforeCategories + newCategoriesSection + afterCategories;
+  }
   
   // Update statistics
   const statsRegex = /<div class="stat-value">(\d+[+]?)<\/div>\s*<div class="stat-label">([^<]+)<\/div>/g;
