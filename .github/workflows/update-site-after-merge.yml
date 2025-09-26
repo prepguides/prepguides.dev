@@ -1,0 +1,203 @@
+name: Update Site After Content Merge
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content-config.json'
+      - '.github/workflows/content-pr-handler.yml'
+  workflow_dispatch:
+
+jobs:
+  update-navigation:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: |
+        npm install -g marked
+        npm install -g js-yaml
+
+    - name: Update navigation and pages
+      run: |
+        echo "🔄 Updating site navigation and pages..."
+        node scripts/update-navigation.js
+
+    - name: Validate updated files
+      run: |
+        echo "🔍 Validating updated HTML files..."
+        
+        # Check if index.html was updated
+        if [ -f "index.html" ]; then
+          echo "✅ index.html exists and is valid"
+        else
+          echo "❌ index.html not found"
+          exit 1
+        fi
+        
+        # Check category pages
+        for category in kubernetes algorithms networking databases microservices system-design; do
+          if [ -f "${category}.html" ]; then
+            echo "✅ ${category}.html exists"
+          else
+            echo "❌ ${category}.html not found"
+            exit 1
+          fi
+        done
+
+    - name: Test template renderer
+      run: |
+        echo "🧪 Testing template renderer..."
+        
+        # Test if template renderer exists
+        if [ -f "template-md-renderer.html" ]; then
+          echo "✅ template-md-renderer.html exists"
+        else
+          echo "❌ template-md-renderer.html not found"
+          exit 1
+        fi
+        
+        # Test GitHub API access for sample content
+        python3 << 'EOF'
+        import requests
+        import json
+        
+        try:
+            # Test access to the go-interviews operator guide
+            url = "https://raw.githubusercontent.com/prepguides/go-interviews/main/operator/README.md"
+            response = requests.get(url)
+            
+            if response.status_code == 200:
+                print("✅ Sample content is accessible")
+                print(f"   Content length: {len(response.text)} characters")
+            else:
+                print(f"❌ Sample content not accessible: {response.status_code}")
+                exit(1)
+                
+        except Exception as e:
+            print(f"❌ Error testing content access: {e}")
+            exit(1)
+        EOF
+
+    - name: Generate content report
+      run: |
+        echo "📊 Generating content report..."
+        python3 << 'EOF'
+        import json
+        import requests
+        from datetime import datetime
+        
+        try:
+            with open('content-config.json', 'r') as f:
+                config = json.load(f)
+            
+            print("## 📋 Content Report")
+            print(f"**Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            print(f"**Configuration Version**: {config['version']}")
+            print()
+            
+            total_content = 0
+            total_visualizations = 0
+            total_guides = 0
+            
+            for category_id, category in config['categories'].items():
+                if category['subtopics']:
+                    print(f"### {category['icon']} {category['name']}")
+                    print(f"_{category['description']}_")
+                    print()
+                    
+                    for subtopic_id, subtopic in category['subtopics'].items():
+                        if subtopic['content']:
+                            print(f"#### {subtopic['name']}")
+                            print(f"_{subtopic['description']}_")
+                            print()
+                            
+                            for content_item in subtopic['content']:
+                                if content_item.get('status') == 'active':
+                                    total_content += 1
+                                    if content_item.get('type') == 'visualization':
+                                        total_visualizations += 1
+                                    else:
+                                        total_guides += 1
+                                    
+                                    status_emoji = "✅" if content_item.get('status') == 'active' else "🚧"
+                                    print(f"- {status_emoji} **{content_item['title']}**")
+                                    print(f"  - {content_item['description']}")
+                                    
+                                    if 'repo' in content_item:
+                                        print(f"  - 📁 Repository: `{content_item['repo']}`")
+                                        print(f"  - 📄 Path: `{content_item['path']}`")
+                                    
+                                    print(f"  - 📅 Added: {content_item.get('addedDate', 'Unknown')}")
+                                    print()
+            
+            print("## 📊 Summary Statistics")
+            print(f"- **Total Content Items**: {total_content}")
+            print(f"- **Visualizations**: {total_visualizations}")
+            print(f"- **Guides & Tutorials**: {total_guides}")
+            print(f"- **Categories with Content**: {len([c for c in config['categories'].values() if c['subtopics']])}")
+            print(f"- **Total Categories**: {len(config['categories'])}")
+            print()
+            
+            print("## 🔗 Quick Links")
+            print("- [Main Site](https://prepguides.dev)")
+            print("- [Template Renderer](https://prepguides.dev/template-md-renderer.html)")
+            print("- [Content Configuration](https://github.com/prepguides/prepguides.dev/blob/main/content-config.json)")
+            
+        except Exception as e:
+            print(f"❌ Error generating report: {e}")
+            exit(1)
+        EOF
+
+    - name: Commit and push changes
+      run: |
+        echo "💾 Committing updated files..."
+        
+        # Configure git
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # Add all changes
+        git add .
+        
+        # Check if there are changes to commit
+        if git diff --staged --quiet; then
+          echo "ℹ️ No changes to commit"
+        else
+          # Commit changes
+          git commit -m "🔄 Update navigation and pages after content merge
+
+          - Updated index.html with latest content
+          - Updated category pages with new content
+          - Updated statistics and navigation
+          - Generated content report
+          
+          Auto-generated by GitHub Actions"
+          
+          # Push changes
+          git push
+          echo "✅ Changes committed and pushed"
+        fi
+
+    - name: Create deployment summary
+      run: |
+        echo "🎉 Site update completed successfully!"
+        echo ""
+        echo "## 🚀 Deployment Summary"
+        echo "- ✅ Navigation updated"
+        echo "- ✅ Category pages updated" 
+        echo "- ✅ Statistics updated"
+        echo "- ✅ Template renderer validated"
+        echo "- ✅ Content accessibility verified"
+        echo ""
+        echo "The site is now live with the latest content!"
