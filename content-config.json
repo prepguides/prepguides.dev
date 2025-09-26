@@ -82,6 +82,66 @@
               "status": "active"
             }
           ]
+        },
+        "graph-traversal": {
+          "name": "Graph Traversal",
+          "description": "BFS, DFS, and graph algorithms",
+          "content": [
+            {
+              "id": "bfs-dfs-graph-traversal",
+              "title": "BFS/DFS Graph Traversal",
+              "description": "Breadth-first and depth-first search algorithms with interactive graph visualization",
+              "type": "visualization",
+              "path": "algorithms/bfs-dfs-graph-traversal.html",
+              "addedDate": "2025-01-15",
+              "status": "active"
+            }
+          ]
+        },
+        "trie-operations": {
+          "name": "Trie Operations",
+          "description": "Prefix tree data structure operations",
+          "content": [
+            {
+              "id": "trie-operations",
+              "title": "Trie Operations",
+              "description": "Prefix tree data structure with insert, search, and delete operations visualization",
+              "type": "visualization",
+              "path": "algorithms/trie-operations.html",
+              "addedDate": "2025-01-15",
+              "status": "active"
+            }
+          ]
+        },
+        "shortest-path": {
+          "name": "Shortest Path",
+          "description": "Dijkstra's algorithm and path finding",
+          "content": [
+            {
+              "id": "dijkstra-algorithm",
+              "title": "Dijkstra's Algorithm",
+              "description": "Shortest path finding algorithm for weighted graphs with step-by-step visualization",
+              "type": "visualization",
+              "path": "algorithms/dijkstra-algorithm.html",
+              "addedDate": "2025-01-15",
+              "status": "active"
+            }
+          ]
+        },
+        "dynamic-programming": {
+          "name": "Dynamic Programming",
+          "description": "DP problems and memoization techniques",
+          "content": [
+            {
+              "id": "dynamic-programming",
+              "title": "Dynamic Programming",
+              "description": "Knapsack and Longest Common Subsequence problems with memoization visualization",
+              "type": "visualization",
+              "path": "algorithms/dynamic-programming.html",
+              "addedDate": "2025-01-15",
+              "status": "active"
+            }
+          ]
         }
       }
     },
@@ -143,8 +203,8 @@
     }
   },
   "statistics": {
-    "totalContent": 5,
-    "totalVisualizations": 4,
+    "totalContent": 9,
+    "totalVisualizations": 8,
     "totalGuides": 1,
     "categoriesWithContent": 3,
     "lastContentAdded": "2025-01-27"
