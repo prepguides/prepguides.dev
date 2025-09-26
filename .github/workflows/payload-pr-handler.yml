@@ -1,0 +1,297 @@
+name: Payload-Based Content PR Handler
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+    paths:
+      - '.github/content-payloads/**'
+      - 'base.json'
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  validate-payload-pr:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: |
+        npm install -g marked js-yaml
+
+    - name: Validate payload files
+      run: |
+        echo "🔍 Validating payload files..."
+        python3 << 'EOF'
+        import json
+        import os
+        import sys
+        
+        payloads_dir = '.github/content-payloads'
+        
+        if not os.path.exists(payloads_dir):
+            print("❌ No payloads directory found")
+            sys.exit(1)
+        
+        payload_files = [f for f in os.listdir(payloads_dir) if f.endswith('.json')]
+        
+        if not payload_files:
+            print("❌ No payload files found")
+            sys.exit(1)
+        
+        print(f"📋 Found {len(payload_files)} payload file(s)")
+        
+        for payload_file in payload_files:
+            try:
+                with open(os.path.join(payloads_dir, payload_file), 'r') as f:
+                    payload = json.load(f)
+                
+                # Validate required fields
+                required_fields = ['version', 'type', 'metadata', 'content']
+                for field in required_fields:
+                    if field not in payload:
+                        print(f"❌ Missing required field '{field}' in {payload_file}")
+                        sys.exit(1)
+                
+                # Validate metadata
+                required_metadata = ['title', 'category', 'subtopic']
+                for field in required_metadata:
+                    if field not in payload['metadata']:
+                        print(f"❌ Missing required metadata field '{field}' in {payload_file}")
+                        sys.exit(1)
+                
+                # Validate content
+                required_content = ['id', 'title', 'description']
+                for field in required_content:
+                    if field not in payload['content']:
+                        print(f"❌ Missing required content field '{field}' in {payload_file}")
+                        sys.exit(1)
+                
+                print(f"✅ Validated payload: {payload_file}")
+                
+            except Exception as e:
+                print(f"❌ Error validating {payload_file}: {e}")
+                sys.exit(1)
+        
+        print("✅ All payload files are valid")
+        EOF
+
+    - name: Validate base configuration
+      run: |
+        echo "🔍 Validating base configuration..."
+        if [ -f "base.json" ]; then
+          python3 -m json.tool base.json > /dev/null
+          echo "✅ Base configuration is valid"
+        else
+          echo "❌ Base configuration not found"
+          exit 1
+        fi
+
+    - name: Test content merge engine
+      run: |
+        echo "🔄 Testing content merge engine..."
+        node scripts/merge-content.js
+        
+        if [ -f "content-config.json" ]; then
+          echo "✅ Content merge engine generated configuration successfully"
+        else
+          echo "❌ Content merge engine failed to generate configuration"
+          exit 1
+        fi
+
+    - name: Validate GitHub repository access
+      run: |
+        echo "🔍 Validating GitHub repository access..."
+        python3 << 'EOF'
+        import json
+        import requests
+        import sys
+        import os
+        
+        payloads_dir = '.github/content-payloads'
+        
+        for payload_file in os.listdir(payloads_dir):
+            if payload_file.endswith('.json'):
+                with open(os.path.join(payloads_dir, payload_file), 'r') as f:
+                    payload = json.load(f)
+                
+                if 'repo' in payload['content'] and 'path' in payload['content']:
+                    repo = payload['content']['repo']
+                    path = payload['content']['path']
+                    
+                    # Test GitHub API access
+                    url = f"https://api.github.com/repos/{repo}"
+                    response = requests.get(url)
+                    
+                    if response.status_code == 200:
+                        print(f"✅ Repository accessible: {repo}")
+                    else:
+                        print(f"❌ Repository not accessible: {repo} (Status: {response.status_code})")
+                        sys.exit(1)
+                    
+                    # Test file access
+                    raw_url = f"https://raw.githubusercontent.com/{repo}/main/{path}"
+                    file_response = requests.head(raw_url)
+                    if file_response.status_code == 200:
+                        print(f"✅ File accessible: {repo}/{path}")
+                    else:
+                        print(f"❌ File not accessible: {repo}/{path} (Status: {file_response.status_code})")
+                        sys.exit(1)
+        EOF
+
+    - name: Generate site preview
+      run: |
+        echo "🏗️ Generating site preview with merged content..."
+        node scripts/update-navigation.js
+        echo "✅ Site preview generated successfully"
+
+    - name: Upload preview artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: site-preview
+        path: |
+          index.html
+          kubernetes.html
+          algorithms.html
+          networking.html
+          databases.html
+          microservices.html
+          system-design.html
+          content-config.json
+        retention-days: 7
+
+    - name: Comment on PR
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          try {
+            // Read the generated content config
+            const config = JSON.parse(fs.readFileSync('content-config.json', 'utf8'));
+            
+            // Count payloads
+            const payloadsDir = '.github/content-payloads';
+            let payloadCount = 0;
+            if (fs.existsSync(payloadsDir)) {
+              const files = fs.readdirSync(payloadsDir);
+              payloadCount = files.filter(f => f.endsWith('.json')).length;
+            }
+            
+            // Generate statistics
+            let totalContent = 0;
+            let totalVisualizations = 0;
+            let totalGuides = 0;
+            let categoriesWithContent = 0;
+            
+            for (const category of Object.values(config.categories)) {
+              if (Object.keys(category.subtopics).length > 0) {
+                categoriesWithContent++;
+                for (const subtopic of Object.values(category.subtopics)) {
+                  for (const contentItem of subtopic.content) {
+                    if (contentItem.status === 'active') {
+                      totalContent++;
+                      if (contentItem.type === 'visualization') {
+                        totalVisualizations++;
+                      } else {
+                        totalGuides++;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            
+            const comment = `## 🎉 Payload-Based Content Validation Successful!
+            
+            Your content payload(s) have been validated and merged successfully!
+            
+            ### 📊 Impact Summary
+            - **Payload files processed**: ${payloadCount}
+            - **Total content items**: ${totalContent}
+            - **Visualizations**: ${totalVisualizations}
+            - **Guides**: ${totalGuides}
+            - **Active categories**: ${categoriesWithContent}
+            - **Configuration version**: ${config.version}
+            
+            ### ✅ Validation Results
+            - Payload file structure is valid
+            - Base configuration is valid
+            - Content merge engine executed successfully
+            - GitHub repository access confirmed
+            - File paths are accessible
+            - Site preview generated successfully
+            
+            ### 🏗️ Site Preview Generated
+            The workflow has generated a complete site preview with your changes:
+            - Updated navigation structure
+            - Modified category pages
+            - Updated statistics
+            - Preview artifacts uploaded for review
+            
+            ### 🚀 Next Steps
+            Once this PR is merged, the content will be automatically:
+            1. Merged into the base configuration
+            2. Integrated into the site navigation
+            3. Made accessible through the template renderer
+            4. Included in site statistics
+            5. Deployed live immediately
+            
+            **Review the generated preview artifacts to see exactly how the site will look!** 🎯`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+            
+          } catch (error) {
+            console.error('Error creating comment:', error);
+          }
+
+  auto-merge-ready:
+    runs-on: ubuntu-latest
+    needs: validate-payload-pr
+    if: github.event.pull_request.draft == false && github.event.review.state == 'approved'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Auto-merge PR
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { owner, repo, number } = context.issue;
+          
+          // Check if PR is ready for merge
+          const pr = await github.rest.pulls.get({
+            owner,
+            repo,
+            pull_number: number
+          });
+          
+          if (pr.data.mergeable && pr.data.mergeable_state === 'clean') {
+            await github.rest.pulls.merge({
+              owner,
+              repo,
+              pull_number: number,
+              merge_method: 'squash'
+            });
+            
+            console.log('✅ PR merged successfully!');
+          } else {
+            console.log('❌ PR is not ready for merge');
+          }
