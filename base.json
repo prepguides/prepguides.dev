@@ -1,0 +1,136 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-01-27",
+  "categories": {
+    "kubernetes": {
+      "name": "Kubernetes",
+      "icon": "☸️",
+      "description": "Container orchestration and microservices architecture",
+      "color": {
+        "primary": "#3b82f6",
+        "secondary": "#1d4ed8"
+      },
+      "subtopics": {
+        "request-flow": {
+          "name": "Request Flow",
+          "description": "Understanding how requests flow through Kubernetes",
+          "content": [
+            {
+              "id": "k8s-request-flow",
+              "title": "Kubernetes Request Flow",
+              "description": "Interactive visualization of request flow through K8s components",
+              "type": "visualization",
+              "path": "kubernetes/request-flow.html",
+              "addedDate": "2025-01-20",
+              "status": "active"
+            }
+          ]
+        }
+      }
+    },
+    "algorithms": {
+      "name": "Algorithms",
+      "icon": "🔢",
+      "description": "Interactive algorithm visualizations for technical interview preparation",
+      "color": {
+        "primary": "#8b5cf6",
+        "secondary": "#a855f7"
+      },
+      "subtopics": {
+        "sorting": {
+          "name": "Sorting Algorithms",
+          "description": "Visualizations of various sorting algorithms",
+          "content": [
+            {
+              "id": "sorting-algorithms",
+              "title": "Sorting Algorithms",
+              "description": "Interactive visualizations of sorting algorithms",
+              "type": "visualization",
+              "path": "algorithms/sorting.html",
+              "addedDate": "2025-01-15",
+              "status": "active"
+            }
+          ]
+        },
+        "trees": {
+          "name": "Tree Structures",
+          "description": "Binary trees, BSTs, and tree traversal algorithms",
+          "content": [
+            {
+              "id": "binary-search-tree",
+              "title": "Binary Search Tree",
+              "description": "Interactive BST operations and visualizations",
+              "type": "visualization",
+              "path": "algorithms/binary-search-tree.html",
+              "addedDate": "2025-01-15",
+              "status": "active"
+            }
+          ]
+        }
+      }
+    },
+    "networking": {
+      "name": "Networking",
+      "icon": "🌐",
+      "description": "OSI model, TCP/IP, and network protocols visualization",
+      "color": {
+        "primary": "#10b981",
+        "secondary": "#059669"
+      },
+      "subtopics": {
+        "osi-model": {
+          "name": "OSI Model",
+          "description": "Understanding the 7-layer OSI model",
+          "content": [
+            {
+              "id": "osi-7-layer",
+              "title": "OSI 7-Layer Model",
+              "description": "Interactive visualization of the OSI model layers",
+              "type": "visualization",
+              "path": "networking/osi-model.html",
+              "addedDate": "2025-01-18",
+              "status": "active"
+            }
+          ]
+        }
+      }
+    },
+    "databases": {
+      "name": "Databases",
+      "icon": "🗄️",
+      "description": "Database design, replication, and scaling patterns",
+      "color": {
+        "primary": "#f59e0b",
+        "secondary": "#d97706"
+      },
+      "subtopics": {}
+    },
+    "microservices": {
+      "name": "Microservices",
+      "icon": "🏗️",
+      "description": "Service mesh, API gateways, and distributed systems",
+      "color": {
+        "primary": "#ef4444",
+        "secondary": "#dc2626"
+      },
+      "subtopics": {}
+    },
+    "system-design": {
+      "name": "System Design",
+      "icon": "🏛️",
+      "description": "Scalability patterns, caching strategies, and architecture",
+      "color": {
+        "primary": "#6366f1",
+        "secondary": "#4f46e5"
+      },
+      "subtopics": {}
+    }
+  },
+  "statistics": {
+    "totalContent": 4,
+    "totalVisualizations": 4,
+    "totalGuides": 0,
+    "categoriesWithContent": 3,
+    "lastContentAdded": "2025-01-20"
+  }
+}
