@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kubernetes - PrepGuides.dev</title>
-    <meta name="description" content="Kubernetes container orchestration and microservices architecture diagrams and visualizations">
+    <meta name="description" content="Container orchestration and microservices architecture">
     <style>
         * {
             margin: 0;
@@ -82,50 +82,59 @@
             padding: 40px;
         }
 
-        .visualization-card {
+        .algorithms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .algorithm-card {
             background: white;
             border-radius: 16px;
             padding: 30px;
-            margin-bottom: 30px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             border: 1px solid #e5e7eb;
             transition: all 0.3s ease;
             cursor: pointer;
         }
 
-        .visualization-card:hover {
+        .algorithm-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
         }
 
-        .visualization-title {
+        .algorithm-title {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--dark);
             margin-bottom: 10px;
         }
 
-        .visualization-description {
+        .algorithm-description {
             color: #6b7280;
             margin-bottom: 20px;
             line-height: 1.6;
         }
 
-        .visualization-features {
+        .algorithm-features {
             list-style: none;
             margin-bottom: 20px;
         }
 
-        .visualization-features li {
+        .algorithm-features li {
             padding: 5px 0;
-            color: #6b7280;
+            color: #4b5563;
+            position: relative;
+            padding-left: 20px;
         }
 
-        .visualization-features li::before {
-            content: "✓";
-            color: var(--success);
+        .algorithm-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
             font-weight: bold;
-            margin-right: 10px;
         }
 
         .access-button {
@@ -169,6 +178,10 @@
             .content {
                 padding: 20px;
             }
+            
+            .algorithms-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -181,32 +194,29 @@
         </header>
 
         <div class="content">
-            <div class="visualization-card" onclick="window.location.href='kubernetes/request-flow.html'">
-                <h3 class="visualization-title">Kubernetes Request Flow</h3>
-                <p class="visualization-description">
-                    Interactive visualization showing how requests flow through Kubernetes cluster components, 
-                    from external clients to pods and back.
-                </p>
-                <ul class="visualization-features">
-                    <li>Complete request flow visualization</li>
-                    <li>Component explanations and interactions</li>
-                    <li>Step-by-step request processing</li>
-                    <li>Interview questions and scenarios</li>
-                    <li>Troubleshooting guide</li>
-                </ul>
-                <a href="kubernetes/request-flow.html" class="access-button">View Request Flow →</a>
+            <div class="algorithms-grid">
+            <div class="algorithm-card" onclick="window.location.href='kubernetes/request-flow.html'">
+              <h3 class="algorithm-title">Kubernetes Request Flow</h3>
+              <p class="algorithm-description">Interactive visualization of request flow through K8s components</p>
+              <ul class="algorithm-features">
+                <li>Comprehensive visualization</li>
+                <li>Interactive learning experience</li>
+                <li>Interview preparation focused</li>
+                <li>Best practices and examples</li>
+              </ul>
+              <a href="kubernetes/request-flow.html" class="access-button">View Visualization →</a>
             </div>
-
-            <div class="coming-soon">
-                <h3>More Kubernetes Visualizations Coming Soon</h3>
-                <p>We're working on additional Kubernetes diagrams including:</p>
-                <ul style="list-style: none; margin-top: 15px;">
-                    <li>• Pod Lifecycle Management</li>
-                    <li>• Service Mesh Architecture</li>
-                    <li>• Cluster Scaling Patterns</li>
-                    <li>• Security and RBAC</li>
-                </ul>
-            </div>
+            <div class="algorithm-card" onclick="window.location.href='template-md-renderer.html?repo=prepguides%2Fgo-interviews&path=operator%2FREADME.md&category=kubernetes&subtopic=operator-guide&title=Kubernetes+Operator+Guide'">
+              <h3 class="algorithm-title">Kubernetes Operator Guide</h3>
+              <p class="algorithm-description">Comprehensive guide to building and managing Kubernetes operators with practical examples and best practices</p>
+              <ul class="algorithm-features">
+                <li>Comprehensive guide</li>
+                <li>Interactive learning experience</li>
+                <li>Interview preparation focused</li>
+                <li>Best practices and examples</li>
+              </ul>
+              <a href="template-md-renderer.html?repo=prepguides%2Fgo-interviews&path=operator%2FREADME.md&category=kubernetes&subtopic=operator-guide&title=Kubernetes+Operator+Guide" class="access-button">View Guide →</a>
+            </div></div>
         </div>
     </div>
 </body>

@@ -25,6 +25,22 @@
               "status": "active"
             }
           ]
+        },
+        "operator-guide": {
+          "name": "Operator Guide",
+          "description": "Comprehensive guide to building and managing Kubernetes operators with practical examples and best practices",
+          "content": [
+            {
+              "id": "kubernetes-operator-guide",
+              "title": "Kubernetes Operator Guide",
+              "description": "Comprehensive guide to building and managing Kubernetes operators with practical examples and best practices",
+              "repo": "prepguides/go-interviews",
+              "path": "operator/README.md",
+              "type": "guide",
+              "status": "active",
+              "addedDate": "2025-01-27"
+            }
+          ]
         }
       }
     },
@@ -187,10 +203,10 @@
     }
   },
   "statistics": {
-    "totalContent": 4,
-    "totalVisualizations": 4,
-    "totalGuides": 0,
+    "totalContent": 9,
+    "totalVisualizations": 8,
+    "totalGuides": 1,
     "categoriesWithContent": 3,
-    "lastContentAdded": "2025-01-20"
+    "lastContentAdded": "2025-01-27"
   }
 }

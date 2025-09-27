@@ -10,9 +10,9 @@
     "subtopic": "operator-guide"
   },
   "content": {
-    "id": "go-interviews-operator",
+    "id": "kubernetes-operator-guide",
     "title": "Kubernetes Operator Guide",
-    "description": "Comprehensive guide to building and managing Kubernetes operators",
+    "description": "Comprehensive guide to building and managing Kubernetes operators with practical examples and best practices",
     "repo": "prepguides/go-interviews",
     "path": "operator/README.md",
     "type": "guide",
