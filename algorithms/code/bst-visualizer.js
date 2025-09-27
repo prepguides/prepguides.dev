@@ -32,6 +32,20 @@ class BSTVisualizer {
         
         // Group for zoom/pan
         this.g = this.svg.append('g');
+        
+        // Add arrowhead marker definition
+        const defs = this.svg.append('defs');
+        defs.append('marker')
+            .attr('id', 'arrowhead')
+            .attr('viewBox', '0 0 10 10')
+            .attr('refX', 9)
+            .attr('refY', 3)
+            .attr('markerWidth', 6)
+            .attr('markerHeight', 6)
+            .attr('orient', 'auto')
+            .append('path')
+            .attr('d', 'M0,0 L0,6 L9,3 z')
+            .style('fill', '#ef4444');
 
         // D3 Tree layout
         this.treeLayout = d3.tree()
@@ -192,42 +206,42 @@ class BSTVisualizer {
         if (value < node.value) {
             this.showComparison(node.value, value, 'left');
             this.highlightNode(node.id, 'examining-left');
-            await this.delay(800);
+            await this.delay(1000);
             if (node.left) {
                 this.highlightNode(node.id, 'path-left');
                 this.showDirectionArrow(node.id, 'left');
-                await this.delay(600);
+                await this.delay(800);
                 await this.insertNode(node.left, value);
             } else {
                 node.left = new BSTNode(value);
                 this.highlightNode(node.id, 'path-left');
                 this.showDirectionArrow(node.id, 'left');
-                await this.delay(600);
+                await this.delay(800);
                 this.renderTree();
                 this.highlightNode(node.left.id, 'inserting-left');
                 this.showMessage(`Inserted ${value} as LEFT child of ${node.value}`, 'success');
-                await this.delay(1200);
+                await this.delay(1500);
                 this.clearHighlights();
                 this.clearDirectionArrows();
             }
         } else if (value > node.value) {
             this.showComparison(node.value, value, 'right');
             this.highlightNode(node.id, 'examining-right');
-            await this.delay(800);
+            await this.delay(1000);
             if (node.right) {
                 this.highlightNode(node.id, 'path-right');
                 this.showDirectionArrow(node.id, 'right');
-                await this.delay(600);
+                await this.delay(800);
                 await this.insertNode(node.right, value);
             } else {
                 node.right = new BSTNode(value);
                 this.highlightNode(node.id, 'path-right');
                 this.showDirectionArrow(node.id, 'right');
-                await this.delay(600);
+                await this.delay(800);
                 this.renderTree();
                 this.highlightNode(node.right.id, 'inserting-right');
                 this.showMessage(`Inserted ${value} as RIGHT child of ${node.value}`, 'success');
-                await this.delay(1200);
+                await this.delay(1500);
                 this.clearHighlights();
                 this.clearDirectionArrows();
             }
@@ -356,8 +370,9 @@ class BSTVisualizer {
         await this.inorderTraversal(node.left);
         this.highlightNode(node.id, 'examining');
         this.traversalSequence.push(node.value);
-        await this.delay(800);
+        await this.delay(1200); // Longer delay to see the highlight
         this.clearHighlights();
+        await this.delay(200); // Small pause before next node
         await this.inorderTraversal(node.right);
     }
 
@@ -366,8 +381,9 @@ class BSTVisualizer {
         
         this.highlightNode(node.id, 'examining');
         this.traversalSequence.push(node.value);
-        await this.delay(800);
+        await this.delay(1200); // Longer delay to see the highlight
         this.clearHighlights();
+        await this.delay(200); // Small pause before next node
         await this.preorderTraversal(node.left);
         await this.preorderTraversal(node.right);
     }
@@ -379,8 +395,9 @@ class BSTVisualizer {
         await this.postorderTraversal(node.right);
         this.highlightNode(node.id, 'examining');
         this.traversalSequence.push(node.value);
-        await this.delay(800);
+        await this.delay(1200); // Longer delay to see the highlight
         this.clearHighlights();
+        await this.delay(200); // Small pause before next node
     }
 
     async levelOrderTraversal() {
@@ -392,8 +409,9 @@ class BSTVisualizer {
             const node = queue.shift();
             this.highlightNode(node.id, 'examining');
             this.traversalSequence.push(node.value);
-            await this.delay(800);
+            await this.delay(1200); // Longer delay to see the highlight
             this.clearHighlights();
+            await this.delay(200); // Small pause before next node
             
             if (node.left) queue.push(node.left);
             if (node.right) queue.push(node.right);
