@@ -144,13 +144,13 @@ We welcome contributions! Here's how you can help:
 
 ## 📈 Roadmap
 
-### Phase 1 - Essential (In Progress - 5/6 Complete)
+### Phase 1 - Essential (Complete - 6/6 ✅)
 - ✅ **Sorting Algorithms** - 6 sorting algorithms with performance metrics
 - ✅ **Binary Search Tree** - Complete BST operations and traversals
 - ✅ **BFS/DFS Graph Traversal** - Graph traversal algorithms
 - ✅ **Trie Operations** - Prefix tree with D3.js visualization
 - ✅ **Binary Heap Operations** - Min/Max heap with insert, extract, and heapify
-- 🔄 **Dijkstra's Algorithm** - Shortest path finding (coming next)
+- ✅ **Dijkstra's Algorithm** - Shortest path finding in weighted graphs
 
 ### Phase 2 - Important (Planned)
 - **Segment Tree** - Range queries and tree construction
