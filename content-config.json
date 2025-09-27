@@ -60,11 +60,18 @@
             {
               "id": "sorting-algorithms",
               "title": "Sorting Algorithms",
-              "description": "Interactive visualizations of sorting algorithms",
+              "description": "Master 6 essential sorting algorithms with step-by-step visualizations and performance comparisons",
               "type": "visualization",
               "path": "algorithms/sorting.html",
               "addedDate": "2025-01-15",
-              "status": "active"
+              "status": "active",
+              "features": [
+                "Bubble, Selection, Insertion, Merge, Quick, Heap Sort",
+                "Real-time performance metrics and comparisons",
+                "Interactive array manipulation and sorting",
+                "Time complexity analysis (O(n²) to O(n log n))"
+              ],
+              "jsFile": "algorithms/code/sorting-visualizer.js"
             }
           ]
         },
@@ -75,11 +82,18 @@
             {
               "id": "binary-search-tree",
               "title": "Binary Search Tree",
-              "description": "Interactive BST operations and visualizations",
+              "description": "Complete BST operations with explicit left/right positioning and traversal animations",
               "type": "visualization",
               "path": "algorithms/binary-search-tree.html",
               "addedDate": "2025-01-15",
-              "status": "active"
+              "status": "active",
+              "features": [
+                "Insert, Delete, Search with color-coded animations",
+                "Inorder, Preorder, Postorder, Level-order traversals",
+                "Explicit left/right child positioning",
+                "Random tree generation with BST validation"
+              ],
+              "jsFile": "algorithms/code/bst-visualizer.js"
             }
           ]
         },
@@ -90,11 +104,18 @@
             {
               "id": "bfs-dfs-graph-traversal",
               "title": "BFS/DFS Graph Traversal",
-              "description": "Breadth-first and depth-first search algorithms with interactive graph visualization",
+              "description": "Master graph traversal algorithms with interactive node-by-node exploration",
               "type": "visualization",
               "path": "algorithms/bfs-dfs-graph-traversal.html",
               "addedDate": "2025-01-15",
-              "status": "active"
+              "status": "active",
+              "features": [
+                "Breadth-First Search (BFS) with queue visualization",
+                "Depth-First Search (DFS) with stack visualization",
+                "Interactive graph creation and manipulation",
+                "Path finding and shortest path algorithms"
+              ],
+              "jsFile": "algorithms/code/graph-traversal-visualizer.js"
             }
           ]
         },
@@ -105,11 +126,18 @@
             {
               "id": "trie-operations",
               "title": "Trie Operations",
-              "description": "Prefix tree data structure with insert, search, and delete operations visualization",
+              "description": "Master the prefix tree data structure with dynamic string operations and autocomplete simulation",
               "type": "visualization",
               "path": "algorithms/trie-operations.html",
               "addedDate": "2025-01-15",
-              "status": "active"
+              "status": "active",
+              "features": [
+                "Insert, Search, Delete with character-by-character animation",
+                "Prefix matching and autocomplete functionality",
+                "Dynamic trie construction and visualization",
+                "String manipulation and word suggestions"
+              ],
+              "jsFile": "algorithms/code/trie-visualizer.js"
             }
           ]
         },
@@ -120,11 +148,18 @@
             {
               "id": "dijkstra-algorithm",
               "title": "Dijkstra's Algorithm",
-              "description": "Shortest path finding algorithm for weighted graphs with step-by-step visualization",
+              "description": "Find shortest paths in weighted graphs with priority queue visualization and distance tracking",
               "type": "visualization",
               "path": "algorithms/dijkstra-algorithm.html",
               "addedDate": "2025-01-15",
-              "status": "active"
+              "status": "active",
+              "features": [
+                "Step-by-step shortest path calculation",
+                "Priority queue and distance array visualization",
+                "Interactive weighted graph creation",
+                "Path reconstruction and cost analysis"
+              ],
+              "jsFile": "algorithms/code/dijkstra-visualizer.js"
             }
           ]
         },
@@ -135,11 +170,18 @@
             {
               "id": "dynamic-programming",
               "title": "Dynamic Programming",
-              "description": "Knapsack and Longest Common Subsequence problems with memoization visualization",
+              "description": "Solve classic DP problems with memoization tables and optimal substructure visualization",
               "type": "visualization",
               "path": "algorithms/dynamic-programming.html",
               "addedDate": "2025-01-15",
-              "status": "active"
+              "status": "active",
+              "features": [
+                "0/1 Knapsack with weight-value optimization",
+                "Longest Common Subsequence (LCS) with table filling",
+                "Memoization vs Tabulation comparison",
+                "Optimal substructure and overlapping subproblems"
+              ],
+              "jsFile": "algorithms/code/dp-visualizer.js"
             }
           ]
         },
@@ -150,11 +192,18 @@
             {
               "id": "binary-heap-operations",
               "title": "Binary Heap Operations",
-              "description": "Min/Max heap data structure with insert, extract, and heapify operations visualization",
+              "description": "Master priority queue operations with heap property maintenance and array-based visualization",
               "type": "visualization",
               "path": "algorithms/binary-heap.html",
               "addedDate": "2025-01-27",
-              "status": "active"
+              "status": "active",
+              "features": [
+                "Min/Max heap with insert, extract, and heapify",
+                "Array-based heap representation and tree visualization",
+                "Priority queue operations and heap sort",
+                "Heap property validation and bubble operations"
+              ],
+              "jsFile": "algorithms/code/heap-visualizer.js"
             }
           ]
         },
@@ -165,11 +214,18 @@
             {
               "id": "segment-tree-operations",
               "title": "Segment Tree",
-              "description": "Range queries and tree construction with sum, min, and max operations",
+              "description": "Efficient range queries with O(log n) operations and dynamic tree construction",
               "type": "visualization",
               "path": "algorithms/segment-tree.html",
               "addedDate": "2025-01-27",
-              "status": "active"
+              "status": "active",
+              "features": [
+                "Range Sum, Min, Max queries with tree visualization",
+                "Point updates and range update operations",
+                "Interactive tree construction from arrays",
+                "Efficient O(log n) query and update complexity"
+              ],
+              "jsFile": "algorithms/code/segment-tree-visualizer.js"
             }
           ]
         }
