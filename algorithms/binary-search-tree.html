@@ -199,9 +199,51 @@
             animation: bounce 0.6s ease;
         }
 
+        .node.inserting-left circle {
+            fill: #3b82f6;
+            stroke: #1e40af;
+            stroke-width: 4px;
+            animation: bounce-left 0.6s ease;
+            filter: drop-shadow(0 0 8px #3b82f6);
+        }
+
+        .node.inserting-right circle {
+            fill: #ef4444;
+            stroke: #dc2626;
+            stroke-width: 4px;
+            animation: bounce-right 0.6s ease;
+            filter: drop-shadow(0 0 8px #ef4444);
+        }
+
+        .node.examining-left circle {
+            fill: #3b82f6;
+            stroke: #1e40af;
+            stroke-width: 3px;
+            animation: pulse-left 1s infinite;
+        }
+
+        .node.examining-right circle {
+            fill: #ef4444;
+            stroke: #dc2626;
+            stroke-width: 3px;
+            animation: pulse-right 1s infinite;
+        }
+
         .node.path circle {
             fill: #e0e7ff;
             stroke: var(--primary);
+            stroke-width: 3px;
+        }
+
+        .node.path-left circle {
+            fill: #dbeafe;
+            stroke: #3b82f6;
+            stroke-width: 3px;
+        }
+
+        .node.path-right circle {
+            fill: #fee2e2;
+            stroke: #ef4444;
             stroke-width: 3px;
         }
 
@@ -214,6 +256,28 @@
             0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
             40% { transform: translateY(-10px); }
             60% { transform: translateY(-5px); }
+        }
+
+        @keyframes bounce-left {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(0); }
+            40% { transform: translateY(-10px) translateX(-5px); }
+            60% { transform: translateY(-5px) translateX(-2px); }
+        }
+
+        @keyframes bounce-right {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(0); }
+            40% { transform: translateY(-10px) translateX(5px); }
+            60% { transform: translateY(-5px) translateX(2px); }
+        }
+
+        @keyframes pulse-left {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes pulse-right {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         .node text {
@@ -676,7 +740,14 @@
 
                 // D3 Tree layout
                 this.treeLayout = d3.tree()
-                    .nodeSize([80, 80]); // Horizontal and vertical spacing
+                    .nodeSize([120, 100]) // Increased horizontal and vertical spacing for clearer left/right distinction
+                    .separation((a, b) => {
+                        // Custom separation function to ensure clear left/right positioning
+                        if (a.parent === b.parent) {
+                            return 1.5; // More space between siblings
+                        }
+                        return 1;
+                    });
 
                 // Zoom behavior
                 this.zoom = d3.zoom()
@@ -798,42 +869,54 @@
                 this.updateStats();
 
                 if (value < node.value) {
-                    // Show going left
+                    // Show going left with enhanced visual feedback
                     this.showComparison(node.value, value, 'left');
-                    await this.delay(600);
+                    this.highlightNode(node.id, 'examining-left');
+                    await this.delay(800);
                     
                     if (node.left) {
-                        // Mark current node as part of path
-                        this.highlightNode(node.id, 'path');
+                        // Mark current node as part of path and show left arrow
+                        this.highlightNode(node.id, 'path-left');
+                        this.showDirectionArrow(node.id, 'left');
+                        await this.delay(600);
                         await this.insertNode(node.left, value);
                     } else {
-                        // Insert new node on the left
+                        // Insert new node on the left with clear visual indication
                         node.left = new BSTNode(value);
-                        this.highlightNode(node.id, 'path');
-                        await this.delay(400);
+                        this.highlightNode(node.id, 'path-left');
+                        this.showDirectionArrow(node.id, 'left');
+                        await this.delay(600);
                         this.renderTree();
-                        this.highlightNode(node.left.id, 'inserting');
-                        await this.delay(1000);
+                        this.highlightNode(node.left.id, 'inserting-left');
+                        this.showMessage(`Inserted ${value} as LEFT child of ${node.value}`, 'success');
+                        await this.delay(1200);
                         this.clearHighlights();
+                        this.clearDirectionArrows();
                     }
                 } else if (value > node.value) {
-                    // Show going right
+                    // Show going right with enhanced visual feedback
                     this.showComparison(node.value, value, 'right');
-                    await this.delay(600);
+                    this.highlightNode(node.id, 'examining-right');
+                    await this.delay(800);
                     
                     if (node.right) {
-                        // Mark current node as part of path
-                        this.highlightNode(node.id, 'path');
+                        // Mark current node as part of path and show right arrow
+                        this.highlightNode(node.id, 'path-right');
+                        this.showDirectionArrow(node.id, 'right');
+                        await this.delay(600);
                         await this.insertNode(node.right, value);
                     } else {
-                        // Insert new node on the right
+                        // Insert new node on the right with clear visual indication
                         node.right = new BSTNode(value);
-                        this.highlightNode(node.id, 'path');
-                        await this.delay(400);
+                        this.highlightNode(node.id, 'path-right');
+                        this.showDirectionArrow(node.id, 'right');
+                        await this.delay(600);
                         this.renderTree();
-                        this.highlightNode(node.right.id, 'inserting');
-                        await this.delay(1000);
+                        this.highlightNode(node.right.id, 'inserting-right');
+                        this.showMessage(`Inserted ${value} as RIGHT child of ${node.value}`, 'success');
+                        await this.delay(1200);
                         this.clearHighlights();
+                        this.clearDirectionArrows();
                     }
                 } else {
                     // Value already exists
@@ -1284,9 +1367,63 @@
             clearHighlights() {
                 this.g.selectAll('.node')
                     .classed('examining', false)
+                    .classed('examining-left', false)
+                    .classed('examining-right', false)
                     .classed('inserting', false)
+                    .classed('inserting-left', false)
+                    .classed('inserting-right', false)
                     .classed('path', false)
+                    .classed('path-left', false)
+                    .classed('path-right', false)
                     .classed('visited', false);
+            }
+
+            showDirectionArrow(nodeId, direction) {
+                const nodeElement = this.g.select(`.node[data-id="${nodeId}"]`);
+                if (nodeElement.empty()) return;
+
+                const nodeData = nodeElement.datum();
+                const x = nodeData.x;
+                const y = nodeData.y;
+                
+                let arrowX, arrowY;
+                if (direction === 'left') {
+                    arrowX = x - 30;
+                    arrowY = y;
+                } else {
+                    arrowX = x + 30;
+                    arrowY = y;
+                }
+
+                // Add arrow marker if not exists
+                if (this.g.select('#arrowhead').empty()) {
+                    this.g.append('defs')
+                        .append('marker')
+                        .attr('id', 'arrowhead')
+                        .attr('viewBox', '0 0 10 10')
+                        .attr('refX', 9)
+                        .attr('refY', 3)
+                        .attr('markerWidth', 6)
+                        .attr('markerHeight', 6)
+                        .attr('orient', 'auto')
+                        .append('path')
+                        .attr('d', 'M0,0 L0,6 L9,3 z')
+                        .attr('fill', '#f59e0b');
+                }
+
+                this.g.append('line')
+                    .attr('class', `direction-arrow ${direction}`)
+                    .attr('x1', x)
+                    .attr('y1', y)
+                    .attr('x2', arrowX)
+                    .attr('y2', arrowY)
+                    .attr('stroke', direction === 'left' ? '#3b82f6' : '#ef4444')
+                    .attr('stroke-width', 3)
+                    .attr('marker-end', 'url(#arrowhead)');
+            }
+
+            clearDirectionArrows() {
+                this.g.selectAll('.direction-arrow').remove();
             }
 
             showComparison(currentValue, newValue, direction) {
