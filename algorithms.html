@@ -82,50 +82,59 @@
             padding: 40px;
         }
 
-        .visualization-card {
+        .algorithms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .algorithm-card {
             background: white;
             border-radius: 16px;
             padding: 30px;
-            margin-bottom: 30px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             border: 1px solid #e5e7eb;
             transition: all 0.3s ease;
             cursor: pointer;
         }
 
-        .visualization-card:hover {
+        .algorithm-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
         }
 
-        .visualization-title {
+        .algorithm-title {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--dark);
             margin-bottom: 10px;
         }
 
-        .visualization-description {
+        .algorithm-description {
             color: #6b7280;
             margin-bottom: 20px;
             line-height: 1.6;
         }
 
-        .visualization-features {
+        .algorithm-features {
             list-style: none;
             margin-bottom: 20px;
         }
 
-        .visualization-features li {
+        .algorithm-features li {
             padding: 5px 0;
-            color: #6b7280;
+            color: #4b5563;
+            position: relative;
+            padding-left: 20px;
         }
 
-        .visualization-features li::before {
-            content: "✓";
-            color: var(--success);
+        .algorithm-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
             font-weight: bold;
-            margin-right: 10px;
         }
 
         .access-button {
@@ -169,6 +178,10 @@
             .content {
                 padding: 20px;
             }
+            
+            .algorithms-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -181,11 +194,11 @@
         </header>
 
         <div class="content">
-            
-            <div class="visualization-card" onclick="window.location.href='algorithms/sorting.html'">
-              <h3 class="visualization-title">Sorting Algorithms</h3>
-              <p class="visualization-description">Interactive visualizations of sorting algorithms</p>
-              <ul class="visualization-features">
+            <div class="algorithms-grid">
+            <div class="algorithm-card" onclick="window.location.href='algorithms/sorting.html'">
+              <h3 class="algorithm-title">Sorting Algorithms</h3>
+              <p class="algorithm-description">Interactive visualizations of sorting algorithms</p>
+              <ul class="algorithm-features">
                 <li>Comprehensive visualization</li>
                 <li>Interactive learning experience</li>
                 <li>Interview preparation focused</li>
@@ -193,10 +206,10 @@
               </ul>
               <a href="algorithms/sorting.html" class="access-button">View Visualization →</a>
             </div>
-            <div class="visualization-card" onclick="window.location.href='algorithms/binary-search-tree.html'">
-              <h3 class="visualization-title">Binary Search Tree</h3>
-              <p class="visualization-description">Interactive BST operations and visualizations</p>
-              <ul class="visualization-features">
+            <div class="algorithm-card" onclick="window.location.href='algorithms/binary-search-tree.html'">
+              <h3 class="algorithm-title">Binary Search Tree</h3>
+              <p class="algorithm-description">Interactive BST operations and visualizations</p>
+              <ul class="algorithm-features">
                 <li>Comprehensive visualization</li>
                 <li>Interactive learning experience</li>
                 <li>Interview preparation focused</li>
@@ -204,10 +217,10 @@
               </ul>
               <a href="algorithms/binary-search-tree.html" class="access-button">View Visualization →</a>
             </div>
-            <div class="visualization-card" onclick="window.location.href='algorithms/bfs-dfs-graph-traversal.html'">
-              <h3 class="visualization-title">BFS/DFS Graph Traversal</h3>
-              <p class="visualization-description">Breadth-first and depth-first search algorithms with interactive graph visualization</p>
-              <ul class="visualization-features">
+            <div class="algorithm-card" onclick="window.location.href='algorithms/bfs-dfs-graph-traversal.html'">
+              <h3 class="algorithm-title">BFS/DFS Graph Traversal</h3>
+              <p class="algorithm-description">Breadth-first and depth-first search algorithms with interactive graph visualization</p>
+              <ul class="algorithm-features">
                 <li>Comprehensive visualization</li>
                 <li>Interactive learning experience</li>
                 <li>Interview preparation focused</li>
@@ -215,10 +228,10 @@
               </ul>
               <a href="algorithms/bfs-dfs-graph-traversal.html" class="access-button">View Visualization →</a>
             </div>
-            <div class="visualization-card" onclick="window.location.href='algorithms/trie-operations.html'">
-              <h3 class="visualization-title">Trie Operations</h3>
-              <p class="visualization-description">Prefix tree data structure with insert, search, and delete operations visualization</p>
-              <ul class="visualization-features">
+            <div class="algorithm-card" onclick="window.location.href='algorithms/trie-operations.html'">
+              <h3 class="algorithm-title">Trie Operations</h3>
+              <p class="algorithm-description">Prefix tree data structure with insert, search, and delete operations visualization</p>
+              <ul class="algorithm-features">
                 <li>Comprehensive visualization</li>
                 <li>Interactive learning experience</li>
                 <li>Interview preparation focused</li>
@@ -226,10 +239,10 @@
               </ul>
               <a href="algorithms/trie-operations.html" class="access-button">View Visualization →</a>
             </div>
-            <div class="visualization-card" onclick="window.location.href='algorithms/dijkstra-algorithm.html'">
-              <h3 class="visualization-title">Dijkstra's Algorithm</h3>
-              <p class="visualization-description">Shortest path finding algorithm for weighted graphs with step-by-step visualization</p>
-              <ul class="visualization-features">
+            <div class="algorithm-card" onclick="window.location.href='algorithms/dijkstra-algorithm.html'">
+              <h3 class="algorithm-title">Dijkstra's Algorithm</h3>
+              <p class="algorithm-description">Shortest path finding algorithm for weighted graphs with step-by-step visualization</p>
+              <ul class="algorithm-features">
                 <li>Comprehensive visualization</li>
                 <li>Interactive learning experience</li>
                 <li>Interview preparation focused</li>
@@ -237,17 +250,17 @@
               </ul>
               <a href="algorithms/dijkstra-algorithm.html" class="access-button">View Visualization →</a>
             </div>
-            <div class="visualization-card" onclick="window.location.href='algorithms/dynamic-programming.html'">
-              <h3 class="visualization-title">Dynamic Programming</h3>
-              <p class="visualization-description">Knapsack and Longest Common Subsequence problems with memoization visualization</p>
-              <ul class="visualization-features">
+            <div class="algorithm-card" onclick="window.location.href='algorithms/dynamic-programming.html'">
+              <h3 class="algorithm-title">Dynamic Programming</h3>
+              <p class="algorithm-description">Knapsack and Longest Common Subsequence problems with memoization visualization</p>
+              <ul class="algorithm-features">
                 <li>Comprehensive visualization</li>
                 <li>Interactive learning experience</li>
                 <li>Interview preparation focused</li>
                 <li>Best practices and examples</li>
               </ul>
               <a href="algorithms/dynamic-programming.html" class="access-button">View Visualization →</a>
-            </div>
+            </div></div>
         </div>
     </div>
 </body>

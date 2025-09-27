@@ -245,10 +245,10 @@ function generateCategoryPage(categoryId, category) {
           }
           
           contentHtml += `
-            <div class="visualization-card" onclick="window.location.href='${link}'">
-              <h3 class="visualization-title">${contentItem.title}</h3>
-              <p class="visualization-description">${contentItem.description}</p>
-              <ul class="visualization-features">
+            <div class="algorithm-card" onclick="window.location.href='${link}'">
+              <h3 class="algorithm-title">${contentItem.title}</h3>
+              <p class="algorithm-description">${contentItem.description}</p>
+              <ul class="algorithm-features">
                 <li>Comprehensive ${contentItem.type || 'content'}</li>
                 <li>Interactive learning experience</li>
                 <li>Interview preparation focused</li>
@@ -359,50 +359,59 @@ function generateCategoryPage(categoryId, category) {
             padding: 40px;
         }
 
-        .visualization-card {
+        .algorithms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .algorithm-card {
             background: white;
             border-radius: 16px;
             padding: 30px;
-            margin-bottom: 30px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             border: 1px solid #e5e7eb;
             transition: all 0.3s ease;
             cursor: pointer;
         }
 
-        .visualization-card:hover {
+        .algorithm-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
         }
 
-        .visualization-title {
+        .algorithm-title {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--dark);
             margin-bottom: 10px;
         }
 
-        .visualization-description {
+        .algorithm-description {
             color: #6b7280;
             margin-bottom: 20px;
             line-height: 1.6;
         }
 
-        .visualization-features {
+        .algorithm-features {
             list-style: none;
             margin-bottom: 20px;
         }
 
-        .visualization-features li {
+        .algorithm-features li {
             padding: 5px 0;
-            color: #6b7280;
+            color: #4b5563;
+            position: relative;
+            padding-left: 20px;
         }
 
-        .visualization-features li::before {
-            content: "✓";
-            color: var(--success);
+        .algorithm-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
             font-weight: bold;
-            margin-right: 10px;
         }
 
         .access-button {
@@ -446,6 +455,10 @@ function generateCategoryPage(categoryId, category) {
             .content {
                 padding: 20px;
             }
+            
+            .algorithms-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -458,7 +471,7 @@ function generateCategoryPage(categoryId, category) {
         </header>
 
         <div class="content">
-            ${contentHtml}
+            ${hasContent ? `<div class="algorithms-grid">${contentHtml}</div>` : contentHtml}
         </div>
     </div>
 </body>
