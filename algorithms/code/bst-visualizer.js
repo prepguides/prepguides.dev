@@ -200,7 +200,7 @@ class BSTVisualizer {
             return;
         }
 
-        this.highlightNode(node.id, 'examining');
+        this.highlightNode(node.id, 'visiting');
         await this.delay(600);
 
         if (value < node.value) {
@@ -263,7 +263,7 @@ class BSTVisualizer {
             return null;
         }
 
-        this.highlightNode(node.id, 'examining');
+        this.highlightNode(node.id, 'visiting');
         await this.delay(600);
 
         if (value < node.value) {
@@ -320,7 +320,7 @@ class BSTVisualizer {
             return false;
         }
 
-        this.highlightNode(node.id, 'examining');
+        this.highlightNode(node.id, 'visiting');
         await this.delay(600);
 
         if (value === node.value) {
@@ -379,7 +379,7 @@ class BSTVisualizer {
         await this.inorderTraversal(node.left);
         
         // Highlight the current node
-        this.highlightNode(node.id, 'examining');
+        this.highlightNode(node.id, 'visiting');
         this.traversalSequence.push(node.value);
         console.log(`Visiting node: ${node.value}`);
         
@@ -394,7 +394,7 @@ class BSTVisualizer {
         if (!node) return;
         
         // Highlight the current node
-        this.highlightNode(node.id, 'examining');
+        this.highlightNode(node.id, 'visiting');
         this.traversalSequence.push(node.value);
         console.log(`Visiting node: ${node.value}`);
         
@@ -413,7 +413,7 @@ class BSTVisualizer {
         await this.postorderTraversal(node.right);
         
         // Highlight the current node
-        this.highlightNode(node.id, 'examining');
+        this.highlightNode(node.id, 'visiting');
         this.traversalSequence.push(node.value);
         console.log(`Visiting node: ${node.value}`);
         
@@ -431,7 +431,7 @@ class BSTVisualizer {
             const node = queue.shift();
             
             // Highlight the current node
-            this.highlightNode(node.id, 'examining');
+            this.highlightNode(node.id, 'visiting');
             this.traversalSequence.push(node.value);
             console.log(`Visiting node: ${node.value}`);
             
@@ -615,15 +615,31 @@ class BSTVisualizer {
         const node = this.g.selectAll('.node').filter(d => d.data.id === nodeId);
         const circle = node.select('circle');
         
+        console.log(`Highlighting node ${nodeId} with type ${type}`);
+        console.log('Node found:', node.size());
+        
         // Clear existing highlights
         circle.classed('highlighted examining examining-left examining-right inserting inserting-left inserting-right deleting visiting found path-left path-right', false);
         
         // Apply new highlight
         circle.classed(type, true);
+        
+        // Force a style update
+        if (type === 'examining') {
+            circle.style('fill', '#f59e0b').style('stroke', '#ef4444').style('stroke-width', '4px');
+        } else if (type === 'visiting') {
+            circle.style('fill', '#10b981').style('stroke', '#059669').style('stroke-width', '4px');
+        } else if (type === 'found') {
+            circle.style('fill', '#10b981').style('stroke', '#10b981').style('stroke-width', '4px');
+        }
     }
 
     clearHighlights() {
-        this.g.selectAll('.node circle').classed('highlighted examining examining-left examining-right inserting inserting-left inserting-right deleting visiting found path-left path-right', false);
+        this.g.selectAll('.node circle')
+            .classed('highlighted examining examining-left examining-right inserting inserting-left inserting-right deleting visiting found path-left path-right', false)
+            .style('fill', '#ffffff')
+            .style('stroke', '#6366f1')
+            .style('stroke-width', '3px');
     }
 
     showDirectionArrow(nodeId, direction) {
