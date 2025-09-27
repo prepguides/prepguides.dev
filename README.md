@@ -100,11 +100,17 @@ cd prepguides.dev
 ├── system-design.html      # Scalability patterns (coming soon)
 ├── algorithms/             # Interactive algorithm visualizations
 │   ├── sorting.html        # 6 sorting algorithms
-│   ├── binary-search-tree.html  # BST operations
+│   ├── binary-search-tree.html  # BST operations with explicit positioning
 │   ├── bfs-dfs-graph-traversal.html  # Graph traversal
 │   ├── trie-operations.html     # Trie data structure
 │   ├── binary-heap.html         # Min/Max heap operations
-│   └── segment-tree.html        # Range queries and tree construction
+│   ├── dijkstra-algorithm.html  # Shortest path algorithm
+│   ├── segment-tree.html        # Range queries and tree construction
+│   ├── dynamic-programming.html # DP concepts and examples
+│   └── code/                    # Shared code and styles
+│       ├── algorithm-layout.css # Generic layout styles
+│       ├── code-highlighting.css # Syntax highlighting
+│       └── code-execution-sync.js # Code synchronization
 ├── docs/                   # Project documentation
 │   ├── algorithm/          # Algorithm development docs
 │   ├── development/        # Development workflow docs
@@ -147,14 +153,14 @@ We welcome contributions! Here's how you can help:
 
 ### Phase 1 - Essential (Complete - 6/6 ✅)
 - ✅ **Sorting Algorithms** - 6 sorting algorithms with performance metrics
-- ✅ **Binary Search Tree** - Complete BST operations and traversals
+- ✅ **Binary Search Tree** - Complete BST operations with explicit left/right positioning
 - ✅ **BFS/DFS Graph Traversal** - Graph traversal algorithms
 - ✅ **Trie Operations** - Prefix tree with D3.js visualization
 - ✅ **Binary Heap Operations** - Min/Max heap with insert, extract, and heapify
 - ✅ **Dijkstra's Algorithm** - Shortest path finding in weighted graphs
 
 ### Phase 2 - Important (In Progress - 1/4 Complete)
-- ✅ **Segment Tree** - Range queries and tree construction
+- ✅ **Segment Tree** - Range queries and tree construction with sum/min/max operations
 - **KMP String Matching** - Pattern matching with failure function
 - **Topological Sort** - DAG ordering and dependency resolution
 - **Union-Find** - Disjoint sets with path compression
