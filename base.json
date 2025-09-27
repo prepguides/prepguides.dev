@@ -126,6 +126,21 @@
               "status": "active"
             }
           ]
+        },
+        "heap-operations": {
+          "name": "Heap Operations",
+          "description": "Binary heap data structure operations",
+          "content": [
+            {
+              "id": "binary-heap-operations",
+              "title": "Binary Heap Operations",
+              "description": "Min/Max heap data structure with insert, extract, and heapify operations visualization",
+              "type": "visualization",
+              "path": "algorithms/binary-heap.html",
+              "addedDate": "2025-01-27",
+              "status": "active"
+            }
+          ]
         }
       }
     },
@@ -187,10 +202,10 @@
     }
   },
   "statistics": {
-    "totalContent": 4,
-    "totalVisualizations": 4,
+    "totalContent": 5,
+    "totalVisualizations": 5,
     "totalGuides": 0,
     "categoriesWithContent": 3,
-    "lastContentAdded": "2025-01-20"
+    "lastContentAdded": "2025-01-27"
   }
 }
