@@ -157,6 +157,21 @@
               "status": "active"
             }
           ]
+        },
+        "segment-tree": {
+          "name": "Segment Tree",
+          "description": "Range queries and tree construction",
+          "content": [
+            {
+              "id": "segment-tree-operations",
+              "title": "Segment Tree",
+              "description": "Range queries and tree construction with sum, min, and max operations",
+              "type": "visualization",
+              "path": "algorithms/segment-tree.html",
+              "addedDate": "2025-01-27",
+              "status": "active"
+            }
+          ]
         }
       }
     },
@@ -218,8 +233,8 @@
     }
   },
   "statistics": {
-    "totalContent": 10,
-    "totalVisualizations": 9,
+    "totalContent": 11,
+    "totalVisualizations": 10,
     "totalGuides": 1,
     "categoriesWithContent": 3,
     "lastContentAdded": "2025-01-27"
