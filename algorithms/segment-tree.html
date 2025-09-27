@@ -7,6 +7,7 @@
     <meta name="description" content="Interactive visualization of Segment Tree operations with range queries and updates">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="../algorithms/code/code-highlighting.css">
+    <link rel="stylesheet" href="../algorithms/code/algorithm-layout.css">
     <script src="../algorithms/code/code-execution-sync.js"></script>
     <style>
         * {
@@ -81,33 +82,7 @@
             z-index: 1;
         }
 
-        .content {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 0;
-            min-height: 80vh;
-        }
-
-        .visualization-panel {
-            padding: 40px;
-            background: #fafafa;
-        }
-
-        .controls-panel {
-            background: white;
-            border-left: 1px solid #e5e7eb;
-            padding: 40px;
-            overflow-y: auto;
-        }
-
-        .tree-container {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-            min-height: 500px;
-        }
+        /* Layout styles are now in algorithm-layout.css */
 
         .controls-section {
             margin-bottom: 30px;
@@ -375,12 +350,7 @@
             margin-bottom: 12px;
         }
 
-        .array-elements {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
+        /* Array elements styles are now in algorithm-layout.css */
 
         .array-element {
             background: var(--primary);
@@ -396,16 +366,7 @@
             background: var(--warning);
         }
 
-        @media (max-width: 1024px) {
-            .content {
-                grid-template-columns: 1fr;
-            }
-            
-            .controls-panel {
-                border-left: none;
-                border-top: 1px solid #e5e7eb;
-            }
-        }
+        /* Responsive styles are now in algorithm-layout.css */
     </style>
 </head>
 <body>
@@ -526,14 +487,38 @@
 
             initializeSVG() {
                 this.svg = d3.select('#tree-svg');
-                this.width = 900;
-                this.height = 600;
+                
+                // Get container dimensions
+                const container = document.querySelector('.tree-container');
+                const containerRect = container.getBoundingClientRect();
+                
+                this.width = Math.max(800, containerRect.width - 40); // Account for padding
+                this.height = Math.max(500, containerRect.height - 40);
                 
                 this.svg.attr('width', this.width).attr('height', this.height);
                 
                 // Create groups for different elements
                 this.edgesGroup = this.svg.append('g').attr('class', 'edges');
                 this.nodesGroup = this.svg.append('g').attr('class', 'nodes');
+                
+                // Handle window resize
+                window.addEventListener('resize', () => {
+                    this.resizeSVG();
+                });
+            }
+
+            resizeSVG() {
+                const container = document.querySelector('.tree-container');
+                const containerRect = container.getBoundingClientRect();
+                
+                this.width = Math.max(800, containerRect.width - 40);
+                this.height = Math.max(500, containerRect.height - 40);
+                
+                this.svg.attr('width', this.width).attr('height', this.height);
+                
+                if (this.treeBuilt) {
+                    this.updateDisplay();
+                }
             }
 
             setupEventListeners() {
@@ -785,6 +770,21 @@
                 this.nodesGroup.selectAll('*').remove();
                 this.hideOperationInfo();
                 this.updateCodeDisplay('clear');
+                this.showDefaultMessage();
+            }
+
+            showDefaultMessage() {
+                // Add a default message when no tree is built
+                this.nodesGroup.append('text')
+                    .attr('x', this.width / 2)
+                    .attr('y', this.height / 2)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('class', 'default-message')
+                    .style('font-size', '18px')
+                    .style('fill', '#6b7280')
+                    .style('font-weight', '500')
+                    .text('Click "Build Segment Tree" to visualize the tree structure');
             }
 
             updateDisplay() {
@@ -1052,7 +1052,10 @@ function clearSegmentTree() {
 
         // Initialize the visualizer when the page loads
         document.addEventListener('DOMContentLoaded', () => {
-            new SegmentTreeVisualizer();
+            // Small delay to ensure DOM is fully rendered
+            setTimeout(() => {
+                new SegmentTreeVisualizer();
+            }, 100);
         });
     </script>
 </body>
