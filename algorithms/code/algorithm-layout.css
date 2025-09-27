@@ -1,0 +1,222 @@
+/* Generic Algorithm Visualization Layout Styles */
+/* This file provides consistent layout fixes for all algorithm visualizations */
+
+/* Main container improvements */
+.main-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    min-height: 100vh;
+}
+
+/* Content grid layout with better space utilization */
+.content {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 0;
+    min-height: calc(100vh - 200px);
+    height: calc(100vh - 200px);
+}
+
+/* Visualization panel improvements */
+.visualization-panel {
+    padding: 20px;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Controls panel improvements */
+.controls-panel {
+    background: white;
+    border-left: 1px solid #e5e7eb;
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+}
+
+/* Algorithm container improvements */
+.algorithm-container,
+.tree-container,
+.graph-container,
+.heap-container {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Array display improvements */
+.array-elements {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Responsive design improvements */
+@media (max-width: 1200px) {
+    .content {
+        grid-template-columns: 1fr 350px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .content {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        height: auto;
+    }
+    
+    .visualization-panel {
+        min-height: 60vh;
+    }
+    
+    .controls-panel {
+        border-left: none;
+        border-top: 1px solid #e5e7eb;
+        max-height: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .content {
+        padding: 10px;
+    }
+    
+    .visualization-panel,
+    .controls-panel {
+        padding: 15px;
+    }
+    
+    .algorithm-container,
+    .tree-container,
+    .graph-container,
+    .heap-container {
+        padding: 15px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    header p {
+        font-size: 1rem;
+    }
+}
+
+/* Default message styling for empty visualizations */
+.default-message {
+    font-size: 18px !important;
+    fill: #6b7280 !important;
+    font-weight: 500 !important;
+    text-anchor: middle !important;
+    dominant-baseline: middle !important;
+}
+
+/* SVG improvements */
+svg {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Button improvements for better touch targets */
+.btn {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Input improvements */
+.input-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.input-group input {
+    flex: 1;
+    min-width: 120px;
+    padding: 10px 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* Stats panel improvements */
+.stats {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.stat-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Operation info improvements */
+.operation-info {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.operation-info h4 {
+    color: #92400e;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.operation-info p {
+    color: #92400e;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Code section improvements */
+.code-section {
+    background: #1e293b;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.code-section h4 {
+    color: #e2e8f0;
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+
+.code-section pre {
+    color: #e2e8f0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
