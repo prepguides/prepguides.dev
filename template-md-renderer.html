@@ -250,6 +250,35 @@
             border: 1px solid #e5e7eb;
         }
 
+        /* Mermaid error styling */
+        .mermaid-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: #dc2626;
+        }
+
+        .mermaid-error pre {
+            background: #f3f4f6;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            margin: 0.5rem 0;
+        }
+
+        .mermaid-error details {
+            margin-top: 0.5rem;
+        }
+
+        .mermaid-error summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #7f1d1d;
+        }
+
         /* Enhanced code block styling */
         .markdown-content pre {
             position: relative;
@@ -495,7 +524,9 @@
             // Replace mermaid code blocks with special markers
             return markdown.replace(/```mermaid\n([\s\S]*?)\n```/g, (match, diagram) => {
                 const id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
-                return `<div class="mermaid" id="${id}">${diagram.trim()}</div>`;
+                // Clean up the diagram content and ensure proper formatting
+                const cleanDiagram = diagram.trim().replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                return `<div class="mermaid" id="${id}">${cleanDiagram}</div>`;
             });
         }
 
@@ -504,11 +535,26 @@
             const mermaidElements = document.querySelectorAll('.mermaid');
             if (mermaidElements.length > 0) {
                 try {
-                    await mermaid.run({
-                        querySelector: '.mermaid'
-                    });
+                    // Render each diagram individually to better handle errors
+                    for (let i = 0; i < mermaidElements.length; i++) {
+                        const element = mermaidElements[i];
+                        try {
+                            const { svg } = await mermaid.render(`mermaid-${i}`, element.textContent);
+                            element.innerHTML = svg;
+                        } catch (error) {
+                            console.error(`Error rendering Mermaid diagram ${i}:`, error);
+                            element.innerHTML = `<div class="mermaid-error">
+                                <p><strong>Diagram rendering error:</strong></p>
+                                <pre>${error.message}</pre>
+                                <details>
+                                    <summary>Raw diagram code</summary>
+                                    <pre>${element.textContent}</pre>
+                                </details>
+                            </div>`;
+                        }
+                    }
                 } catch (error) {
-                    console.error('Error rendering Mermaid diagrams:', error);
+                    console.error('Error initializing Mermaid:', error);
                 }
             }
         }
