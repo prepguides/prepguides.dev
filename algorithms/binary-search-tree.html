@@ -185,6 +185,18 @@
             stroke: var(--success);
         }
 
+        .node.found circle {
+            fill: var(--success);
+            stroke: var(--success);
+            stroke-width: 4px;
+            animation: found-pulse 1s ease-in-out;
+        }
+
+        @keyframes found-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
         .node.examining circle {
             fill: var(--warning);
             stroke: var(--danger);

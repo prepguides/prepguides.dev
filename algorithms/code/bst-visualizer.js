@@ -221,6 +221,9 @@ class BSTVisualizer {
                 this.highlightNode(node.left.id, 'inserting-left');
                 this.showMessage(`Inserted ${value} as LEFT child of ${node.value}`, 'success');
                 await this.delay(1500);
+                // Keep the inserted node highlighted for a moment
+                this.highlightNode(node.left.id, 'found');
+                await this.delay(1000);
                 this.clearHighlights();
                 this.clearDirectionArrows();
             }
@@ -242,6 +245,9 @@ class BSTVisualizer {
                 this.highlightNode(node.right.id, 'inserting-right');
                 this.showMessage(`Inserted ${value} as RIGHT child of ${node.value}`, 'success');
                 await this.delay(1500);
+                // Keep the inserted node highlighted for a moment
+                this.highlightNode(node.right.id, 'found');
+                await this.delay(1000);
                 this.clearHighlights();
                 this.clearDirectionArrows();
             }
@@ -320,7 +326,7 @@ class BSTVisualizer {
         if (value === node.value) {
             this.highlightNode(node.id, 'found');
             this.showMessage(`Found ${value}!`, 'success');
-            await this.delay(1000);
+            await this.delay(2000); // Keep found node highlighted longer
             this.clearHighlights();
             return true;
         } else if (value < node.value) {
@@ -362,28 +368,40 @@ class BSTVisualizer {
         // Show traversal result
         this.showTraversalResult(type, this.traversalSequence);
         this.showMessage(`${type.charAt(0).toUpperCase() + type.slice(1)} traversal completed!`, 'success');
+        
+        // Briefly highlight all visited nodes
+        await this.highlightAllVisitedNodes();
     }
 
     async inorderTraversal(node) {
         if (!node) return;
         
         await this.inorderTraversal(node.left);
+        
+        // Highlight the current node
         this.highlightNode(node.id, 'examining');
         this.traversalSequence.push(node.value);
-        await this.delay(1200); // Longer delay to see the highlight
+        console.log(`Visiting node: ${node.value}`);
+        
+        await this.delay(1500); // Longer delay to see the highlight
         this.clearHighlights();
-        await this.delay(200); // Small pause before next node
+        await this.delay(300); // Small pause before next node
+        
         await this.inorderTraversal(node.right);
     }
 
     async preorderTraversal(node) {
         if (!node) return;
         
+        // Highlight the current node
         this.highlightNode(node.id, 'examining');
         this.traversalSequence.push(node.value);
-        await this.delay(1200); // Longer delay to see the highlight
+        console.log(`Visiting node: ${node.value}`);
+        
+        await this.delay(1500); // Longer delay to see the highlight
         this.clearHighlights();
-        await this.delay(200); // Small pause before next node
+        await this.delay(300); // Small pause before next node
+        
         await this.preorderTraversal(node.left);
         await this.preorderTraversal(node.right);
     }
@@ -393,11 +411,15 @@ class BSTVisualizer {
         
         await this.postorderTraversal(node.left);
         await this.postorderTraversal(node.right);
+        
+        // Highlight the current node
         this.highlightNode(node.id, 'examining');
         this.traversalSequence.push(node.value);
-        await this.delay(1200); // Longer delay to see the highlight
+        console.log(`Visiting node: ${node.value}`);
+        
+        await this.delay(1500); // Longer delay to see the highlight
         this.clearHighlights();
-        await this.delay(200); // Small pause before next node
+        await this.delay(300); // Small pause before next node
     }
 
     async levelOrderTraversal() {
@@ -407,11 +429,15 @@ class BSTVisualizer {
         
         while (queue.length > 0) {
             const node = queue.shift();
+            
+            // Highlight the current node
             this.highlightNode(node.id, 'examining');
             this.traversalSequence.push(node.value);
-            await this.delay(1200); // Longer delay to see the highlight
+            console.log(`Visiting node: ${node.value}`);
+            
+            await this.delay(1500); // Longer delay to see the highlight
             this.clearHighlights();
-            await this.delay(200); // Small pause before next node
+            await this.delay(300); // Small pause before next node
             
             if (node.left) queue.push(node.left);
             if (node.right) queue.push(node.right);
@@ -709,6 +735,31 @@ class BSTVisualizer {
                 title.textContent = `${type.charAt(0).toUpperCase() + type.slice(1)} Traversal Result`;
             }
         }
+    }
+
+    async highlightAllVisitedNodes() {
+        // Highlight all nodes that were visited in the traversal
+        for (const value of this.traversalSequence) {
+            const node = this.findNodeByValue(this.root, value);
+            if (node) {
+                this.highlightNode(node.id, 'found');
+                await this.delay(300);
+            }
+        }
+        
+        // Keep all highlighted for a moment, then clear
+        await this.delay(1000);
+        this.clearHighlights();
+    }
+
+    findNodeByValue(node, value) {
+        if (!node) return null;
+        if (node.value === value) return node;
+        
+        const leftResult = this.findNodeByValue(node.left, value);
+        if (leftResult) return leftResult;
+        
+        return this.findNodeByValue(node.right, value);
     }
 
     reset() {
