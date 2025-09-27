@@ -102,7 +102,8 @@ cd prepguides.dev
 │   ├── sorting.html        # 6 sorting algorithms
 │   ├── binary-search-tree.html  # BST operations
 │   ├── bfs-dfs-graph-traversal.html  # Graph traversal
-│   └── trie-operations.html     # Trie data structure
+│   ├── trie-operations.html     # Trie data structure
+│   └── binary-heap.html         # Min/Max heap operations
 ├── docs/                   # Project documentation
 │   ├── algorithm/          # Algorithm development docs
 │   ├── development/        # Development workflow docs
@@ -143,11 +144,12 @@ We welcome contributions! Here's how you can help:
 
 ## 📈 Roadmap
 
-### Phase 1 - Essential (In Progress - 4/5 Complete)
+### Phase 1 - Essential (In Progress - 5/6 Complete)
 - ✅ **Sorting Algorithms** - 6 sorting algorithms with performance metrics
 - ✅ **Binary Search Tree** - Complete BST operations and traversals
 - ✅ **BFS/DFS Graph Traversal** - Graph traversal algorithms
 - ✅ **Trie Operations** - Prefix tree with D3.js visualization
+- ✅ **Binary Heap Operations** - Min/Max heap with insert, extract, and heapify
 - 🔄 **Dijkstra's Algorithm** - Shortest path finding (coming next)
 
 ### Phase 2 - Important (Planned)
