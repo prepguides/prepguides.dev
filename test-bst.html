@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test BST</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .controls { margin-bottom: 20px; }
+        button { margin: 5px; padding: 10px; }
+        #treeSvg { border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>BST Test</h1>
+    <div class="controls">
+        <button onclick="testBST()">Test BST</button>
+        <button onclick="generateTree()">Generate Tree</button>
+    </div>
+    <svg id="treeSvg" width="800" height="500"></svg>
+    
+    <script>
+        console.log('D3.js loaded:', typeof d3 !== 'undefined');
+        
+        function testBST() {
+            console.log('Testing BST...');
+            const svg = d3.select('#treeSvg');
+            console.log('SVG selected:', svg.empty() ? 'NO' : 'YES');
+            
+            svg.append('circle')
+                .attr('cx', 100)
+                .attr('cy', 100)
+                .attr('r', 20)
+                .style('fill', 'blue');
+                
+            console.log('Circle added');
+        }
+        
+        function generateTree() {
+            console.log('Generating tree...');
+            if (window.bstVisualizer) {
+                window.bstVisualizer.generateRandomTree();
+            } else {
+                console.error('BST Visualizer not available');
+            }
+        }
+        
+        // Load the BST visualizer
+        const script = document.createElement('script');
+        script.src = 'algorithms/code/bst-visualizer.js';
+        script.onload = () => {
+            console.log('BST Visualizer script loaded');
+        };
+        script.onerror = () => {
+            console.error('Failed to load BST Visualizer script');
+        };
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>

@@ -742,5 +742,14 @@ function updateExecutionSpeed() {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.bstVisualizer = new BSTVisualizer();
+    console.log('DOM loaded, initializing BST Visualizer...');
+    console.log('D3.js available:', typeof d3 !== 'undefined');
+    console.log('SVG element exists:', !!document.getElementById('treeSvg'));
+    
+    try {
+        window.bstVisualizer = new BSTVisualizer();
+        console.log('BST Visualizer created successfully');
+    } catch (error) {
+        console.error('Failed to create BST Visualizer:', error);
+    }
 });
