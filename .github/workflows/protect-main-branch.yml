@@ -27,6 +27,10 @@ jobs:
             echo "✅ Admin-approved PR merge detected - allowing push to main"
             echo "This is a legitimate merge from a Pull Request"
             exit 0
+          elif echo "${{ github.event.head_commit.message }}" | grep -q "\(#[0-9]\+\)"; then
+            echo "✅ GitHub CLI PR merge detected - allowing push to main"
+            echo "This is a legitimate merge from a Pull Request"
+            exit 0
           else
             echo "❌ DIRECT PUSH TO MAIN DETECTED!"
             echo "🚫 This repository enforces a feature branch workflow."
@@ -98,6 +102,10 @@ jobs:
             exit 0
           elif echo "${{ github.event.head_commit.message }}" | grep -q "Admin-approved merge"; then
             echo "✅ Admin-approved PR merge detected - allowing push to main"
+            echo "This is a legitimate merge from a Pull Request"
+            exit 0
+          elif echo "${{ github.event.head_commit.message }}" | grep -q "\(#[0-9]\+\)"; then
+            echo "✅ GitHub CLI PR merge detected - allowing push to main"
             echo "This is a legitimate merge from a Pull Request"
             exit 0
           else
