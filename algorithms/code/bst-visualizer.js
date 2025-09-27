@@ -23,6 +23,10 @@ class BSTVisualizer {
         
         // D3.js setup
         this.svg = d3.select('#treeSvg');
+        if (this.svg.empty()) {
+            console.error('SVG element #treeSvg not found!');
+            return;
+        }
         this.width = 800;
         this.height = 500;
         
@@ -56,8 +60,13 @@ class BSTVisualizer {
         this.generateRandomTree();
 
         // Code execution synchronization (after DOM elements are ready)
-        this.codeSync = new CodeExecutionSync();
-        this.initializeCodeBlocks();
+        try {
+            this.codeSync = new CodeExecutionSync();
+            this.initializeCodeBlocks();
+        } catch (error) {
+            console.warn('CodeExecutionSync not available:', error);
+            this.codeSync = null;
+        }
     }
 
     initializeElements() {
@@ -73,6 +82,23 @@ class BSTVisualizer {
         this.comparisonsEl = document.getElementById('comparisons');
         this.timeEl = document.getElementById('time');
         this.traversalGroup = document.getElementById('traversalGroup');
+        
+        // Debug: Check if all elements are found
+        const elements = {
+            operationSelect: this.operationSelect,
+            valueInput: this.valueInput,
+            executeBtn: this.executeBtn,
+            generateBtn: this.generateBtn,
+            resetBtn: this.resetBtn
+        };
+        
+        for (const [name, element] of Object.entries(elements)) {
+            if (!element) {
+                console.error(`Element not found: ${name}`);
+            }
+        }
+        
+        console.log('BST Visualizer initialized successfully');
     }
 
     setupEventListeners() {
@@ -605,9 +631,37 @@ class BSTVisualizer {
     }
 
     showMessage(message, type) {
-        const messageEl = document.getElementById('message');
+        // Create message element if it doesn't exist
+        let messageEl = document.getElementById('message');
+        if (!messageEl) {
+            messageEl = document.createElement('div');
+            messageEl.id = 'message';
+            messageEl.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 600;
+                z-index: 1000;
+                display: none;
+                max-width: 300px;
+            `;
+            document.body.appendChild(messageEl);
+        }
+        
         messageEl.textContent = message;
         messageEl.className = `message ${type}`;
+        
+        // Set background color based on type
+        const colors = {
+            success: '#10b981',
+            error: '#ef4444',
+            warning: '#f59e0b',
+            info: '#3b82f6'
+        };
+        messageEl.style.backgroundColor = colors[type] || colors.info;
         messageEl.style.display = 'block';
         
         setTimeout(() => {
@@ -651,6 +705,38 @@ class BSTVisualizer {
         if (this.codeSync) {
             this.codeSync.updateCodeBlocks(operation);
         }
+    }
+}
+
+// Global functions for code execution controls (referenced in HTML)
+function startCodeExecution() {
+    if (window.bstVisualizer && window.bstVisualizer.codeSync) {
+        window.bstVisualizer.codeSync.start();
+    }
+}
+
+function pauseCodeExecution() {
+    if (window.bstVisualizer && window.bstVisualizer.codeSync) {
+        window.bstVisualizer.codeSync.pause();
+    }
+}
+
+function resumeCodeExecution() {
+    if (window.bstVisualizer && window.bstVisualizer.codeSync) {
+        window.bstVisualizer.codeSync.resume();
+    }
+}
+
+function stopCodeExecution() {
+    if (window.bstVisualizer && window.bstVisualizer.codeSync) {
+        window.bstVisualizer.codeSync.stop();
+    }
+}
+
+function updateExecutionSpeed() {
+    const speed = document.getElementById('executionSpeed').value;
+    if (window.bstVisualizer && window.bstVisualizer.codeSync) {
+        window.bstVisualizer.codeSync.setSpeed(speed);
     }
 }
 
