@@ -457,12 +457,22 @@
         document.getElementById('metadata').style.display = 'flex';
         document.getElementById('back-button').style.display = 'inline-flex';
 
-        // Initialize Mermaid
+        // Initialize Mermaid with more robust settings
         mermaid.initialize({
             startOnLoad: false,
             theme: 'default',
             securityLevel: 'loose',
-            fontFamily: 'inherit'
+            fontFamily: 'inherit',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            },
+            sequence: {
+                useMaxWidth: true
+            },
+            gantt: {
+                useMaxWidth: true
+            }
         });
 
         // Configure marked with enhanced options
@@ -525,7 +535,19 @@
             return markdown.replace(/```mermaid\n([\s\S]*?)\n```/g, (match, diagram) => {
                 const id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
                 // Clean up the diagram content and ensure proper formatting
-                const cleanDiagram = diagram.trim().replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                let cleanDiagram = diagram.trim()
+                    .replace(/\r\n/g, '\n')
+                    .replace(/\r/g, '\n')
+                    // Remove any potential HTML entities or tags that might interfere
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&amp;/g, '&')
+                    .replace(/&quot;/g, '"')
+                    .replace(/&#39;/g, "'")
+                    // Remove any stray HTML tags
+                    .replace(/<[^>]*>/g, '')
+                    // Ensure proper line breaks
+                    .replace(/\n\s*\n/g, '\n');
                 return `<div class="mermaid" id="${id}">${cleanDiagram}</div>`;
             });
         }
@@ -543,12 +565,20 @@
                             element.innerHTML = svg;
                         } catch (error) {
                             console.error(`Error rendering Mermaid diagram ${i}:`, error);
+                            console.error('Diagram content:', element.textContent);
                             element.innerHTML = `<div class="mermaid-error">
                                 <p><strong>Diagram rendering error:</strong></p>
                                 <pre>${error.message}</pre>
                                 <details>
                                     <summary>Raw diagram code</summary>
                                     <pre>${element.textContent}</pre>
+                                </details>
+                                <details>
+                                    <summary>Debug info</summary>
+                                    <pre>Diagram length: ${element.textContent.length}
+Line count: ${element.textContent.split('\n').length}
+First 100 chars: ${element.textContent.substring(0, 100)}
+Last 100 chars: ${element.textContent.substring(Math.max(0, element.textContent.length - 100))}</pre>
                                 </details>
                             </div>`;
                         }
