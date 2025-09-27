@@ -23,6 +23,10 @@ jobs:
             echo "✅ Self-approved PR merge detected - allowing push to main"
             echo "This is a legitimate merge from a Pull Request"
             exit 0
+          elif echo "${{ github.event.head_commit.message }}" | grep -q "Admin-approved merge"; then
+            echo "✅ Admin-approved PR merge detected - allowing push to main"
+            echo "This is a legitimate merge from a Pull Request"
+            exit 0
           else
             echo "❌ DIRECT PUSH TO MAIN DETECTED!"
             echo "🚫 This repository enforces a feature branch workflow."
@@ -90,6 +94,10 @@ jobs:
             exit 0
           elif echo "${{ github.event.head_commit.message }}" | grep -q "Self-approved merge"; then
             echo "✅ Self-approved PR merge detected - allowing push to main"
+            echo "This is a legitimate merge from a Pull Request"
+            exit 0
+          elif echo "${{ github.event.head_commit.message }}" | grep -q "Admin-approved merge"; then
+            echo "✅ Admin-approved PR merge detected - allowing push to main"
             echo "This is a legitimate merge from a Pull Request"
             exit 0
           else
