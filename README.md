@@ -103,7 +103,8 @@ cd prepguides.dev
 │   ├── binary-search-tree.html  # BST operations
 │   ├── bfs-dfs-graph-traversal.html  # Graph traversal
 │   ├── trie-operations.html     # Trie data structure
-│   └── binary-heap.html         # Min/Max heap operations
+│   ├── binary-heap.html         # Min/Max heap operations
+│   └── segment-tree.html        # Range queries and tree construction
 ├── docs/                   # Project documentation
 │   ├── algorithm/          # Algorithm development docs
 │   ├── development/        # Development workflow docs
@@ -152,8 +153,8 @@ We welcome contributions! Here's how you can help:
 - ✅ **Binary Heap Operations** - Min/Max heap with insert, extract, and heapify
 - ✅ **Dijkstra's Algorithm** - Shortest path finding in weighted graphs
 
-### Phase 2 - Important (Planned)
-- **Segment Tree** - Range queries and tree construction
+### Phase 2 - Important (In Progress - 1/4 Complete)
+- ✅ **Segment Tree** - Range queries and tree construction
 - **KMP String Matching** - Pattern matching with failure function
 - **Topological Sort** - DAG ordering and dependency resolution
 - **Union-Find** - Disjoint sets with path compression
