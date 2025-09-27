@@ -379,6 +379,7 @@
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+            justify-content: center;
         }
 
         .array-element {
@@ -525,8 +526,8 @@
 
             initializeSVG() {
                 this.svg = d3.select('#tree-svg');
-                this.width = 800;
-                this.height = 500;
+                this.width = 900;
+                this.height = 600;
                 
                 this.svg.attr('width', this.width).attr('height', this.height);
                 
@@ -808,18 +809,23 @@
 
             calculateTreePositions() {
                 const positions = [];
-                const nodeSpacing = 80;
-                const levelHeight = 60;
+                const nodeSpacing = 100;
+                const levelHeight = 80;
                 
                 // Calculate tree structure
                 const treeLevels = this.calculateTreeLevels();
                 
+                // Calculate the maximum width needed for the tree
+                const maxLevelWidth = Math.max(...treeLevels.map(level => level.length));
+                const totalWidth = (maxLevelWidth - 1) * nodeSpacing;
+                const startX = (this.width - totalWidth) / 2;
+                
                 treeLevels.forEach((level, levelIndex) => {
-                    const startX = this.width / 2 - (level.length - 1) * nodeSpacing / 2;
+                    const levelStartX = startX + (maxLevelWidth - level.length) * nodeSpacing / 2;
                     
                     level.forEach((nodeIndex, nodeInLevel) => {
-                        const x = startX + nodeInLevel * nodeSpacing;
-                        const y = 50 + levelIndex * levelHeight;
+                        const x = levelStartX + nodeInLevel * nodeSpacing;
+                        const y = 80 + levelIndex * levelHeight;
                         
                         positions[nodeIndex] = {x, y, level: levelIndex};
                     });
@@ -831,9 +837,13 @@
             calculateTreeLevels() {
                 const levels = [];
                 const queue = [{node: 0, level: 0}];
+                const visited = new Set();
                 
                 while (queue.length > 0) {
                     const {node, level} = queue.shift();
+                    
+                    if (visited.has(node)) continue;
+                    visited.add(node);
                     
                     if (!levels[level]) {
                         levels[level] = [];
@@ -843,6 +853,7 @@
                     const leftChild = 2 * node + 1;
                     const rightChild = 2 * node + 2;
                     
+                    // Add children if they exist and have valid values
                     if (leftChild < this.segmentTree.length && this.segmentTree[leftChild] !== 0) {
                         queue.push({node: leftChild, level: level + 1});
                     }
@@ -856,15 +867,20 @@
 
             drawTreeEdges(positions, nodeRadius) {
                 for (let i = 0; i < this.segmentTree.length; i++) {
-                    if (this.segmentTree[i] === 0) continue;
+                    if (this.segmentTree[i] === 0 || !positions[i]) continue;
                     
                     const leftChild = 2 * i + 1;
                     const rightChild = 2 * i + 2;
                     
-                    if (leftChild < this.segmentTree.length && this.segmentTree[leftChild] !== 0 && positions[leftChild]) {
+                    // Only draw edges to children that exist and have positions
+                    if (leftChild < this.segmentTree.length && 
+                        this.segmentTree[leftChild] !== 0 && 
+                        positions[leftChild]) {
                         this.drawEdge(positions[i], positions[leftChild], nodeRadius);
                     }
-                    if (rightChild < this.segmentTree.length && this.segmentTree[rightChild] !== 0 && positions[rightChild]) {
+                    if (rightChild < this.segmentTree.length && 
+                        this.segmentTree[rightChild] !== 0 && 
+                        positions[rightChild]) {
                         this.drawEdge(positions[i], positions[rightChild], nodeRadius);
                     }
                 }
@@ -891,15 +907,27 @@
             }
 
             drawTreeNodes(positions, nodeRadius) {
-                const nodes = this.nodesGroup.selectAll('.node')
-                    .data(this.segmentTree.filter((val, index) => val !== 0 && positions[index]))
+                // Clear existing nodes
+                this.nodesGroup.selectAll('*').remove();
+                
+                // Create data array with node indices and values
+                const nodeData = [];
+                for (let i = 0; i < this.segmentTree.length; i++) {
+                    if (this.segmentTree[i] !== 0 && positions[i]) {
+                        nodeData.push({
+                            index: i,
+                            value: this.segmentTree[i],
+                            position: positions[i]
+                        });
+                    }
+                }
+                
+                const nodes = this.nodesGroup.selectAll('.node-group')
+                    .data(nodeData)
                     .enter()
                     .append('g')
                     .attr('class', 'node-group')
-                    .attr('transform', (d, i) => {
-                        const nodeIndex = this.segmentTree.findIndex((val, idx) => val === d && positions[idx]);
-                        return `translate(${positions[nodeIndex].x}, ${positions[nodeIndex].y})`;
-                    });
+                    .attr('transform', d => `translate(${d.position.x}, ${d.position.y})`);
                 
                 nodes.append('circle')
                     .attr('class', 'node')
@@ -907,7 +935,7 @@
                 
                 nodes.append('text')
                     .attr('class', 'node-text')
-                    .text(d => d);
+                    .text(d => d.value);
             }
 
             updateStats() {
