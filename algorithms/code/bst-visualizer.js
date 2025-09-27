@@ -324,6 +324,12 @@ class BSTVisualizer {
         this.traversalSequence = [];
         this.clearHighlights();
         
+        // Hide previous traversal result
+        const traversalResult = document.getElementById('traversalResult');
+        if (traversalResult) {
+            traversalResult.style.display = 'none';
+        }
+        
         switch (type) {
             case 'inorder':
                 await this.inorderTraversal(this.root);
@@ -339,14 +345,16 @@ class BSTVisualizer {
                 break;
         }
         
-        this.showMessage(`${type.charAt(0).toUpperCase() + type.slice(1)} traversal: ${this.traversalSequence.join(' → ')}`, 'info');
+        // Show traversal result
+        this.showTraversalResult(type, this.traversalSequence);
+        this.showMessage(`${type.charAt(0).toUpperCase() + type.slice(1)} traversal completed!`, 'success');
     }
 
     async inorderTraversal(node) {
         if (!node) return;
         
         await this.inorderTraversal(node.left);
-        this.highlightNode(node.id, 'visiting');
+        this.highlightNode(node.id, 'examining');
         this.traversalSequence.push(node.value);
         await this.delay(800);
         this.clearHighlights();
@@ -356,7 +364,7 @@ class BSTVisualizer {
     async preorderTraversal(node) {
         if (!node) return;
         
-        this.highlightNode(node.id, 'visiting');
+        this.highlightNode(node.id, 'examining');
         this.traversalSequence.push(node.value);
         await this.delay(800);
         this.clearHighlights();
@@ -369,7 +377,7 @@ class BSTVisualizer {
         
         await this.postorderTraversal(node.left);
         await this.postorderTraversal(node.right);
-        this.highlightNode(node.id, 'visiting');
+        this.highlightNode(node.id, 'examining');
         this.traversalSequence.push(node.value);
         await this.delay(800);
         this.clearHighlights();
@@ -382,7 +390,7 @@ class BSTVisualizer {
         
         while (queue.length > 0) {
             const node = queue.shift();
-            this.highlightNode(node.id, 'visiting');
+            this.highlightNode(node.id, 'examining');
             this.traversalSequence.push(node.value);
             await this.delay(800);
             this.clearHighlights();
@@ -667,6 +675,22 @@ class BSTVisualizer {
         setTimeout(() => {
             messageEl.style.display = 'none';
         }, 3000);
+    }
+
+    showTraversalResult(type, sequence) {
+        const traversalResult = document.getElementById('traversalResult');
+        const traversalSequence = document.getElementById('traversalSequence');
+        
+        if (traversalResult && traversalSequence) {
+            traversalResult.style.display = 'block';
+            traversalSequence.textContent = sequence.join(' → ');
+            
+            // Update the title
+            const title = traversalResult.querySelector('h4');
+            if (title) {
+                title.textContent = `${type.charAt(0).toUpperCase() + type.slice(1)} Traversal Result`;
+            }
+        }
     }
 
     reset() {

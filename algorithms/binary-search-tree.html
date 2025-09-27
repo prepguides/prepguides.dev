@@ -6,8 +6,8 @@
     <title>Binary Search Tree - PrepGuides.dev</title>
     <meta name="description" content="Interactive visualization of Binary Search Tree operations with insert, delete, search, and traversal animations">
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <link rel="stylesheet" href="code/code-highlighting.css">
-    <script src="code/code-execution-sync.js"></script>
+    <link rel="stylesheet" href="../algorithms/code/code-highlighting.css">
+    <script src="../algorithms/code/code-execution-sync.js"></script>
     <style>
         * {
             margin: 0;
@@ -635,6 +635,12 @@
                 </div>
             </div>
 
+            <!-- Traversal Result Display -->
+            <div class="traversal-result" id="traversalResult" style="display: none;">
+                <h4>Traversal Result</h4>
+                <div class="traversal-sequence" id="traversalSequence"></div>
+            </div>
+
             <!-- Code Execution Synchronization -->
             <div class="code-execution-container">
                 <div class="code-panel go">
@@ -712,12 +718,12 @@
     </div>
 
     <!-- External JavaScript -->
-    <script src="code/bst-visualizer.js"></script>
+    <script src="../algorithms/code/bst-visualizer.js"></script>
     
     <!-- Fallback if external script fails -->
     <script>
         // Check if BST visualizer loaded
-        setTimeout(() => {
+                setTimeout(() => {
             if (!window.bstVisualizer) {
                 console.error('BST Visualizer failed to load');
                 document.body.innerHTML += '<div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: red; color: white; padding: 20px; border-radius: 8px;">BST Visualizer failed to load. Check console for errors.</div>';
