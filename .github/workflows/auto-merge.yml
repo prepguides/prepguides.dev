@@ -122,7 +122,7 @@ jobs:
             
             // Check if PR follows naming convention
             const branchName = pr.head.ref;
-            const validPrefixes = ['feature/', 'fix/', 'docs/', 'improve/'];
+            const validPrefixes = ['feature/', 'fix/', 'docs/', 'improve/', 'security/'];
             const hasValidPrefix = validPrefixes.some(prefix => branchName.startsWith(prefix));
             
             if (!hasValidPrefix) {
@@ -135,7 +135,7 @@ jobs:
                 This PR cannot be approved because it doesn't follow the naming convention.
                 
                 **Requirements:**
-                - Branch must start with: \`feature/\`, \`fix/\`, \`docs/\`, or \`improve/\`
+                - Branch must start with: \`feature/\`, \`fix/\`, \`docs/\`, \`improve/\`, or \`security/\`
                 
                 **Current Branch**: \`${branchName}\`
                 
