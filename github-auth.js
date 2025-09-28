@@ -335,8 +335,6 @@ class GitHubAuth {
         }
 
         const branchName = `content-submission-${Date.now()}`;
-        const fileName = this.generateFileName(contentData);
-        const filePath = this.getFilePath(contentData);
         
         // Validate branch name (GitHub branch names must be valid ref names)
         if (!/^[a-zA-Z0-9._-]+$/.test(branchName)) {
@@ -352,8 +350,8 @@ class GitHubAuth {
             console.log('Branch created successfully');
 
             // Create/update the content file
-            console.log('Creating content file:', filePath);
-            await this.createContentFile(branchName, filePath, contentData);
+            console.log('Creating content submission file');
+            await this.createContentFile(branchName, contentData);
             console.log('Content file created successfully');
 
             // Create pull request
@@ -453,11 +451,15 @@ class GitHubAuth {
     /**
      * Create content file in the repository
      */
-    async createContentFile(branchName, filePath, contentData) {
-        const content = this.formatContent(contentData);
-        const encodedContent = btoa(unescape(encodeURIComponent(content)));
+    async createContentFile(branchName, contentData) {
+        // Create content JSON file in .github/content-submissions/ folder
+        const contentJson = this.formatContentAsJson(contentData);
+        const encodedContent = btoa(unescape(encodeURIComponent(contentJson)));
 
-        const response = await fetch(`https://api.github.com/repos/prepguides/prepguides.dev/contents/${filePath}`, {
+        // Use a standardized path for content submissions
+        const submissionPath = `.github/content-submissions/${contentData.id}.json`;
+
+        const response = await fetch(`https://api.github.com/repos/prepguides/prepguides.dev/contents/${submissionPath}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `token ${this.accessToken}`,
@@ -465,14 +467,14 @@ class GitHubAuth {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                message: `Add content: ${contentData.title}`,
+                message: `Add content submission: ${contentData.title}`,
                 content: encodedContent,
                 branch: branchName
             })
         });
 
         if (!response.ok) {
-            throw new Error('Failed to create content file');
+            throw new Error('Failed to create content submission file');
         }
 
         return await response.json();
@@ -501,46 +503,36 @@ class GitHubAuth {
     /**
      * Format content as HTML
      */
-    formatContent(contentData) {
-        return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${contentData.title} - PrepGuides.dev</title>
-    <meta name="description" content="${contentData.description}">
-    <style>
-        /* Add your custom styles here */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+    formatContentAsJson(contentData) {
+        // Create a JSON structure that matches the base.json format
+        const contentJson = {
+            id: contentData.id,
+            title: contentData.title,
+            description: contentData.description,
+            type: contentData.type || 'guide',
+            path: contentData.path || `${contentData.category}/${contentData.id}.html`,
+            addedDate: contentData.addedDate,
+            status: contentData.status || 'pending',
+            submittedBy: this.user.login,
+            submittedAt: new Date().toISOString(),
+            category: contentData.category,
+            subtopic: contentData.subtopic
+        };
+
+        // Add type-specific fields
+        if (contentData.type === 'guide' && contentData.repo) {
+            contentJson.repo = contentData.repo;
         }
-        .content {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+        if (contentData.features && contentData.features.length > 0) {
+            contentJson.features = contentData.features;
         }
-    </style>
-</head>
-<body>
-    <div class="content">
-        <h1>${contentData.title}</h1>
-        <p><strong>Category:</strong> ${contentData.category}</p>
-        <p><strong>Description:</strong> ${contentData.description}</p>
-        
-        <div class="main-content">
-            ${contentData.content || contentData.description || ''}
-        </div>
-        
-        <hr>
-        <p><em>Submitted by: ${this.user.login} on ${new Date().toISOString()}</em></p>
-    </div>
-</body>
-</html>`;
+
+        if (contentData.jsFile) {
+            contentJson.jsFile = contentData.jsFile;
+        }
+
+        return JSON.stringify(contentJson, null, 2);
     }
 
     /**
