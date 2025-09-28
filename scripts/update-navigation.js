@@ -244,15 +244,37 @@ function generateCategoryPage(categoryId, category) {
             buttonText = 'View Guide →';
           }
           
+          // Generate features list based on content type and available data
+          let featuresHtml = '';
+          if (contentItem.features && contentItem.features.length > 0) {
+            // Use specific features from content
+            featuresHtml = contentItem.features.map(feature => `<li>${feature}</li>`).join('');
+          } else {
+            // Use generic features based on content type
+            const genericFeatures = {
+              'visualization': [
+                'Interactive step-by-step visualization',
+                'Real-time algorithm execution',
+                'Performance metrics and analysis',
+                'Interview preparation focused'
+              ],
+              'guide': [
+                'Comprehensive guide and tutorial',
+                'Best practices and examples',
+                'Interview preparation focused',
+                'Practical implementation tips'
+              ]
+            };
+            const features = genericFeatures[contentItem.type] || genericFeatures['guide'];
+            featuresHtml = features.map(feature => `<li>${feature}</li>`).join('');
+          }
+          
           contentHtml += `
             <div class="algorithm-card" onclick="window.location.href='${link}'">
               <h3 class="algorithm-title">${contentItem.title}</h3>
               <p class="algorithm-description">${contentItem.description}</p>
               <ul class="algorithm-features">
-                <li>Comprehensive ${contentItem.type || 'content'}</li>
-                <li>Interactive learning experience</li>
-                <li>Interview preparation focused</li>
-                <li>Best practices and examples</li>
+                ${featuresHtml}
               </ul>
               <a href="${link}" class="access-button">${buttonText}</a>
             </div>`;
