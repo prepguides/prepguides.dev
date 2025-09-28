@@ -485,6 +485,7 @@ class ContentForm {
             content: formData.get('description'), // Use description as content for consistency
             type: contentType,
             path: formData.get('path'),
+            repo: formData.get('repo'), // Add repo field
             addedDate: new Date().toISOString().split('T')[0],
             status: 'pending'
         };
@@ -535,6 +536,12 @@ class ContentForm {
      * Generate content ID
      */
     generateContentId(title, category) {
+        // Validate inputs
+        if (!title || !category) {
+            console.error('generateContentId: Missing title or category', { title, category });
+            return 'unknown-content';
+        }
+        
         const id = title.toLowerCase()
             .replace(/[^a-z0-9\s]/g, '')
             .replace(/\s+/g, '-')
