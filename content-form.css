@@ -12,43 +12,6 @@
     border: 1px solid #e5e7eb;
 }
 
-/* Form Header */
-.form-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #f3f4f6;
-}
-
-.form-header h3 {
-    margin: 0;
-    color: #1f2937;
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
-.close-form-btn {
-    background: #f3f4f6;
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 16px;
-    color: #6b7280;
-    transition: all 0.3s ease;
-}
-
-.close-form-btn:hover {
-    background: #e5e7eb;
-    color: #374151;
-}
-
 /* Authentication Section */
 .auth-section {
     margin-bottom: 30px;
@@ -219,53 +182,6 @@
     color: #6b7280;
     font-size: 0.75rem;
     margin-top: 4px;
-}
-
-/* Field Validation States */
-.field-error {
-    color: #dc2626;
-    font-size: 0.875rem;
-    margin-top: 4px;
-    font-weight: 500;
-}
-
-.field-success {
-    color: #059669;
-    font-size: 0.875rem;
-    margin-top: 4px;
-    font-weight: 500;
-}
-
-.form-group input.error,
-.form-group select.error,
-.form-group textarea.error {
-    border-color: #dc2626;
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-}
-
-.form-group input.success,
-.form-group select.success,
-.form-group textarea.success {
-    border-color: #059669;
-    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
-}
-
-/* Content Type Specific Fields */
-.github-content-fields,
-.local-content-fields {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 20px;
-    margin-top: 15px;
-}
-
-.github-content-fields h4,
-.local-content-fields h4 {
-    margin: 0 0 15px 0;
-    color: #374151;
-    font-size: 1rem;
-    font-weight: 600;
 }
 
 .form-actions {

@@ -25,97 +25,83 @@ class ContentForm {
 
         formContainer.innerHTML = `
             <div class="content-submission-panel">
-                <div class="form-header">
-                    <h3>📝 Submit New Content</h3>
-                    <button id="close-form-btn" class="close-form-btn">✕</button>
-                </div>
-                
-                <form id="content-form" class="content-form">
-                    <div class="form-group">
-                        <label for="content-title">Title *</label>
-                        <input type="text" id="content-title" name="title" required 
-                               placeholder="e.g., Advanced Kubernetes Networking">
+                <div class="auth-section">
+                    <div id="auth-status" class="auth-status">
+                        <div class="auth-loading">Checking authentication...</div>
                     </div>
-
-                    <div class="form-group">
-                        <label for="content-category">Category *</label>
-                        <select id="content-category" name="category" required>
-                            <option value="">Select a category</option>
-                            <option value="algorithms">Algorithms</option>
-                            <option value="kubernetes">Kubernetes</option>
-                            <option value="networking">Networking</option>
-                            <option value="databases">Databases</option>
-                            <option value="microservices">Microservices</option>
-                            <option value="system-design">System Design</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="content-subtopic">Subtopic *</label>
-                        <input type="text" id="content-subtopic" name="subtopic" required 
-                               placeholder="e.g., request-flow, sorting, osi-model">
-                        <small class="form-help">URL-friendly name for the subtopic (lowercase, hyphens)</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="content-description">Description *</label>
-                        <textarea id="content-description" name="description" required 
-                                  placeholder="Brief description of the content..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="content-type">Content Type *</label>
-                        <select id="content-type" name="type" required>
-                            <option value="">Select content type</option>
-                            <option value="guide">Guide (GitHub Markdown)</option>
-                            <option value="visualization">Visualization (Local HTML)</option>
-                        </select>
-                    </div>
-
-                    <div id="github-content-fields" class="github-content-fields" style="display: none;">
-                        <div class="form-group">
-                            <label for="content-repo">GitHub Repository *</label>
-                            <input type="text" id="content-repo" name="repo" 
-                                   placeholder="e.g., prepguides/go-interviews">
-                            <small class="form-help">Format: owner/repository-name</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="content-path">Markdown File Path *</label>
-                            <input type="text" id="content-path" name="path" 
-                                   placeholder="e.g., operator/README.md">
-                            <small class="form-help">Path to the markdown file in the repository</small>
-                        </div>
-                    </div>
-
-                    <div id="local-content-fields" class="local-content-fields" style="display: none;">
-                        <div class="form-group">
-                            <label for="content-path">HTML File Path *</label>
-                            <input type="text" id="content-path" name="path" 
-                                   placeholder="e.g., algorithms/sorting.html">
-                            <small class="form-help">Path to the HTML file (will be created)</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="content-jsfile">JavaScript File (optional)</label>
-                            <input type="text" id="content-jsfile" name="jsFile" 
-                                   placeholder="e.g., algorithms/code/sorting-visualizer.js">
-                            <small class="form-help">Path to the JavaScript visualization file</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="content-features">Features (optional)</label>
-                            <textarea id="content-features" name="features" 
-                                      placeholder="Enter each feature on a new line..."></textarea>
-                            <small class="form-help">List key features, one per line</small>
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="button" id="preview-btn" class="preview-btn">Preview</button>
-                        <button type="submit" id="submit-btn" class="submit-btn">
-                            <span class="btn-text">Submit Content</span>
-                            <span class="btn-loading" style="display: none;">Creating PR...</span>
+                    <div id="login-section" class="login-section" style="display: none;">
+                        <h3>🔐 GitHub Authentication Required</h3>
+                        <p>Please log in with GitHub to submit content. This ensures quality control and proper attribution.</p>
+                        <button id="github-login-btn" class="github-login-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            Login with GitHub
                         </button>
                     </div>
-                </form>
+                    <div id="user-section" class="user-section" style="display: none;">
+                        <div class="user-info">
+                            <img id="user-avatar" src="" alt="User Avatar" class="user-avatar">
+                            <div class="user-details">
+                                <div id="user-name" class="user-name"></div>
+                                <div id="user-login" class="user-login"></div>
+                            </div>
+                        </div>
+                        <button id="logout-btn" class="logout-btn">Logout</button>
+                    </div>
+                </div>
+
+                <div id="form-section" class="form-section" style="display: none;">
+                    <h3>📝 Submit New Content</h3>
+                    <form id="content-form" class="content-form">
+                        <div class="form-group">
+                            <label for="content-title">Title *</label>
+                            <input type="text" id="content-title" name="title" required 
+                                   placeholder="e.g., Advanced Kubernetes Networking">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="content-category">Category *</label>
+                            <select id="content-category" name="category" required>
+                                <option value="">Select a category</option>
+                                <option value="algorithms">Algorithms</option>
+                                <option value="kubernetes">Kubernetes</option>
+                                <option value="networking">Networking</option>
+                                <option value="databases">Databases</option>
+                                <option value="microservices">Microservices</option>
+                                <option value="system-design">System Design</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="content-description">Description *</label>
+                            <textarea id="content-description" name="description" required 
+                                      placeholder="Brief description of the content..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="content-content">Content *</label>
+                            <textarea id="content-content" name="content" required 
+                                      placeholder="Your content in HTML or Markdown format..."></textarea>
+                            <small class="form-help">You can use HTML tags or Markdown formatting</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="content-tags">Tags (optional)</label>
+                            <input type="text" id="content-tags" name="tags" 
+                                   placeholder="e.g., sorting, algorithms, interview">
+                            <small class="form-help">Comma-separated tags for better discoverability</small>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" id="preview-btn" class="preview-btn">Preview</button>
+                            <button type="submit" id="submit-btn" class="submit-btn">
+                                <span class="btn-text">Submit Content</span>
+                                <span class="btn-loading" style="display: none;">Creating PR...</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
 
                 <div id="preview-section" class="preview-section" style="display: none;">
                     <h3>👀 Content Preview</h3>
@@ -180,170 +166,6 @@ class ContentForm {
                 this.confirmSubmit();
             }
         });
-
-        // Show content form button
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'show-content-form-btn') {
-                this.showContentForm();
-            }
-        });
-
-        // Close form button
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'close-form-btn') {
-                this.hideContentForm();
-            }
-        });
-
-        // Content type change
-        document.addEventListener('change', (e) => {
-            if (e.target.id === 'content-type') {
-                this.handleContentTypeChange(e.target.value);
-            }
-        });
-
-        // GitHub repo validation
-        document.addEventListener('blur', (e) => {
-            if (e.target.id === 'content-repo') {
-                this.validateGitHubRepo(e.target.value);
-            }
-        });
-
-        // Markdown path validation
-        document.addEventListener('blur', (e) => {
-            if (e.target.id === 'content-path' && document.getElementById('content-type').value === 'guide') {
-                this.validateMarkdownPath(e.target.value);
-            }
-        });
-    }
-
-    /**
-     * Show content form
-     */
-    showContentForm() {
-        const formContainer = document.getElementById('content-form-container');
-        if (formContainer) {
-            formContainer.style.display = 'block';
-            formContainer.scrollIntoView({ behavior: 'smooth' });
-        }
-    }
-
-    /**
-     * Hide content form
-     */
-    hideContentForm() {
-        const formContainer = document.getElementById('content-form-container');
-        if (formContainer) {
-            formContainer.style.display = 'none';
-        }
-    }
-
-    /**
-     * Handle content type change
-     */
-    handleContentTypeChange(type) {
-        const githubFields = document.getElementById('github-content-fields');
-        const localFields = document.getElementById('local-content-fields');
-        
-        if (type === 'guide') {
-            githubFields.style.display = 'block';
-            localFields.style.display = 'none';
-        } else if (type === 'visualization') {
-            githubFields.style.display = 'none';
-            localFields.style.display = 'block';
-        } else {
-            githubFields.style.display = 'none';
-            localFields.style.display = 'none';
-        }
-    }
-
-    /**
-     * Validate GitHub repository format
-     */
-    async validateGitHubRepo(repo) {
-        const repoInput = document.getElementById('content-repo');
-        const repoPattern = /^[a-zA-Z0-9._-]+\/[a-zA-Z0-9._-]+$/;
-        
-        if (!repo) return;
-        
-        if (!repoPattern.test(repo)) {
-            this.showFieldError(repoInput, 'Invalid repository format. Use: owner/repository-name');
-            return;
-        }
-
-        // Check if repository exists
-        try {
-            const response = await fetch(`https://api.github.com/repos/${repo}`);
-            if (response.ok) {
-                this.showFieldSuccess(repoInput, 'Repository found');
-            } else {
-                this.showFieldError(repoInput, 'Repository not found or not accessible');
-            }
-        } catch (error) {
-            this.showFieldError(repoInput, 'Error checking repository');
-        }
-    }
-
-    /**
-     * Validate markdown file path
-     */
-    async validateMarkdownPath(path) {
-        const pathInput = document.getElementById('content-path');
-        const repo = document.getElementById('content-repo').value;
-        
-        if (!path || !repo) return;
-        
-        if (!path.endsWith('.md')) {
-            this.showFieldError(pathInput, 'Path must end with .md for markdown files');
-            return;
-        }
-
-        // Check if file exists in repository
-        try {
-            const response = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`);
-            if (response.ok) {
-                this.showFieldSuccess(pathInput, 'Markdown file found');
-            } else {
-                this.showFieldError(pathInput, 'Markdown file not found in repository');
-            }
-        } catch (error) {
-            this.showFieldError(pathInput, 'Error checking file');
-        }
-    }
-
-    /**
-     * Show field error
-     */
-    showFieldError(field, message) {
-        this.clearFieldStatus(field);
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'field-error';
-        errorDiv.textContent = message;
-        field.parentNode.appendChild(errorDiv);
-        field.classList.add('error');
-    }
-
-    /**
-     * Show field success
-     */
-    showFieldSuccess(field, message) {
-        this.clearFieldStatus(field);
-        const successDiv = document.createElement('div');
-        successDiv.className = 'field-success';
-        successDiv.textContent = message;
-        field.parentNode.appendChild(successDiv);
-        field.classList.add('success');
-    }
-
-    /**
-     * Clear field status
-     */
-    clearFieldStatus(field) {
-        field.classList.remove('error', 'success');
-        const existingError = field.parentNode.querySelector('.field-error');
-        const existingSuccess = field.parentNode.querySelector('.field-success');
-        if (existingError) existingError.remove();
-        if (existingSuccess) existingSuccess.remove();
     }
 
     /**
@@ -353,36 +175,45 @@ class ContentForm {
         const authStatus = document.getElementById('auth-status');
         const loginSection = document.getElementById('login-section');
         const userSection = document.getElementById('user-section');
-        const showFormBtn = document.getElementById('show-content-form-btn');
+        const formSection = document.getElementById('form-section');
 
         if (!authStatus) return;
 
         // Check if GitHub OAuth is configured
         if (!window.githubAuth.isConfigured) {
             authStatus.innerHTML = '<div class="auth-error">⚠️ GitHub OAuth not configured</div>';
-            if (loginSection) loginSection.style.display = 'none';
-            if (userSection) userSection.style.display = 'none';
-            if (showFormBtn) showFormBtn.style.display = 'none';
+            loginSection.innerHTML = `
+                <h3>🔧 Setup Required</h3>
+                <p>GitHub OAuth is not configured. To enable content submission:</p>
+                <ol style="text-align: left; margin: 15px 0;">
+                    <li>Create a GitHub OAuth App</li>
+                    <li>Set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET environment variables</li>
+                    <li>Configure the callback URL</li>
+                </ol>
+                <p>See <a href="CONTENT_SUBMISSION_SETUP.md" target="_blank">setup documentation</a> for details.</p>
+            `;
+            loginSection.style.display = 'block';
+            userSection.style.display = 'none';
+            formSection.style.display = 'none';
             return;
         }
 
         if (window.githubAuth.isAuthenticated()) {
             authStatus.innerHTML = '<div class="auth-success">✅ Authenticated with GitHub</div>';
-            if (loginSection) loginSection.style.display = 'none';
-            if (userSection) userSection.style.display = 'flex';
-            if (showFormBtn) showFormBtn.style.display = 'inline-block';
+            loginSection.style.display = 'none';
+            userSection.style.display = 'block';
+            formSection.style.display = 'block';
             
             // Update user info
             const user = window.githubAuth.user;
-            const userAvatar = document.getElementById('user-avatar');
-            const userName = document.getElementById('user-name');
-            if (userAvatar) userAvatar.src = user.avatar_url;
-            if (userName) userName.textContent = user.name || user.login;
+            document.getElementById('user-avatar').src = user.avatar_url;
+            document.getElementById('user-name').textContent = user.name || user.login;
+            document.getElementById('user-login').textContent = `@${user.login}`;
         } else {
             authStatus.innerHTML = '<div class="auth-error">❌ Not authenticated</div>';
-            if (loginSection) loginSection.style.display = 'flex';
-            if (userSection) userSection.style.display = 'none';
-            if (showFormBtn) showFormBtn.style.display = 'none';
+            loginSection.style.display = 'block';
+            userSection.style.display = 'none';
+            formSection.style.display = 'none';
         }
     }
 
@@ -393,32 +224,13 @@ class ContentForm {
         if (this.isSubmitting) return;
 
         const formData = new FormData(document.getElementById('content-form'));
-        const contentType = formData.get('type');
-        
         const contentData = {
-            id: this.generateContentId(formData.get('title'), formData.get('category')),
             title: formData.get('title'),
             category: formData.get('category'),
-            subtopic: formData.get('subtopic'),
             description: formData.get('description'),
-            type: contentType,
-            path: formData.get('path'),
-            addedDate: new Date().toISOString().split('T')[0],
-            status: 'pending'
+            content: formData.get('content'),
+            tags: formData.get('tags')
         };
-
-        // Add type-specific fields
-        if (contentType === 'guide') {
-            contentData.repo = formData.get('repo');
-        } else if (contentType === 'visualization') {
-            const jsFile = formData.get('jsFile');
-            if (jsFile) contentData.jsFile = jsFile;
-            
-            const features = formData.get('features');
-            if (features) {
-                contentData.features = features.split('\n').filter(f => f.trim());
-            }
-        }
 
         // Validate form
         if (!this.validateForm(contentData)) {
@@ -426,17 +238,6 @@ class ContentForm {
         }
 
         this.showPreview(contentData);
-    }
-
-    /**
-     * Generate content ID
-     */
-    generateContentId(title, category) {
-        const id = title.toLowerCase()
-            .replace(/[^a-z0-9\s]/g, '')
-            .replace(/\s+/g, '-')
-            .substring(0, 50);
-        return `${category}-${id}`;
     }
 
     /**
@@ -453,37 +254,12 @@ class ContentForm {
             errors.push('Category is required');
         }
 
-        if (!data.subtopic.trim()) {
-            errors.push('Subtopic is required');
-        }
-
         if (!data.description.trim()) {
             errors.push('Description is required');
         }
 
-        if (!data.type) {
-            errors.push('Content type is required');
-        }
-
-        if (!data.path.trim()) {
-            errors.push('Path is required');
-        }
-
-        // Type-specific validation
-        if (data.type === 'guide') {
-            if (!data.repo.trim()) {
-                errors.push('GitHub repository is required for guides');
-            } else if (!/^[a-zA-Z0-9._-]+\/[a-zA-Z0-9._-]+$/.test(data.repo)) {
-                errors.push('Invalid repository format. Use: owner/repository-name');
-            }
-            
-            if (!data.path.endsWith('.md')) {
-                errors.push('Path must end with .md for markdown guides');
-            }
-        } else if (data.type === 'visualization') {
-            if (!data.path.endsWith('.html')) {
-                errors.push('Path must end with .html for visualizations');
-            }
+        if (!data.content.trim()) {
+            errors.push('Content is required');
         }
 
         if (errors.length > 0) {
