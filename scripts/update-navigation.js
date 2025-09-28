@@ -501,16 +501,73 @@ function generateCategoryPage(categoryId, category) {
 }
 
 /**
- * Update category pages
+ * Update category pages - only for categories with new content
  */
 function updateCategoryPages(config) {
-  for (const [categoryId, category] of Object.entries(config.categories)) {
-    const categoryPagePath = path.resolve(`${categoryId}.html`);
-    const categoryPageContent = generateCategoryPage(categoryId, category);
-    
-    fs.writeFileSync(categoryPagePath, categoryPageContent, 'utf8');
-    console.log(`✅ Updated ${categoryId}.html`);
+  // Get categories that have new content from payloads
+  const affectedCategories = getAffectedCategories();
+  
+  if (affectedCategories.length === 0) {
+    console.log('ℹ️  No categories affected by new content - skipping HTML updates');
+    return;
   }
+  
+  console.log(`📝 Updating ${affectedCategories.length} affected category page(s): ${affectedCategories.join(', ')}`);
+  
+  for (const categoryId of affectedCategories) {
+    if (config.categories[categoryId]) {
+      const categoryPagePath = path.resolve(`${categoryId}.html`);
+      const categoryPageContent = generateCategoryPage(categoryId, config.categories[categoryId]);
+      
+      fs.writeFileSync(categoryPagePath, categoryPageContent, 'utf8');
+      console.log(`✅ Updated ${categoryId}.html`);
+    } else {
+      console.log(`⚠️  Category ${categoryId} not found in config - skipping`);
+    }
+  }
+}
+
+/**
+ * Get categories affected by new payloads in this PR
+ */
+function getAffectedCategories() {
+  const affectedCategories = new Set();
+  
+  try {
+    const { execSync } = require('child_process');
+    
+    // Get changed files from git diff
+    try {
+      const diffOutput = execSync('git diff --name-only HEAD~1 HEAD', { encoding: 'utf8' });
+      const changedFiles = diffOutput.trim().split('\n').filter(file => file.length > 0);
+      
+      // Find payload files and extract their categories
+      for (const file of changedFiles) {
+        if (file.startsWith('.github/content-payloads/') && file.endsWith('.json')) {
+          try {
+            const filePath = path.resolve(file);
+            const fileData = fs.readFileSync(filePath, 'utf8');
+            const payload = JSON.parse(fileData);
+            
+            if (payload.metadata && payload.metadata.category) {
+              affectedCategories.add(payload.metadata.category);
+            }
+          } catch (error) {
+            console.error(`❌ Error reading payload file ${file}:`, error.message);
+          }
+        }
+      }
+    } catch (error) {
+      console.log('⚠️  Could not determine affected categories from git diff - updating all categories');
+      // Fallback: return all categories if we can't determine changes
+      return Object.keys(require('./content-config.json').categories || {});
+    }
+  } catch (error) {
+    console.error('❌ Error getting affected categories:', error.message);
+    return [];
+  }
+  
+  return Array.from(affectedCategories);
 }
 
 /**
@@ -522,7 +579,21 @@ function main() {
   const config = loadConfig();
   console.log(`📋 Loaded configuration for ${Object.keys(config.categories).length} categories`);
   
+  // Check if there are any new payloads
+  const affectedCategories = getAffectedCategories();
+  
+  if (affectedCategories.length === 0) {
+    console.log('ℹ️  No new content detected - skipping HTML updates');
+    return;
+  }
+  
+  console.log(`📝 Detected changes in categories: ${affectedCategories.join(', ')}`);
+  
+  // Update main index.html (always update as it shows overall stats)
   updateIndexHtml(config);
+  console.log('✅ Updated index.html');
+  
+  // Update only affected category pages
   updateCategoryPages(config);
   
   const stats = generateStatistics(config);
