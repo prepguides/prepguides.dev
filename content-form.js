@@ -651,7 +651,7 @@ class ContentForm {
             </div>
             <div class="preview-item">
                 <h4>Content Preview</h4>
-                <div class="content-preview">${this.formatPreviewContent(contentData.content)}</div>
+                <div class="content-preview">${this.formatPreviewContent(contentData.description || '')}</div>
             </div>
             ${contentData.tags ? `
             <div class="preview-item">
@@ -670,6 +670,11 @@ class ContentForm {
      */
     formatPreviewContent(content) {
         // Simple markdown to HTML conversion for preview
+        console.log('formatPreviewContent called with:', content, 'type:', typeof content);
+        if (!content) {
+            console.log('Content is falsy, returning empty string');
+            return '';
+        }
         return content
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')

@@ -142,7 +142,7 @@ class GitHubAuth {
         
         // For local development
         if (currentOrigin.includes('localhost') || currentOrigin.includes('127.0.0.1')) {
-            return 'http://localhost:3000/auth/callback';
+            return currentOrigin + '/auth/callback';
         }
         
         // Fallback to current origin
