@@ -71,23 +71,39 @@
         }
 
         .github-login-btn-compact {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            color: #1f2937;
             padding: 8px 16px;
             border-radius: 6px;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 8px;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1000;
+            pointer-events: auto !important;
         }
 
         .github-login-btn-compact:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
+            background: white;
+            border-color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .github-login-btn-compact:active {
+            background: rgba(255, 255, 255, 0.8);
+            transform: scale(0.98);
+        }
+
+        .github-login-btn-compact:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.5);
+            outline-offset: 2px;
         }
 
         .user-info-compact {
@@ -453,6 +469,7 @@
             clientId: 'Ov23liX9YTDE0e7OaBLs', // Actual GitHub Client ID
             isConfigured: true // Set to true since environment variables are configured
         };
+        console.log('GitHub Config set:', window.GITHUB_CONFIG);
     </script>
     <script src="github-auth.js"></script>
     <script src="content-form.js"></script>

@@ -266,14 +266,39 @@ class ContentForm {
         
         if (!repo) return;
         
+        // Check if it's just an organization name (common repositories)
+        const commonRepos = {
+            'kubernetes': 'kubernetes/kubernetes',
+            'react': 'facebook/react',
+            'vue': 'vuejs/vue',
+            'angular': 'angular/angular',
+            'node': 'nodejs/node',
+            'express': 'expressjs/express',
+            'django': 'django/django',
+            'flask': 'pallets/flask',
+            'spring': 'spring-projects/spring-framework',
+            'tensorflow': 'tensorflow/tensorflow',
+            'pytorch': 'pytorch/pytorch',
+            'docker': 'docker/docker',
+            'kubernetes-sigs': 'kubernetes-sigs/kind'
+        };
+        
+        let fullRepo = repo;
         if (!repoPattern.test(repo)) {
-            this.showFieldError(repoInput, 'Invalid repository format. Use: owner/repository-name');
-            return;
+            // Check if it's a common repository
+            if (commonRepos[repo.toLowerCase()]) {
+                fullRepo = commonRepos[repo.toLowerCase()];
+                repoInput.value = fullRepo;
+                this.showFieldSuccess(repoInput, `Auto-completed to: ${fullRepo}`);
+            } else {
+                this.showFieldError(repoInput, 'Invalid repository format. Use: owner/repository-name (e.g., kubernetes/kubernetes)');
+                return;
+            }
         }
 
         // Check if repository exists
         try {
-            const response = await fetch(`https://api.github.com/repos/${repo}`);
+            const response = await fetch(`https://api.github.com/repos/${fullRepo}`);
             if (response.ok) {
                 this.showFieldSuccess(repoInput, 'Repository found');
             } else {
@@ -350,10 +375,15 @@ class ContentForm {
      * Update authentication status
      */
     updateAuthStatus() {
+        console.log('updateAuthStatus called');
         const authStatus = document.getElementById('auth-status');
         const loginSection = document.getElementById('login-section');
         const userSection = document.getElementById('user-section');
         const showFormBtn = document.getElementById('show-content-form-btn');
+
+        console.log('Elements found:', { authStatus, loginSection, userSection, showFormBtn });
+        console.log('window.githubAuth:', window.githubAuth);
+        console.log('isConfigured:', window.githubAuth?.isConfigured);
 
         if (!authStatus) return;
 
@@ -364,6 +394,55 @@ class ContentForm {
             if (userSection) userSection.style.display = 'none';
             if (showFormBtn) showFormBtn.style.display = 'none';
             return;
+        }
+
+        // Always show login button first, then check authentication
+        console.log('Setting login section display to flex');
+        if (loginSection) {
+            loginSection.style.display = 'flex';
+            console.log('Login section display set to:', loginSection.style.display);
+        }
+        
+        // Ensure login button is always enabled and clickable
+        const loginBtn = document.getElementById('github-login-btn');
+        console.log('Login button found:', loginBtn);
+        if (loginBtn) {
+            console.log('Configuring login button...');
+            loginBtn.disabled = false;
+            loginBtn.style.opacity = '1';
+            loginBtn.style.cursor = 'pointer';
+            loginBtn.style.pointerEvents = 'auto';
+            loginBtn.removeAttribute('disabled');
+            
+            console.log('Login button configured:', {
+                disabled: loginBtn.disabled,
+                opacity: loginBtn.style.opacity,
+                cursor: loginBtn.style.cursor,
+                pointerEvents: loginBtn.style.pointerEvents
+            });
+            
+            // Add click event listener directly
+            loginBtn.onclick = function(e) {
+                console.log('Login button clicked!');
+                e.preventDefault();
+                e.stopPropagation();
+                if (window.githubAuth && window.githubAuth.login) {
+                    window.githubAuth.login();
+                }
+            };
+            
+            // Also add event listener using addEventListener as backup
+            loginBtn.addEventListener('click', function(e) {
+                console.log('Login button clicked via addEventListener!');
+                e.preventDefault();
+                e.stopPropagation();
+                if (window.githubAuth && window.githubAuth.login) {
+                    window.githubAuth.login();
+                }
+            });
+            
+        } else {
+            console.log('Login button NOT found!');
         }
 
         if (window.githubAuth.isAuthenticated()) {
@@ -380,7 +459,6 @@ class ContentForm {
             if (userName) userName.textContent = user.name || user.login;
         } else {
             authStatus.innerHTML = '<div class="auth-error">❌ Not authenticated</div>';
-            if (loginSection) loginSection.style.display = 'flex';
             if (userSection) userSection.style.display = 'none';
             if (showFormBtn) showFormBtn.style.display = 'none';
         }
@@ -409,7 +487,28 @@ class ContentForm {
 
         // Add type-specific fields
         if (contentType === 'guide') {
-            contentData.repo = formData.get('repo');
+            // Auto-complete common repositories
+            const commonRepos = {
+                'kubernetes': 'kubernetes/kubernetes',
+                'react': 'facebook/react',
+                'vue': 'vuejs/vue',
+                'angular': 'angular/angular',
+                'node': 'nodejs/node',
+                'express': 'expressjs/express',
+                'django': 'django/django',
+                'flask': 'pallets/flask',
+                'spring': 'spring-projects/spring-framework',
+                'tensorflow': 'tensorflow/tensorflow',
+                'pytorch': 'pytorch/pytorch',
+                'docker': 'docker/docker',
+                'kubernetes-sigs': 'kubernetes-sigs/kind'
+            };
+            
+            let repo = formData.get('repo');
+            if (commonRepos[repo.toLowerCase()]) {
+                repo = commonRepos[repo.toLowerCase()];
+            }
+            contentData.repo = repo;
         } else if (contentType === 'visualization') {
             const jsFile = formData.get('jsFile');
             if (jsFile) contentData.jsFile = jsFile;
@@ -473,8 +572,28 @@ class ContentForm {
         if (data.type === 'guide') {
             if (!data.repo.trim()) {
                 errors.push('GitHub repository is required for guides');
-            } else if (!/^[a-zA-Z0-9._-]+\/[a-zA-Z0-9._-]+$/.test(data.repo)) {
-                errors.push('Invalid repository format. Use: owner/repository-name');
+            } else {
+                // Check if it's a common repository that can be auto-completed
+                const commonRepos = {
+                    'kubernetes': 'kubernetes/kubernetes',
+                    'react': 'facebook/react',
+                    'vue': 'vuejs/vue',
+                    'angular': 'angular/angular',
+                    'node': 'nodejs/node',
+                    'express': 'expressjs/express',
+                    'django': 'django/django',
+                    'flask': 'pallets/flask',
+                    'spring': 'spring-projects/spring-framework',
+                    'tensorflow': 'tensorflow/tensorflow',
+                    'pytorch': 'pytorch/pytorch',
+                    'docker': 'docker/docker',
+                    'kubernetes-sigs': 'kubernetes-sigs/kind'
+                };
+                
+                const repoPattern = /^[a-zA-Z0-9._-]+\/[a-zA-Z0-9._-]+$/;
+                if (!repoPattern.test(data.repo) && !commonRepos[data.repo.toLowerCase()]) {
+                    errors.push('Invalid repository format. Use: owner/repository-name (e.g., kubernetes/kubernetes)');
+                }
             }
             
             if (!data.path.endsWith('.md')) {
@@ -636,10 +755,12 @@ class ContentForm {
 
 // Initialize content form when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOMContentLoaded - initializing content form');
     window.contentForm = new ContentForm();
     
     // Listen for GitHub auth configuration ready
     window.addEventListener('githubAuthReady', () => {
+        console.log('githubAuthReady event received');
         if (window.contentForm) {
             window.contentForm.updateAuthStatus();
         }
@@ -647,6 +768,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Fallback: Update auth status after a delay if event doesn't fire
     setTimeout(() => {
+        console.log('Fallback timeout - updating auth status');
         if (window.contentForm) {
             window.contentForm.updateAuthStatus();
         }
