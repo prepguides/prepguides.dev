@@ -339,11 +339,17 @@ class GitHubAuth {
         const filePath = this.getFilePath(contentData);
 
         try {
+            console.log('Starting PR creation process...');
+            
             // Create a new branch
+            console.log('Creating branch:', branchName);
             await this.createBranch(branchName);
+            console.log('Branch created successfully');
 
             // Create/update the content file
+            console.log('Creating content file:', filePath);
             await this.createContentFile(branchName, filePath, contentData);
+            console.log('Content file created successfully');
 
             // Create pull request
             const prData = {
@@ -352,6 +358,8 @@ class GitHubAuth {
                 head: `${this.user.login}:${branchName}`,
                 base: 'main'
             };
+            
+            console.log('Creating PR with data:', prData);
 
             const response = await fetch('/api/github/create-pr', {
                 method: 'POST',
@@ -362,11 +370,17 @@ class GitHubAuth {
                 body: JSON.stringify(prData)
             });
 
+            console.log('PR creation response status:', response.status);
+            
             if (!response.ok) {
-                throw new Error('Failed to create pull request');
+                const errorText = await response.text();
+                console.error('PR creation failed:', errorText);
+                throw new Error(`Failed to create pull request: ${response.status} ${errorText}`);
             }
 
-            return await response.json();
+            const result = await response.json();
+            console.log('PR created successfully:', result);
+            return result;
         } catch (error) {
             console.error('Failed to create pull request:', error);
             throw error;
