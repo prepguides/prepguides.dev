@@ -337,6 +337,11 @@ class GitHubAuth {
         const branchName = `content-submission-${Date.now()}`;
         const fileName = this.generateFileName(contentData);
         const filePath = this.getFilePath(contentData);
+        
+        // Validate branch name (GitHub branch names must be valid ref names)
+        if (!/^[a-zA-Z0-9._-]+$/.test(branchName)) {
+            throw new Error('Invalid branch name format');
+        }
 
         try {
             console.log('Starting PR creation process...');
@@ -355,7 +360,7 @@ class GitHubAuth {
             const prData = {
                 title: `Content Submission: ${contentData.title}`,
                 body: this.generatePRDescription(contentData),
-                head: `${this.user.login}:${branchName}`,
+                head: branchName, // Use the branch name directly since we created it on the main repo
                 base: 'main'
             };
             
@@ -375,7 +380,25 @@ class GitHubAuth {
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('PR creation failed:', errorText);
-                throw new Error(`Failed to create pull request: ${response.status} ${errorText}`);
+                
+                // Parse the error to provide better messaging
+                let errorMessage = `Failed to create pull request: ${response.status}`;
+                try {
+                    const errorData = JSON.parse(errorText);
+                    if (errorData.message) {
+                        errorMessage = errorData.message;
+                        
+                        // Provide specific guidance for common errors
+                        if (errorData.message.includes('Validation Failed')) {
+                            errorMessage += '\n\nThis usually means the branch reference is invalid. Please ensure you have write access to the repository or try again.';
+                        }
+                    }
+                } catch (e) {
+                    // If we can't parse the error, use the raw text
+                    errorMessage = errorText;
+                }
+                
+                throw new Error(errorMessage);
             }
 
             const result = await response.json();
