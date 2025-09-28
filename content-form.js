@@ -390,6 +390,17 @@ class ContentForm {
                 loginBtn.disabled = false;
                 loginBtn.style.opacity = '1';
                 loginBtn.style.cursor = 'pointer';
+                loginBtn.style.pointerEvents = 'auto';
+                loginBtn.removeAttribute('disabled');
+                
+                // Add click event listener directly
+                loginBtn.onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (window.githubAuth && window.githubAuth.login) {
+                        window.githubAuth.login();
+                    }
+                };
             }
         }
     }
