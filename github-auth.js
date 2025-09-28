@@ -412,6 +412,10 @@ class GitHubAuth {
      * Create a new branch
      */
     async createBranch(branchName) {
+        console.log(`Creating branch: ${branchName}`);
+        console.log(`Using access token: ${this.accessToken ? 'Present' : 'Missing'}`);
+        console.log(`User: ${this.user ? this.user.login : 'Unknown'}`);
+        
         // Get the latest commit SHA from main branch
         const mainBranchResponse = await fetch('https://api.github.com/repos/prepguides/prepguides.dev/git/refs/heads/main', {
             headers: {
@@ -421,7 +425,13 @@ class GitHubAuth {
         });
 
         if (!mainBranchResponse.ok) {
-            throw new Error('Failed to get main branch reference');
+            const errorText = await mainBranchResponse.text();
+            console.error('Main branch fetch failed:', {
+                status: mainBranchResponse.status,
+                statusText: mainBranchResponse.statusText,
+                error: errorText
+            });
+            throw new Error(`Failed to get main branch reference: ${mainBranchResponse.status} ${mainBranchResponse.statusText}`);
         }
 
         const mainBranch = await mainBranchResponse.json();
@@ -442,7 +452,13 @@ class GitHubAuth {
         });
 
         if (!branchResponse.ok) {
-            throw new Error('Failed to create branch');
+            const errorText = await branchResponse.text();
+            console.error('Branch creation failed:', {
+                status: branchResponse.status,
+                statusText: branchResponse.statusText,
+                error: errorText
+            });
+            throw new Error(`Failed to create branch: ${branchResponse.status} ${branchResponse.statusText}`);
         }
 
         return await branchResponse.json();
