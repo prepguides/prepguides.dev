@@ -344,31 +344,36 @@ class GitHubAuth {
         try {
             console.log('Starting PR creation process...');
             
-            // Create a new branch
+            // First, ensure user has a fork of the repository
+            const forkRepo = await this.ensureFork();
+            console.log(`✅ Using fork repository: ${forkRepo.full_name}`);
+            
+            // Create a new branch in fork
             console.log('Creating branch:', branchName);
             await this.createBranch(branchName);
             console.log('Branch created successfully');
 
-            // Create/update the content file
+            // Create/update the content file in fork
             console.log('Creating content submission file');
-            await this.createContentFile(branchName, contentData);
+            await this.createContentFile(branchName, contentData, forkRepo);
             console.log('Content file created successfully');
 
-            // Create pull request
+            // Create pull request from fork to main repository
             const prData = {
                 title: `Content Submission: ${contentData.title}`,
                 body: this.generatePRDescription(contentData),
-                head: branchName, // Use the branch name directly since we created it on the main repo
+                head: `${this.user.login}:${branchName}`, // From user's fork
                 base: 'main'
             };
             
             console.log('Creating PR with data:', prData);
 
-            const response = await fetch('/api/github/create-pr', {
+            const response = await fetch('https://api.github.com/repos/prepguides/prepguides.dev/pulls', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.accessToken}`
+                    'Authorization': `token ${this.accessToken}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(prData)
             });
@@ -409,15 +414,64 @@ class GitHubAuth {
     }
 
     /**
+     * Ensure user has a fork of the repository
+     */
+    async ensureFork() {
+        const forkRepoName = `${this.user.login}/prepguides.dev`;
+        
+        // Check if fork already exists
+        const forkResponse = await fetch(`https://api.github.com/repos/${forkRepoName}`, {
+            headers: {
+                'Authorization': `token ${this.accessToken}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (forkResponse.ok) {
+            console.log(`Fork already exists: ${forkRepoName}`);
+            return await forkResponse.json();
+        }
+        
+        // Create fork if it doesn't exist
+        console.log(`Creating fork: ${forkRepoName}`);
+        const createForkResponse = await fetch('https://api.github.com/repos/prepguides/prepguides.dev/forks', {
+            method: 'POST',
+            headers: {
+                'Authorization': `token ${this.accessToken}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!createForkResponse.ok) {
+            const errorText = await createForkResponse.text();
+            console.error('Fork creation failed:', {
+                status: createForkResponse.status,
+                statusText: createForkResponse.statusText,
+                error: errorText
+            });
+            throw new Error(`Failed to create fork: ${createForkResponse.status} ${createForkResponse.statusText}`);
+        }
+        
+        const forkRepo = await createForkResponse.json();
+        console.log(`Fork created successfully: ${forkRepo.full_name}`);
+        return forkRepo;
+    }
+
+    /**
      * Create a new branch
      */
     async createBranch(branchName) {
         console.log(`Creating branch: ${branchName}`);
         console.log(`Using access token: ${this.accessToken ? 'Present' : 'Missing'}`);
         console.log(`User: ${this.user ? this.user.login : 'Unknown'}`);
+        console.log(`Fork-based workflow: Enabled`);
         
-        // Get the latest commit SHA from main branch
-        const mainBranchResponse = await fetch('https://api.github.com/repos/prepguides/prepguides.dev/git/refs/heads/main', {
+        // First, ensure user has a fork of the repository
+        const forkRepo = await this.ensureFork();
+        console.log(`Using fork repository: ${forkRepo.full_name}`);
+        
+        // Get the latest commit SHA from main branch of the fork
+        const mainBranchResponse = await fetch(`https://api.github.com/repos/${forkRepo.full_name}/git/refs/heads/main`, {
             headers: {
                 'Authorization': `token ${this.accessToken}`,
                 'Accept': 'application/vnd.github.v3+json'
@@ -437,8 +491,8 @@ class GitHubAuth {
         const mainBranch = await mainBranchResponse.json();
         const mainSha = mainBranch.object.sha;
 
-        // Create new branch
-        const branchResponse = await fetch('https://api.github.com/repos/prepguides/prepguides.dev/git/refs', {
+        // Create new branch in the fork
+        const branchResponse = await fetch(`https://api.github.com/repos/${forkRepo.full_name}/git/refs`, {
             method: 'POST',
             headers: {
                 'Authorization': `token ${this.accessToken}`,
@@ -467,7 +521,7 @@ class GitHubAuth {
     /**
      * Create content file in the repository
      */
-    async createContentFile(branchName, contentData) {
+    async createContentFile(branchName, contentData, forkRepo) {
         // Debug: Log content data to identify issues
         console.log('Creating content file with data:', contentData);
         
@@ -485,7 +539,7 @@ class GitHubAuth {
         
         console.log('Creating payload file at:', submissionPath);
 
-        const response = await fetch(`https://api.github.com/repos/prepguides/prepguides.dev/contents/${submissionPath}`, {
+        const response = await fetch(`https://api.github.com/repos/${forkRepo.full_name}/contents/${submissionPath}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `token ${this.accessToken}`,
