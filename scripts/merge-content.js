@@ -14,10 +14,19 @@ const CONTENT_CONFIG_FILE = 'content-config.json';
 const PAYLOADS_DIR = '.github/content-payloads';
 
 /**
- * Load base configuration
+ * Load base configuration or existing content config
  */
 function loadBaseConfig() {
   try {
+    // First try to load existing content-config.json to preserve previously processed content
+    if (fs.existsSync(CONTENT_CONFIG_FILE)) {
+      console.log('📋 Loading existing content-config.json to preserve previously processed content');
+      const existingConfig = fs.readFileSync(CONTENT_CONFIG_FILE, 'utf8');
+      return JSON.parse(existingConfig);
+    }
+    
+    // Fallback to base.json if content-config.json doesn't exist
+    console.log('📋 Loading base.json (no existing content-config.json found)');
     const basePath = path.resolve(BASE_CONFIG_FILE);
     const baseData = fs.readFileSync(basePath, 'utf8');
     return JSON.parse(baseData);
@@ -153,6 +162,9 @@ function mergePayload(baseConfig, payload) {
       description: content.description,
       content: []
     };
+    console.log(`🆕 Created new subtopic: ${category}/${subtopic}`);
+  } else {
+    console.log(`📝 Using existing subtopic: ${category}/${subtopic}`);
   }
   
   // Check if content with this ID already exists to avoid duplicates
@@ -266,15 +278,25 @@ function main() {
   
   // Load base configuration
   const baseConfig = loadBaseConfig();
-  console.log(`✅ Loaded base configuration`);
+  console.log(`✅ Loaded base configuration with ${Object.keys(baseConfig.categories).length} categories`);
   
   // Load payloads
   const payloads = loadPayloads();
   console.log(`✅ Loaded ${payloads.length} payload(s)`);
   
+  if (payloads.length === 0) {
+    console.log('ℹ️  No new payloads to process - preserving existing content-config.json');
+    return;
+  }
+  
   // Merge each payload
   let mergedCount = 0;
   for (const payload of payloads) {
+    console.log(`\n🔄 Processing payload: ${payload.metadata.title}`);
+    console.log(`   Category: ${payload.metadata.category}`);
+    console.log(`   Subtopic: ${payload.metadata.subtopic}`);
+    console.log(`   Content ID: ${payload.content.id}`);
+    
     if (mergePayload(baseConfig, payload)) {
       mergedCount++;
       console.log(`✅ Merged payload: ${payload.metadata.title}`);
