@@ -670,7 +670,11 @@ class ContentForm {
      */
     formatPreviewContent(content) {
         // Simple markdown to HTML conversion for preview
-        if (!content) return '';
+        console.log('formatPreviewContent called with:', content, 'type:', typeof content);
+        if (!content) {
+            console.log('Content is falsy, returning empty string');
+            return '';
+        }
         return content
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')
