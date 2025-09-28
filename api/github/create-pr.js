@@ -34,6 +34,8 @@ export default async function handler(req, res) {
     }
 
     try {
+        console.log('Creating PR with data:', { title, head, base });
+        
         // Create the pull request
         const prResponse = await fetch('https://api.github.com/repos/prepguides/prepguides.dev/pulls', {
             method: 'POST',
@@ -50,8 +52,11 @@ export default async function handler(req, res) {
             }),
         });
 
+        console.log('GitHub API response status:', prResponse.status);
+
         if (!prResponse.ok) {
             const errorData = await prResponse.json();
+            console.error('GitHub API error:', errorData);
             throw new Error(errorData.message || 'Failed to create pull request');
         }
 
