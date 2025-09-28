@@ -1,6 +1,17 @@
 {
   "name": "prepguides-dev",
   "version": "1.0.0",
-  "description": "Static HTML site for technical interview preparation",
-  "private": true
+  "description": "Static HTML site for technical interview preparation with GitHub-integrated content submission",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site - no build needed'",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@vercel/node": "^3.0.0"
+  },
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  }
 }

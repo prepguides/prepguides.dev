@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Submission Test - PrepGuides.dev</title>
+    <link rel="stylesheet" href="css/content-form.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .test-header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .test-content {
+            padding: 30px;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .test-section h3 {
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+
+        .test-button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .test-button:hover {
+            background: #4f46e5;
+        }
+
+        .test-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            background: white;
+        }
+
+        .test-result.success {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .test-result.error {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-indicator.success {
+            background: #10b981;
+        }
+
+        .status-indicator.error {
+            background: #ef4444;
+        }
+
+        .status-indicator.pending {
+            background: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🧪 Content Submission System Test</h1>
+            <p>Test the GitHub authentication and content submission functionality</p>
+        </div>
+
+        <div class="test-content">
+            <!-- Content Submission Form -->
+            <div id="content-form-container"></div>
+
+            <!-- Test Controls -->
+            <div class="test-section">
+                <h3>🔧 Test Controls</h3>
+                <button class="test-button" onclick="testGitHubAuth()">Test GitHub Auth</button>
+                <button class="test-button" onclick="testFormValidation()">Test Form Validation</button>
+                <button class="test-button" onclick="testContentPreview()">Test Content Preview</button>
+                <button class="test-button" onclick="testPRCreation()">Test PR Creation</button>
+                <button class="test-button" onclick="clearTestResults()">Clear Results</button>
+            </div>
+
+            <!-- Test Results -->
+            <div class="test-section">
+                <h3>📊 Test Results</h3>
+                <div id="test-results"></div>
+            </div>
+
+            <!-- System Status -->
+            <div class="test-section">
+                <h3>📈 System Status</h3>
+                <div id="system-status">
+                    <div><span class="status-indicator pending"></span>GitHub Auth: <span id="auth-status">Not tested</span></div>
+                    <div><span class="status-indicator pending"></span>Form Validation: <span id="form-status">Not tested</span></div>
+                    <div><span class="status-indicator pending"></span>Content Preview: <span id="preview-status">Not tested</span></div>
+                    <div><span class="status-indicator pending"></span>PR Creation: <span id="pr-status">Not tested</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/github-auth.js"></script>
+    <script src="js/content-form.js"></script>
+    <script>
+        // Test functions
+        function testGitHubAuth() {
+            addTestResult('GitHub Auth Test', 'Testing GitHub authentication system...', 'info');
+            
+            try {
+                if (typeof window.githubAuth === 'undefined') {
+                    throw new Error('GitHub Auth class not loaded');
+                }
+
+                const isAuth = window.githubAuth.isAuthenticated();
+                updateSystemStatus('auth-status', isAuth ? 'Authenticated' : 'Not authenticated', isAuth ? 'success' : 'pending');
+                
+                addTestResult('GitHub Auth Test', 
+                    isAuth ? 'User is authenticated' : 'User is not authenticated', 
+                    isAuth ? 'success' : 'info'
+                );
+            } catch (error) {
+                updateSystemStatus('auth-status', 'Error: ' + error.message, 'error');
+                addTestResult('GitHub Auth Test', 'Error: ' + error.message, 'error');
+            }
+        }
+
+        function testFormValidation() {
+            addTestResult('Form Validation Test', 'Testing form validation...', 'info');
+            
+            try {
+                if (typeof window.contentForm === 'undefined') {
+                    throw new Error('Content Form class not loaded');
+                }
+
+                // Test with empty data
+                const emptyData = {
+                    title: '',
+                    category: '',
+                    description: '',
+                    content: ''
+                };
+
+                const isValid = window.contentForm.validateForm(emptyData);
+                updateSystemStatus('form-status', isValid ? 'Validation passed' : 'Validation failed (expected)', isValid ? 'error' : 'success');
+                
+                addTestResult('Form Validation Test', 
+                    isValid ? 'Validation incorrectly passed' : 'Validation correctly failed for empty data', 
+                    isValid ? 'error' : 'success'
+                );
+
+                // Test with valid data
+                const validData = {
+                    title: 'Test Title',
+                    category: 'algorithms',
+                    description: 'Test description',
+                    content: 'Test content'
+                };
+
+                const isValidData = window.contentForm.validateForm(validData);
+                updateSystemStatus('form-status', isValidData ? 'Validation passed' : 'Validation failed', isValidData ? 'success' : 'error');
+                
+                addTestResult('Form Validation Test', 
+                    isValidData ? 'Validation correctly passed for valid data' : 'Validation incorrectly failed for valid data', 
+                    isValidData ? 'success' : 'error'
+                );
+            } catch (error) {
+                updateSystemStatus('form-status', 'Error: ' + error.message, 'error');
+                addTestResult('Form Validation Test', 'Error: ' + error.message, 'error');
+            }
+        }
+
+        function testContentPreview() {
+            addTestResult('Content Preview Test', 'Testing content preview functionality...', 'info');
+            
+            try {
+                if (typeof window.contentForm === 'undefined') {
+                    throw new Error('Content Form class not loaded');
+                }
+
+                const testContent = '**Bold text** and *italic text* and `code text`';
+                const formatted = window.contentForm.formatPreviewContent(testContent);
+                
+                const expectedFormats = formatted.includes('<strong>') && 
+                                      formatted.includes('<em>') && 
+                                      formatted.includes('<code>');
+
+                updateSystemStatus('preview-status', expectedFormats ? 'Preview working' : 'Preview failed', expectedFormats ? 'success' : 'error');
+                
+                addTestResult('Content Preview Test', 
+                    expectedFormats ? 'Content preview formatting working correctly' : 'Content preview formatting failed', 
+                    expectedFormats ? 'success' : 'error'
+                );
+            } catch (error) {
+                updateSystemStatus('preview-status', 'Error: ' + error.message, 'error');
+                addTestResult('Content Preview Test', 'Error: ' + error.message, 'error');
+            }
+        }
+
+        function testPRCreation() {
+            addTestResult('PR Creation Test', 'Testing PR creation functionality...', 'info');
+            
+            try {
+                if (typeof window.githubAuth === 'undefined') {
+                    throw new Error('GitHub Auth class not loaded');
+                }
+
+                // Test PR description generation
+                const testData = {
+                    title: 'Test Content',
+                    category: 'algorithms',
+                    description: 'Test description',
+                    content: 'Test content'
+                };
+
+                const prDescription = window.githubAuth.generatePRDescription(testData);
+                const hasRequiredFields = prDescription.includes('Test Content') && 
+                                        prDescription.includes('algorithms') &&
+                                        prDescription.includes('Test description');
+
+                updateSystemStatus('pr-status', hasRequiredFields ? 'PR generation working' : 'PR generation failed', hasRequiredFields ? 'success' : 'error');
+                
+                addTestResult('PR Creation Test', 
+                    hasRequiredFields ? 'PR description generation working correctly' : 'PR description generation failed', 
+                    hasRequiredFields ? 'success' : 'error'
+                );
+            } catch (error) {
+                updateSystemStatus('pr-status', 'Error: ' + error.message, 'error');
+                addTestResult('PR Creation Test', 'Error: ' + error.message, 'error');
+            }
+        }
+
+        function addTestResult(testName, message, type = 'info') {
+            const resultsContainer = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${type}`;
+            resultDiv.innerHTML = `
+                <strong>${testName}:</strong> ${message}
+                <small style="display: block; margin-top: 5px; color: #6b7280;">
+                    ${new Date().toLocaleTimeString()}
+                </small>
+            `;
+            resultsContainer.appendChild(resultDiv);
+            resultsContainer.scrollTop = resultsContainer.scrollHeight;
+        }
+
+        function updateSystemStatus(elementId, status, type) {
+            const element = document.getElementById(elementId);
+            const indicator = element.previousElementSibling;
+            
+            element.textContent = status;
+            indicator.className = `status-indicator ${type}`;
+        }
+
+        function clearTestResults() {
+            document.getElementById('test-results').innerHTML = '';
+            document.querySelectorAll('.status-indicator').forEach(indicator => {
+                indicator.className = 'status-indicator pending';
+            });
+            document.querySelectorAll('#system-status span:not(.status-indicator)').forEach(span => {
+                span.textContent = 'Not tested';
+            });
+        }
+
+        // Initialize tests when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            addTestResult('System Initialization', 'Content submission system loaded successfully', 'success');
+        });
+    </script>
+</body>
+</html>
