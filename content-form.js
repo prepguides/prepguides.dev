@@ -366,6 +366,28 @@ class ContentForm {
             return;
         }
 
+        // Always show login button first, then check authentication
+        if (loginSection) loginSection.style.display = 'flex';
+        
+        // Ensure login button is always enabled and clickable
+        const loginBtn = document.getElementById('github-login-btn');
+        if (loginBtn) {
+            loginBtn.disabled = false;
+            loginBtn.style.opacity = '1';
+            loginBtn.style.cursor = 'pointer';
+            loginBtn.style.pointerEvents = 'auto';
+            loginBtn.removeAttribute('disabled');
+            
+            // Add click event listener directly
+            loginBtn.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (window.githubAuth && window.githubAuth.login) {
+                    window.githubAuth.login();
+                }
+            };
+        }
+
         if (window.githubAuth.isAuthenticated()) {
             authStatus.innerHTML = '<div class="auth-success">✅ Authenticated with GitHub</div>';
             if (loginSection) loginSection.style.display = 'none';
@@ -380,28 +402,8 @@ class ContentForm {
             if (userName) userName.textContent = user.name || user.login;
         } else {
             authStatus.innerHTML = '<div class="auth-error">❌ Not authenticated</div>';
-            if (loginSection) loginSection.style.display = 'flex';
             if (userSection) userSection.style.display = 'none';
             if (showFormBtn) showFormBtn.style.display = 'none';
-            
-            // Ensure login button is enabled
-            const loginBtn = document.getElementById('github-login-btn');
-            if (loginBtn) {
-                loginBtn.disabled = false;
-                loginBtn.style.opacity = '1';
-                loginBtn.style.cursor = 'pointer';
-                loginBtn.style.pointerEvents = 'auto';
-                loginBtn.removeAttribute('disabled');
-                
-                // Add click event listener directly
-                loginBtn.onclick = function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (window.githubAuth && window.githubAuth.login) {
-                        window.githubAuth.login();
-                    }
-                };
-            }
         }
     }
 
