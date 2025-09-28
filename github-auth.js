@@ -464,6 +464,7 @@ class GitHubAuth {
         console.log(`Creating branch: ${branchName}`);
         console.log(`Using access token: ${this.accessToken ? 'Present' : 'Missing'}`);
         console.log(`User: ${this.user ? this.user.login : 'Unknown'}`);
+        console.log(`Fork-based workflow: Enabled`);
         
         // First, ensure user has a fork of the repository
         const forkRepo = await this.ensureFork();
