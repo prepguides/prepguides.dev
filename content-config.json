@@ -25,22 +25,6 @@
               "status": "active"
             }
           ]
-        },
-        "operator-guide": {
-          "name": "Operator Guide",
-          "description": "Comprehensive guide to building and managing Kubernetes operators with practical examples and best practices",
-          "content": [
-            {
-              "id": "kubernetes-operator-guide",
-              "title": "Kubernetes Operator Guide",
-              "description": "Comprehensive guide to building and managing Kubernetes operators with practical examples and best practices",
-              "repo": "prepguides/go-interviews",
-              "path": "operator/README.md",
-              "type": "guide",
-              "status": "active",
-              "addedDate": "2025-01-27"
-            }
-          ]
         }
       }
     },
@@ -285,14 +269,31 @@
         "primary": "#6366f1",
         "secondary": "#4f46e5"
       },
-      "subtopics": {}
+      "subtopics": {
+        "Concurrency patterns in Go": {
+          "name": "Concurrency Patterns In Go",
+          "description": "Concurrency patterns in Go",
+          "content": [
+            {
+              "id": "system-design-go-design-patterns",
+              "title": "Go Design Patterns",
+              "description": "Concurrency patterns in Go",
+              "type": "guide",
+              "status": "pending",
+              "repo": "prepguides/go-interviews",
+              "path": "patterns/README.md",
+              "addedDate": "2025-09-28"
+            }
+          ]
+        }
+      }
     }
   },
   "statistics": {
-    "totalContent": 11,
+    "totalContent": 10,
     "totalVisualizations": 10,
-    "totalGuides": 1,
-    "categoriesWithContent": 3,
+    "totalGuides": 0,
+    "categoriesWithContent": 4,
     "lastContentAdded": "2025-01-27"
   }
 }
