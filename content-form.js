@@ -122,7 +122,10 @@ class ContentForm {
                     <div id="preview-content" class="preview-content"></div>
                     <div class="preview-actions">
                         <button id="back-to-form-btn" class="back-btn">Back to Form</button>
-                        <button id="confirm-submit-btn" class="confirm-submit-btn">Confirm & Submit</button>
+                        <button id="confirm-submit-btn" class="confirm-submit-btn">
+                            <span class="btn-text">Confirm & Submit</span>
+                            <span class="btn-loading" style="display: none;">Creating PR...</span>
+                        </button>
                     </div>
                 </div>
 
