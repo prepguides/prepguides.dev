@@ -13,8 +13,96 @@ class GitHubAuth {
         this.user = JSON.parse(localStorage.getItem('github_user') || 'null');
         this.isConfigured = window.GITHUB_CONFIG?.isConfigured || false;
         
+        // Check if we're returning from OAuth
+        this.checkOAuthReturn();
+        
         // Still try to check configuration for dynamic updates
         this.checkConfiguration();
+    }
+
+    /**
+     * Check if we're returning from OAuth flow
+     */
+    checkOAuthReturn() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        const error = urlParams.get('error');
+        
+        if (localStorage.getItem('oauth_in_progress') === 'true') {
+            if (code) {
+                // We have an authorization code, process it
+                this.processOAuthCode(code, state);
+            } else if (error) {
+                // OAuth error
+                alert('Authentication failed: ' + error);
+                localStorage.removeItem('oauth_in_progress');
+            } else {
+                // No code, might be a fresh page load
+                localStorage.removeItem('oauth_in_progress');
+            }
+        }
+    }
+
+    /**
+     * Process OAuth authorization code
+     */
+    async processOAuthCode(code, state) {
+        try {
+            // Process the OAuth callback
+            const response = await fetch('/api/auth/github', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    code: code,
+                    state: state
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Authentication failed');
+            }
+
+            const tokenData = await response.json();
+            
+            // Store the access token
+            this.accessToken = tokenData.access_token;
+            localStorage.setItem('github_access_token', this.accessToken);
+            
+            // Get user info
+            const userResponse = await fetch('https://api.github.com/user', {
+                headers: {
+                    'Authorization': `token ${this.accessToken}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            if (userResponse.ok) {
+                this.user = await userResponse.json();
+                localStorage.setItem('github_user', JSON.stringify(this.user));
+            }
+
+            // Clear OAuth in progress flag
+            localStorage.removeItem('oauth_in_progress');
+            
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            // Update the UI
+            if (window.contentForm) {
+                window.contentForm.updateAuthStatus();
+            }
+            
+            alert('Successfully authenticated with GitHub!');
+            
+        } catch (error) {
+            console.error('OAuth processing error:', error);
+            alert('Authentication failed: ' + error.message);
+            localStorage.removeItem('oauth_in_progress');
+        }
     }
 
     /**
@@ -96,51 +184,16 @@ class GitHubAuth {
             return;
         }
 
-        // Use popup-based OAuth flow to avoid callback issues
-        const callbackUrl = window.location.origin + '/callback.html';
-        const popup = window.open(
-            `https://github.com/login/oauth/authorize?` +
+        // For now, let's use a simple approach - redirect to GitHub and handle the callback manually
+        const authUrl = `https://github.com/login/oauth/authorize?` +
             `client_id=${this.clientId}&` +
-            `redirect_uri=${encodeURIComponent(callbackUrl)}&` +
             `scope=${this.scope}&` +
-            `state=${this.generateState()}`,
-            'github-auth',
-            'width=600,height=600,scrollbars=yes,resizable=yes'
-        );
-
-        // Listen for popup messages
-        const messageListener = (event) => {
-            if (event.origin !== window.location.origin) return;
-            
-            if (event.data.type === 'GITHUB_AUTH_SUCCESS') {
-                this.accessToken = event.data.access_token;
-                this.user = event.data.user;
-                localStorage.setItem('github_access_token', this.accessToken);
-                localStorage.setItem('github_user', JSON.stringify(this.user));
-                
-                // Update the UI
-                if (window.contentForm) {
-                    window.contentForm.updateAuthStatus();
-                }
-                
-                popup.close();
-                window.removeEventListener('message', messageListener);
-            } else if (event.data.type === 'GITHUB_AUTH_ERROR') {
-                alert('Authentication failed: ' + event.data.error);
-                popup.close();
-                window.removeEventListener('message', messageListener);
-            }
-        };
-
-        window.addEventListener('message', messageListener);
-
-        // Check if popup is closed manually
-        const checkClosed = setInterval(() => {
-            if (popup.closed) {
-                clearInterval(checkClosed);
-                window.removeEventListener('message', messageListener);
-            }
-        }, 1000);
+            `state=${this.generateState()}`;
+        
+        // Store that we're in the middle of OAuth
+        localStorage.setItem('oauth_in_progress', 'true');
+        
+        window.location.href = authUrl;
     }
 
     /**
