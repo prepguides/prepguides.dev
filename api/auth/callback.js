@@ -1,6 +1,6 @@
 /**
  * OAuth Callback Handler
- * Handles GitHub OAuth callback and redirects appropriately
+ * Serves the callback page with OAuth processing
  */
 
 export default async function handler(req, res) {
@@ -10,32 +10,202 @@ export default async function handler(req, res) {
 
     const { code, state, error } = req.query;
 
-    // Handle OAuth errors
-    if (error) {
-        const errorUrl = new URL('/auth/callback', req.headers.origin || 'https://prepguides-dev.vercel.app');
-        errorUrl.searchParams.set('error', error);
-        errorUrl.searchParams.set('error_description', req.query.error_description || 'OAuth error');
-        return res.redirect(errorUrl.toString());
-    }
+    // Serve the callback HTML page
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Authentication - PrepGuides.dev</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
 
-    // Handle missing authorization code
-    if (!code) {
-        const errorUrl = new URL('/auth/callback', req.headers.origin || 'https://prepguides-dev.vercel.app');
-        errorUrl.searchParams.set('error', 'missing_code');
-        errorUrl.searchParams.set('error_description', 'No authorization code received');
-        return res.redirect(errorUrl.toString());
-    }
+        .auth-container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 500px;
+            width: 100%;
+        }
 
-    // Get the return URL from query params or default to production
-    const returnUrl = req.query.return_url || 'https://prepguides-dev.vercel.app';
-    
-    // Create the callback URL with the authorization code
-    const callbackUrl = new URL('/auth/callback', returnUrl);
-    callbackUrl.searchParams.set('code', code);
-    if (state) {
-        callbackUrl.searchParams.set('state', state);
-    }
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
 
-    // Redirect to the appropriate callback page
-    return res.redirect(callbackUrl.toString());
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success {
+            color: #059669;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        .btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div id="loading-state" class="loading">
+            <div class="spinner"></div>
+            <h2>Authenticating with GitHub...</h2>
+            <p>Please wait while we complete your authentication.</p>
+        </div>
+
+        <div id="success-state" style="display: none;">
+            <h2 class="success">✅ Authentication Successful!</h2>
+            <p>You have been successfully authenticated with GitHub.</p>
+            <p>You can now submit content to PrepGuides.dev.</p>
+            <a href="/" class="btn">Return to Home</a>
+        </div>
+
+        <div id="error-state" style="display: none;">
+            <h2 class="error">❌ Authentication Failed</h2>
+            <p id="error-message">There was an error during authentication.</p>
+            <a href="/" class="btn">Return to Home</a>
+        </div>
+    </div>
+
+    <script>
+        // OAuth callback data
+        const oauthData = {
+            code: '${code || ''}',
+            state: '${state || ''}',
+            error: '${error || ''}',
+            error_description: '${req.query.error_description || ''}'
+        };
+
+        // Handle OAuth callback
+        async function handleAuthCallback() {
+            const loadingState = document.getElementById('loading-state');
+            const successState = document.getElementById('success-state');
+            const errorState = document.getElementById('error-state');
+            const errorMessage = document.getElementById('error-message');
+
+            try {
+                // Check for OAuth errors
+                if (oauthData.error) {
+                    showError(oauthData.error_description || oauthData.error);
+                    return;
+                }
+
+                // Check for missing authorization code
+                if (!oauthData.code) {
+                    showError('No authorization code received');
+                    return;
+                }
+
+                // Process the OAuth callback
+                const response = await fetch('/api/auth/github', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        code: oauthData.code,
+                        state: oauthData.state
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Authentication failed');
+                }
+
+                const tokenData = await response.json();
+                
+                // Store the access token
+                localStorage.setItem('github_access_token', tokenData.access_token);
+                
+                // Get user info
+                const userResponse = await fetch('https://api.github.com/user', {
+                    headers: {
+                        'Authorization': \`token \${tokenData.access_token}\`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (userResponse.ok) {
+                    const userData = await userResponse.json();
+                    localStorage.setItem('github_user', JSON.stringify(userData));
+                }
+
+                // Check if we need to redirect back to a different domain
+                const returnUrl = localStorage.getItem('auth_return_url');
+                
+                if (returnUrl && returnUrl !== window.location.origin) {
+                    // Redirect back to the original domain
+                    window.location.href = returnUrl;
+                    return;
+                }
+                
+                loadingState.style.display = 'none';
+                successState.style.display = 'block';
+            } catch (error) {
+                console.error('Auth callback error:', error);
+                showError(error.message || 'An unexpected error occurred during authentication.');
+            }
+        }
+
+        function showError(message) {
+            const loadingState = document.getElementById('loading-state');
+            const errorState = document.getElementById('error-state');
+            const errorMessage = document.getElementById('error-message');
+
+            loadingState.style.display = 'none';
+            errorMessage.textContent = message;
+            errorState.style.display = 'block';
+        }
+
+        // Start the authentication process when the page loads
+        document.addEventListener('DOMContentLoaded', handleAuthCallback);
+    </script>
+</body>
+</html>`;
+
+    res.setHeader('Content-Type', 'text/html');
+    res.status(200).send(html);
 }
