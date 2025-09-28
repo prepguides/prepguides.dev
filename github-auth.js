@@ -16,17 +16,7 @@ class GitHubAuth {
         // Check if we're returning from OAuth
         this.checkOAuthReturn();
         
-        // Initialize configuration and notify when ready
-        this.initializeConfiguration();
-    }
-
-    /**
-     * Initialize configuration and notify when ready
-     */
-    async initializeConfiguration() {
-        await this.checkConfiguration();
-        
-        // Dispatch event to notify that configuration is ready
+        // Dispatch event immediately since we have the configuration
         window.dispatchEvent(new CustomEvent('githubAuthReady', {
             detail: { isConfigured: this.isConfigured, clientId: this.clientId }
         }));
