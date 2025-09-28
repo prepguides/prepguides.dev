@@ -5,6 +5,7 @@
 
 class GitHubAuth {
     constructor() {
+        console.log('GitHubAuth constructor called');
         // Get configuration from window object
         this.clientId = window.GITHUB_CONFIG?.clientId || null;
         this.redirectUri = this.getRedirectUri();
@@ -13,10 +14,18 @@ class GitHubAuth {
         this.user = JSON.parse(localStorage.getItem('github_user') || 'null');
         this.isConfigured = window.GITHUB_CONFIG?.isConfigured || false;
         
+        console.log('GitHubAuth initialized:', { 
+            clientId: this.clientId, 
+            isConfigured: this.isConfigured,
+            accessToken: !!this.accessToken,
+            user: !!this.user
+        });
+        
         // Check if we're returning from OAuth
         this.checkOAuthReturn();
         
         // Dispatch event immediately since we have the configuration
+        console.log('Dispatching githubAuthReady event');
         window.dispatchEvent(new CustomEvent('githubAuthReady', {
             detail: { isConfigured: this.isConfigured, clientId: this.clientId }
         }));
@@ -526,5 +535,6 @@ This content was submitted via the PrepGuides.dev content submission form.`;
 
 // Initialize GitHub Auth when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOMContentLoaded - initializing GitHub auth');
     window.githubAuth = new GitHubAuth();
 });
