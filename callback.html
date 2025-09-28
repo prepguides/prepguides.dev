@@ -54,24 +54,6 @@
         .error {
             color: #dc2626;
         }
-
-        .btn {
-            background: #6366f1;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            background: #4f46e5;
-        }
     </style>
 </head>
 <body>
@@ -84,15 +66,12 @@
 
         <div id="success-state" style="display: none;">
             <h2 class="success">✅ Authentication Successful!</h2>
-            <p>You have been successfully authenticated with GitHub.</p>
-            <p>You can now submit content to PrepGuides.dev.</p>
-            <a href="/" class="btn">Return to Home</a>
+            <p>You can now close this window and return to the main site.</p>
         </div>
 
         <div id="error-state" style="display: none;">
             <h2 class="error">❌ Authentication Failed</h2>
             <p id="error-message">There was an error during authentication.</p>
-            <a href="/" class="btn">Return to Home</a>
         </div>
     </div>
 
@@ -143,9 +122,6 @@
 
                 const tokenData = await response.json();
                 
-                // Store the access token
-                localStorage.setItem('github_access_token', tokenData.access_token);
-                
                 // Get user info
                 const userResponse = await fetch('https://api.github.com/user', {
                     headers: {
@@ -156,22 +132,37 @@
 
                 if (userResponse.ok) {
                     const userData = await userResponse.json();
-                    localStorage.setItem('github_user', JSON.stringify(userData));
+                    
+                    // Send success message to parent window
+                    if (window.opener) {
+                        window.opener.postMessage({
+                            type: 'GITHUB_AUTH_SUCCESS',
+                            access_token: tokenData.access_token,
+                            user: userData
+                        }, window.location.origin);
+                    }
+                    
+                    loadingState.style.display = 'none';
+                    successState.style.display = 'block';
+                    
+                    // Close popup after a short delay
+                    setTimeout(() => {
+                        window.close();
+                    }, 2000);
+                } else {
+                    throw new Error('Failed to get user information');
                 }
-
-                // Check if we need to redirect back to a different domain
-                const returnUrl = localStorage.getItem('auth_return_url');
-                
-                if (returnUrl && returnUrl !== window.location.origin) {
-                    // Redirect back to the original domain
-                    window.location.href = returnUrl;
-                    return;
-                }
-                
-                loadingState.style.display = 'none';
-                successState.style.display = 'block';
             } catch (error) {
                 console.error('Auth callback error:', error);
+                
+                // Send error message to parent window
+                if (window.opener) {
+                    window.opener.postMessage({
+                        type: 'GITHUB_AUTH_ERROR',
+                        error: error.message
+                    }, window.location.origin);
+                }
+                
                 showError(error.message || 'An unexpected error occurred during authentication.');
             }
         }

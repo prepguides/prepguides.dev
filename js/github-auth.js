@@ -88,7 +88,7 @@ class GitHubAuth {
     }
 
     /**
-     * Initiate GitHub OAuth flow
+     * Initiate GitHub OAuth flow using popup
      */
     login() {
         if (!this.isConfigured) {
@@ -96,22 +96,51 @@ class GitHubAuth {
             return;
         }
 
-        // Store the current URL to return to after authentication
-        const currentOrigin = window.location.origin;
-        if (currentOrigin !== 'https://prepguides-dev.vercel.app') {
-            localStorage.setItem('auth_return_url', currentOrigin);
-        }
-
-        // For preview deployments, use production callback URL and handle redirect
-        const callbackUri = this.getCallbackUri();
-        
-        const authUrl = `https://github.com/login/oauth/authorize?` +
+        // Use popup-based OAuth flow to avoid callback issues
+        const callbackUrl = window.location.origin + '/callback.html';
+        const popup = window.open(
+            `https://github.com/login/oauth/authorize?` +
             `client_id=${this.clientId}&` +
-            `redirect_uri=${encodeURIComponent(callbackUri)}&` +
+            `redirect_uri=${encodeURIComponent(callbackUrl)}&` +
             `scope=${this.scope}&` +
-            `state=${this.generateState()}`;
-        
-        window.location.href = authUrl;
+            `state=${this.generateState()}`,
+            'github-auth',
+            'width=600,height=600,scrollbars=yes,resizable=yes'
+        );
+
+        // Listen for popup messages
+        const messageListener = (event) => {
+            if (event.origin !== window.location.origin) return;
+            
+            if (event.data.type === 'GITHUB_AUTH_SUCCESS') {
+                this.accessToken = event.data.access_token;
+                this.user = event.data.user;
+                localStorage.setItem('github_access_token', this.accessToken);
+                localStorage.setItem('github_user', JSON.stringify(this.user));
+                
+                // Update the UI
+                if (window.contentForm) {
+                    window.contentForm.updateAuthStatus();
+                }
+                
+                popup.close();
+                window.removeEventListener('message', messageListener);
+            } else if (event.data.type === 'GITHUB_AUTH_ERROR') {
+                alert('Authentication failed: ' + event.data.error);
+                popup.close();
+                window.removeEventListener('message', messageListener);
+            }
+        };
+
+        window.addEventListener('message', messageListener);
+
+        // Check if popup is closed manually
+        const checkClosed = setInterval(() => {
+            if (popup.closed) {
+                clearInterval(checkClosed);
+                window.removeEventListener('message', messageListener);
+            }
+        }, 1000);
     }
 
     /**
