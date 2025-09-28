@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0",
+  "type": "content-addition",
+  "metadata": {
+    "title": "Go Design Patterns",
+    "description": "Concurrency patterns in Go",
+    "author": "ishaileshpant",
+    "submissionDate": "2025-09-28",
+    "category": "system-design",
+    "subtopic": "general"
+  },
+  "content": {
+    "title": "Go Design Patterns",
+    "description": "Concurrency patterns in Go",
+    "type": "guide",
+    "status": "pending"
+  },
+  "validation": {
+    "repoAccessible": true,
+    "fileExists": true,
+    "contentValid": true,
+    "categoryValid": true
+  }
+}
