@@ -131,8 +131,8 @@ class GitHubAuth {
         const currentOrigin = window.location.origin;
         
         // For production domain
-        if (currentOrigin === 'https://prepguides-dev.vercel.app') {
-            return 'https://prepguides-dev.vercel.app/auth/callback';
+        if (currentOrigin === 'https://prepguides.dev') {
+            return 'https://prepguides.dev/auth/callback';
         }
         
         // For any Vercel preview deployment (includes PR previews)

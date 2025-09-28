@@ -630,7 +630,7 @@ class ContentForm {
 
         const previewContent = document.getElementById('preview-content');
         const previewSection = document.getElementById('preview-section');
-        const formSection = document.getElementById('form-section');
+        const formSection = document.getElementById('content-form');
 
         // Store content data for submission
         this.pendingContent = contentData;
@@ -687,7 +687,7 @@ class ContentForm {
      */
     showForm() {
         const previewSection = document.getElementById('preview-section');
-        const formSection = document.getElementById('form-section');
+        const formSection = document.getElementById('content-form');
         
         previewSection.style.display = 'none';
         formSection.style.display = 'block';
