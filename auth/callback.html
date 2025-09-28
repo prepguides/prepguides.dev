@@ -97,6 +97,13 @@
     </div>
 
     <script>
+        // Get OAuth parameters from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        const error = urlParams.get('error');
+        const errorDescription = urlParams.get('error_description');
+
         // Handle OAuth callback
         async function handleAuthCallback() {
             const loadingState = document.getElementById('loading-state');
@@ -105,40 +112,64 @@
             const errorMessage = document.getElementById('error-message');
 
             try {
-                // Check if we have the GitHub auth script loaded
-                if (typeof window.githubAuth === 'undefined') {
-                    // Load the auth script if not already loaded
-                    const script = document.createElement('script');
-                    script.src = '/js/github-auth.js';
-                    script.onload = () => {
-                        handleAuthCallback();
-                    };
-                    script.onerror = () => {
-                        showError('Failed to load authentication script');
-                    };
-                    document.head.appendChild(script);
+                // Check for OAuth errors
+                if (error) {
+                    showError(errorDescription || error);
                     return;
                 }
 
-                // Handle the OAuth callback
-                const success = await window.githubAuth.handleCallback();
-                
-                if (success) {
-                    // Check if we need to redirect back to a different domain
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const returnUrl = urlParams.get('return_url') || localStorage.getItem('auth_return_url');
-                    
-                    if (returnUrl && returnUrl !== window.location.origin) {
-                        // Redirect back to the original domain
-                        window.location.href = returnUrl;
-                        return;
-                    }
-                    
-                    loadingState.style.display = 'none';
-                    successState.style.display = 'block';
-                } else {
-                    showError('Authentication failed. Please try again.');
+                // Check for missing authorization code
+                if (!code) {
+                    showError('No authorization code received');
+                    return;
                 }
+
+                // Process the OAuth callback
+                const response = await fetch('/api/auth/github', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        code: code,
+                        state: state
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Authentication failed');
+                }
+
+                const tokenData = await response.json();
+                
+                // Store the access token
+                localStorage.setItem('github_access_token', tokenData.access_token);
+                
+                // Get user info
+                const userResponse = await fetch('https://api.github.com/user', {
+                    headers: {
+                        'Authorization': `token ${tokenData.access_token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (userResponse.ok) {
+                    const userData = await userResponse.json();
+                    localStorage.setItem('github_user', JSON.stringify(userData));
+                }
+
+                // Check if we need to redirect back to a different domain
+                const returnUrl = localStorage.getItem('auth_return_url');
+                
+                if (returnUrl && returnUrl !== window.location.origin) {
+                    // Redirect back to the original domain
+                    window.location.href = returnUrl;
+                    return;
+                }
+                
+                loadingState.style.display = 'none';
+                successState.style.display = 'block';
             } catch (error) {
                 console.error('Auth callback error:', error);
                 showError(error.message || 'An unexpected error occurred during authentication.');
