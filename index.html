@@ -225,6 +225,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="content-form.css">
 </head>
 <body>
     <div class="main-container">
@@ -234,6 +235,9 @@
         </header>
 
         <div class="content">
+            <!-- Content Submission Form -->
+            <div id="content-form-container"></div>
+            
             <div class="categories">
 
     <div class="category-card" onclick="window.location.href='kubernetes.html'">
@@ -311,5 +315,16 @@
             </div>
         </div>
     </div>
+
+    <!-- Content Submission Scripts -->
+    <script>
+        // GitHub OAuth Configuration
+        window.GITHUB_CONFIG = {
+            clientId: 'your_github_client_id_here', // Replace with actual client ID
+            isConfigured: true // Set to true since environment variables are configured
+        };
+    </script>
+    <script src="github-auth.js"></script>
+    <script src="content-form.js"></script>
 </body>
 </html>
