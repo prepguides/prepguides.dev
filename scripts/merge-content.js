@@ -176,7 +176,7 @@ function mergePayload(baseConfig, payload) {
     baseConfig.categories[category].subtopics[subtopic].content[existingContentIndex] = {
       ...content,
       addedDate: metadata.submissionDate || new Date().toISOString().split('T')[0],
-      status: content.status || 'active'
+      status: 'active' // Always set to active when processing through automation
     };
     console.log(`🔄 Updated existing content: ${content.title}`);
   } else {
@@ -184,7 +184,7 @@ function mergePayload(baseConfig, payload) {
     baseConfig.categories[category].subtopics[subtopic].content.push({
       ...content,
       addedDate: metadata.submissionDate || new Date().toISOString().split('T')[0],
-      status: content.status || 'active'
+      status: 'active' // Always set to active when processing through automation
     });
     console.log(`➕ Added new content: ${content.title}`);
   }
