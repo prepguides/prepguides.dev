@@ -5,7 +5,7 @@
 
 class GitHubAuth {
     constructor() {
-        this.clientId = 'YOUR_GITHUB_CLIENT_ID'; // Will be set via environment
+        this.clientId = null; // Will be fetched from API
         this.redirectUri = window.location.origin + '/auth/callback';
         this.scope = 'repo,user:email';
         this.accessToken = localStorage.getItem('github_access_token');
@@ -18,6 +18,19 @@ class GitHubAuth {
      * Check if GitHub OAuth is properly configured
      */
     async checkConfiguration() {
+        try {
+            // First, try to get the client ID from a config endpoint
+            const configResponse = await fetch('/api/config');
+            if (configResponse.ok) {
+                const config = await configResponse.json();
+                this.clientId = config.clientId;
+                this.isConfigured = !!this.clientId;
+                return;
+            }
+        } catch (error) {
+            console.log('Config endpoint not available, checking auth endpoint');
+        }
+
         try {
             const response = await fetch('/api/auth/github', {
                 method: 'POST',
