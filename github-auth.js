@@ -496,7 +496,7 @@ class GitHubAuth {
         <p><strong>Description:</strong> ${contentData.description}</p>
         
         <div class="main-content">
-            ${contentData.content}
+            ${contentData.content || contentData.description || ''}
         </div>
         
         <hr>
@@ -520,7 +520,7 @@ class GitHubAuth {
 ${contentData.description}
 
 ### Content Preview
-${contentData.content.substring(0, 200)}${contentData.content.length > 200 ? '...' : ''}
+${(contentData.content || contentData.description || '').substring(0, 200)}${(contentData.content || contentData.description || '').length > 200 ? '...' : ''}
 
 ### Review Checklist
 - [ ] Content is technically accurate

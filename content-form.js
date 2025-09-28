@@ -482,6 +482,7 @@ class ContentForm {
             category: formData.get('category'),
             subtopic: formData.get('subtopic'),
             description: formData.get('description'),
+            content: formData.get('description'), // Use description as content for consistency
             type: contentType,
             path: formData.get('path'),
             addedDate: new Date().toISOString().split('T')[0],
