@@ -454,6 +454,11 @@ class GitHubAuth {
         
         const forkRepo = await createForkResponse.json();
         console.log(`Fork created successfully: ${forkRepo.full_name}`);
+        
+        // Wait a moment for the fork to be fully initialized
+        console.log('Waiting for fork to be fully initialized...');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
         return forkRepo;
     }
 
@@ -470,13 +475,31 @@ class GitHubAuth {
         const forkRepo = await this.ensureFork();
         console.log(`Using fork repository: ${forkRepo.full_name}`);
         
-        // Get the latest commit SHA from main branch of the fork
-        const mainBranchResponse = await fetch(`https://api.github.com/repos/${forkRepo.full_name}/git/refs/heads/main`, {
-            headers: {
-                'Authorization': `token ${this.accessToken}`,
-                'Accept': 'application/vnd.github.v3+json'
+        // Get the latest commit SHA from main branch of the fork (with retry)
+        let mainBranchResponse;
+        let retryCount = 0;
+        const maxRetries = 3;
+        
+        while (retryCount < maxRetries) {
+            console.log(`Attempting to get main branch SHA (attempt ${retryCount + 1}/${maxRetries})`);
+            
+            mainBranchResponse = await fetch(`https://api.github.com/repos/${forkRepo.full_name}/git/refs/heads/main`, {
+                headers: {
+                    'Authorization': `token ${this.accessToken}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            
+            if (mainBranchResponse.ok) {
+                break;
             }
-        });
+            
+            retryCount++;
+            if (retryCount < maxRetries) {
+                console.log(`Main branch not ready, waiting 3 seconds before retry...`);
+                await new Promise(resolve => setTimeout(resolve, 3000));
+            }
+        }
 
         if (!mainBranchResponse.ok) {
             const errorText = await mainBranchResponse.text();
