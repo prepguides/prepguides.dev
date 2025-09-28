@@ -179,6 +179,25 @@ class ContentForm {
 
         if (!authStatus) return;
 
+        // Check if GitHub OAuth is configured
+        if (!window.githubAuth.isConfigured) {
+            authStatus.innerHTML = '<div class="auth-error">⚠️ GitHub OAuth not configured</div>';
+            loginSection.innerHTML = `
+                <h3>🔧 Setup Required</h3>
+                <p>GitHub OAuth is not configured. To enable content submission:</p>
+                <ol style="text-align: left; margin: 15px 0;">
+                    <li>Create a GitHub OAuth App</li>
+                    <li>Set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET environment variables</li>
+                    <li>Configure the callback URL</li>
+                </ol>
+                <p>See <a href="CONTENT_SUBMISSION_SETUP.md" target="_blank">setup documentation</a> for details.</p>
+            `;
+            loginSection.style.display = 'block';
+            userSection.style.display = 'none';
+            formSection.style.display = 'none';
+            return;
+        }
+
         if (window.githubAuth.isAuthenticated()) {
             authStatus.innerHTML = '<div class="auth-success">✅ Authenticated with GitHub</div>';
             loginSection.style.display = 'none';

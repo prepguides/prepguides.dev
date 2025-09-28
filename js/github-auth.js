@@ -10,12 +10,39 @@ class GitHubAuth {
         this.scope = 'repo,user:email';
         this.accessToken = localStorage.getItem('github_access_token');
         this.user = JSON.parse(localStorage.getItem('github_user') || 'null');
+        this.isConfigured = false;
+        this.checkConfiguration();
+    }
+
+    /**
+     * Check if GitHub OAuth is properly configured
+     */
+    async checkConfiguration() {
+        try {
+            const response = await fetch('/api/auth/github', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ code: 'test' })
+            });
+            
+            // If we get a 503, it means OAuth is not configured
+            this.isConfigured = response.status !== 503;
+        } catch (error) {
+            this.isConfigured = false;
+        }
     }
 
     /**
      * Initiate GitHub OAuth flow
      */
     login() {
+        if (!this.isConfigured) {
+            alert('GitHub OAuth is not configured. Please contact the administrator to set up GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET environment variables.');
+            return;
+        }
+
         const authUrl = `https://github.com/login/oauth/authorize?` +
             `client_id=${this.clientId}&` +
             `redirect_uri=${encodeURIComponent(this.redirectUri)}&` +

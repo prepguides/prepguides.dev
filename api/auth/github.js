@@ -8,6 +8,14 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
+    // Check if environment variables are configured
+    if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
+        return res.status(503).json({ 
+            error: 'GitHub OAuth not configured',
+            message: 'Please set up GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET environment variables'
+        });
+    }
+
     const { code } = req.body;
 
     if (!code) {
