@@ -2,16 +2,5 @@
   "buildCommand": "echo 'Static site - no build needed'",
   "outputDirectory": ".",
   "installCommand": "echo 'No dependencies to install'",
-  "framework": null,
-  "functions": {
-    "api/auth/github.js": {
-      "runtime": "@vercel/node@3.0.0"
-    },
-    "api/github/create-pr.js": {
-      "runtime": "@vercel/node@3.0.0"
-    },
-    "api/health.js": {
-      "runtime": "@vercel/node@3.0.0"
-    }
-  }
+  "framework": null
 }
