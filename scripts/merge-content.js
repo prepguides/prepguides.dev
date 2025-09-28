@@ -28,7 +28,7 @@ function loadBaseConfig() {
 }
 
 /**
- * Load all payload files
+ * Load payload files from current PR only
  */
 function loadPayloads() {
   const payloads = [];
@@ -39,19 +39,29 @@ function loadPayloads() {
       return payloads;
     }
     
-    const files = fs.readdirSync(PAYLOADS_DIR);
-    const jsonFiles = files.filter(file => file.endsWith('.json'));
+    // Check if we're in a PR context by looking for changed files
+    const changedFiles = getChangedFiles();
+    const payloadFiles = changedFiles.filter(file => 
+      file.startsWith('.github/content-payloads/') && file.endsWith('.json')
+    );
     
-    for (const file of jsonFiles) {
+    if (payloadFiles.length === 0) {
+      console.log('No new payload files in this PR, using base config only');
+      return payloads;
+    }
+    
+    console.log(`📋 Found ${payloadFiles.length} new payload file(s) in this PR`);
+    
+    for (const file of payloadFiles) {
       try {
-        const filePath = path.join(PAYLOADS_DIR, file);
+        const filePath = path.resolve(file);
         const fileData = fs.readFileSync(filePath, 'utf8');
         const payload = JSON.parse(fileData);
         
         // Validate payload structure
         if (validatePayload(payload)) {
           payloads.push(payload);
-          console.log(`✅ Loaded payload: ${file}`);
+          console.log(`✅ Loaded new payload: ${path.basename(file)}`);
         } else {
           console.error(`❌ Invalid payload structure: ${file}`);
         }
@@ -64,6 +74,31 @@ function loadPayloads() {
   }
   
   return payloads;
+}
+
+/**
+ * Get changed files in current PR
+ */
+function getChangedFiles() {
+  try {
+    const { execSync } = require('child_process');
+    
+    // Try to get changed files from git diff
+    try {
+      const diffOutput = execSync('git diff --name-only HEAD~1 HEAD', { encoding: 'utf8' });
+      return diffOutput.trim().split('\n').filter(file => file.length > 0);
+    } catch (error) {
+      // Fallback: if not in a PR context, process all files
+      console.log('Not in PR context, processing all payload files');
+      const files = fs.readdirSync(PAYLOADS_DIR);
+      return files.filter(file => file.endsWith('.json')).map(file => 
+        path.join(PAYLOADS_DIR, file)
+      );
+    }
+  } catch (error) {
+    console.error('Error getting changed files:', error.message);
+    return [];
+  }
 }
 
 /**
@@ -120,12 +155,27 @@ function mergePayload(baseConfig, payload) {
     };
   }
   
-  // Add content to subtopic
-  baseConfig.categories[category].subtopics[subtopic].content.push({
-    ...content,
-    addedDate: metadata.submissionDate || new Date().toISOString().split('T')[0],
-    status: content.status || 'active'
-  });
+  // Check if content with this ID already exists to avoid duplicates
+  const existingContentIndex = baseConfig.categories[category].subtopics[subtopic].content
+    .findIndex(item => item.id === content.id);
+  
+  if (existingContentIndex !== -1) {
+    // Update existing content
+    baseConfig.categories[category].subtopics[subtopic].content[existingContentIndex] = {
+      ...content,
+      addedDate: metadata.submissionDate || new Date().toISOString().split('T')[0],
+      status: content.status || 'active'
+    };
+    console.log(`🔄 Updated existing content: ${content.title}`);
+  } else {
+    // Add new content
+    baseConfig.categories[category].subtopics[subtopic].content.push({
+      ...content,
+      addedDate: metadata.submissionDate || new Date().toISOString().split('T')[0],
+      status: content.status || 'active'
+    });
+    console.log(`➕ Added new content: ${content.title}`);
+  }
   
   return true;
 }
