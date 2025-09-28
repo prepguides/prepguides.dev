@@ -638,10 +638,17 @@ class ContentForm {
 document.addEventListener('DOMContentLoaded', () => {
     window.contentForm = new ContentForm();
     
-    // Update auth status after a short delay to ensure GitHub auth is initialized
+    // Listen for GitHub auth configuration ready
+    window.addEventListener('githubAuthReady', () => {
+        if (window.contentForm) {
+            window.contentForm.updateAuthStatus();
+        }
+    });
+    
+    // Fallback: Update auth status after a delay if event doesn't fire
     setTimeout(() => {
         if (window.contentForm) {
             window.contentForm.updateAuthStatus();
         }
-    }, 100);
+    }, 1000);
 });
