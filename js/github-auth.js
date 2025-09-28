@@ -29,18 +29,21 @@ class GitHubAuth {
         const state = urlParams.get('state');
         const error = urlParams.get('error');
         
-        if (localStorage.getItem('oauth_in_progress') === 'true') {
-            if (code) {
-                // We have an authorization code, process it
-                this.processOAuthCode(code, state);
-            } else if (error) {
-                // OAuth error
-                alert('Authentication failed: ' + error);
-                localStorage.removeItem('oauth_in_progress');
-            } else {
-                // No code, might be a fresh page load
-                localStorage.removeItem('oauth_in_progress');
-            }
+        console.log('Checking OAuth return:', { code, state, error, oauthInProgress: localStorage.getItem('oauth_in_progress') });
+        
+        // Check if we have an authorization code (regardless of oauth_in_progress flag)
+        if (code) {
+            console.log('Found authorization code, processing...');
+            this.processOAuthCode(code, state);
+        } else if (error) {
+            // OAuth error
+            console.log('OAuth error:', error);
+            alert('Authentication failed: ' + error);
+            localStorage.removeItem('oauth_in_progress');
+        } else if (localStorage.getItem('oauth_in_progress') === 'true') {
+            // No code, might be a fresh page load
+            console.log('No code found, clearing oauth_in_progress flag');
+            localStorage.removeItem('oauth_in_progress');
         }
     }
 
@@ -49,6 +52,8 @@ class GitHubAuth {
      */
     async processOAuthCode(code, state) {
         try {
+            console.log('Processing OAuth code:', code);
+            
             // Process the OAuth callback
             const response = await fetch('/api/auth/github', {
                 method: 'POST',
@@ -61,12 +66,16 @@ class GitHubAuth {
                 })
             });
 
+            console.log('OAuth response status:', response.status);
+
             if (!response.ok) {
                 const errorData = await response.json();
+                console.error('OAuth error response:', errorData);
                 throw new Error(errorData.message || 'Authentication failed');
             }
 
             const tokenData = await response.json();
+            console.log('OAuth token received:', !!tokenData.access_token);
             
             // Store the access token
             this.accessToken = tokenData.access_token;
@@ -83,6 +92,7 @@ class GitHubAuth {
             if (userResponse.ok) {
                 this.user = await userResponse.json();
                 localStorage.setItem('github_user', JSON.stringify(this.user));
+                console.log('User info received:', this.user.login);
             }
 
             // Clear OAuth in progress flag
@@ -91,10 +101,7 @@ class GitHubAuth {
             // Clean up URL
             window.history.replaceState({}, document.title, window.location.pathname);
             
-            // Update the UI
-            if (window.contentForm) {
-                window.contentForm.updateAuthStatus();
-            }
+            console.log('OAuth processing complete, reloading page...');
             
             // Force a page reload to ensure UI updates
             window.location.reload();
