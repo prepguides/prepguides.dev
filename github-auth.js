@@ -452,12 +452,22 @@ class GitHubAuth {
      * Create content file in the repository
      */
     async createContentFile(branchName, contentData) {
+        // Debug: Log content data to identify issues
+        console.log('Creating content file with data:', contentData);
+        
+        // Validate required fields
+        if (!contentData.id) {
+            throw new Error('Content ID is missing or undefined');
+        }
+        
         // Create content payload JSON file in .github/content-payloads/ folder
         const contentJson = this.formatContentAsJson(contentData);
         const encodedContent = btoa(unescape(encodeURIComponent(contentJson)));
 
         // Use the correct path for content payloads
         const submissionPath = `.github/content-payloads/${contentData.id}-payload.json`;
+        
+        console.log('Creating payload file at:', submissionPath);
 
         const response = await fetch(`https://api.github.com/repos/prepguides/prepguides.dev/contents/${submissionPath}`, {
             method: 'PUT',
@@ -521,7 +531,9 @@ class GitHubAuth {
                 title: contentData.title,
                 description: contentData.description,
                 type: contentData.type || 'guide',
-                status: contentData.status || 'pending'
+                status: contentData.status || 'pending',
+                repo: contentData.repo || '',
+                path: contentData.path || ''
             },
             validation: {
                 repoAccessible: true,
@@ -532,13 +544,6 @@ class GitHubAuth {
         };
 
         // Add type-specific fields to content
-        if (contentData.type === 'guide' && contentData.repo) {
-            payloadJson.content.repo = contentData.repo;
-        }
-
-        if (contentData.path) {
-            payloadJson.content.path = contentData.path;
-        }
 
         if (contentData.features && contentData.features.length > 0) {
             payloadJson.content.features = contentData.features;
