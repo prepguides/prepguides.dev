@@ -10,9 +10,11 @@ export default async function handler(req, res) {
 
     // Check if environment variables are configured
     if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
+        console.log('GitHub integration not configured - missing environment variables');
         return res.status(503).json({ 
             error: 'GitHub integration not configured',
-            message: 'Please set up GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET environment variables'
+            message: 'Please set up GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET environment variables',
+            configured: false
         });
     }
 

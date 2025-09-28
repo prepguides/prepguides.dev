@@ -9,6 +9,9 @@
     },
     "api/github/create-pr.js": {
       "runtime": "@vercel/node"
+    },
+    "api/health.js": {
+      "runtime": "@vercel/node"
     }
   }
 }
