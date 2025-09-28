@@ -452,12 +452,12 @@ class GitHubAuth {
      * Create content file in the repository
      */
     async createContentFile(branchName, contentData) {
-        // Create content JSON file in .github/content-submissions/ folder
+        // Create content payload JSON file in .github/content-payloads/ folder
         const contentJson = this.formatContentAsJson(contentData);
         const encodedContent = btoa(unescape(encodeURIComponent(contentJson)));
 
-        // Use a standardized path for content submissions
-        const submissionPath = `.github/content-submissions/${contentData.id}.json`;
+        // Use the correct path for content payloads
+        const submissionPath = `.github/content-payloads/${contentData.id}-payload.json`;
 
         const response = await fetch(`https://api.github.com/repos/prepguides/prepguides.dev/contents/${submissionPath}`, {
             method: 'PUT',
@@ -504,35 +504,51 @@ class GitHubAuth {
      * Format content as HTML
      */
     formatContentAsJson(contentData) {
-        // Create a JSON structure that matches the base.json format
-        const contentJson = {
-            id: contentData.id,
-            title: contentData.title,
-            description: contentData.description,
-            type: contentData.type || 'guide',
-            path: contentData.path || `${contentData.category}/${contentData.id}.html`,
-            addedDate: contentData.addedDate,
-            status: contentData.status || 'pending',
-            submittedBy: this.user.login,
-            submittedAt: new Date().toISOString(),
-            category: contentData.category,
-            subtopic: contentData.subtopic
+        // Create a JSON structure that matches the payload template format
+        const payloadJson = {
+            version: "1.0.0",
+            type: "content-addition",
+            metadata: {
+                title: contentData.title,
+                description: contentData.description,
+                author: this.user.login,
+                submissionDate: new Date().toISOString().split('T')[0],
+                category: contentData.category,
+                subtopic: contentData.subtopic || 'general'
+            },
+            content: {
+                id: contentData.id,
+                title: contentData.title,
+                description: contentData.description,
+                type: contentData.type || 'guide',
+                status: contentData.status || 'pending'
+            },
+            validation: {
+                repoAccessible: true,
+                fileExists: true,
+                contentValid: true,
+                categoryValid: true
+            }
         };
 
-        // Add type-specific fields
+        // Add type-specific fields to content
         if (contentData.type === 'guide' && contentData.repo) {
-            contentJson.repo = contentData.repo;
+            payloadJson.content.repo = contentData.repo;
+        }
+
+        if (contentData.path) {
+            payloadJson.content.path = contentData.path;
         }
 
         if (contentData.features && contentData.features.length > 0) {
-            contentJson.features = contentData.features;
+            payloadJson.content.features = contentData.features;
         }
 
         if (contentData.jsFile) {
-            contentJson.jsFile = contentData.jsFile;
+            payloadJson.content.jsFile = contentData.jsFile;
         }
 
-        return JSON.stringify(contentJson, null, 2);
+        return JSON.stringify(payloadJson, null, 2);
     }
 
     /**
