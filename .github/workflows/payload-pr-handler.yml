@@ -70,6 +70,7 @@ jobs:
         import json
         import os
         import sys
+        import subprocess
         
         payloads_dir = '.github/content-payloads'
         
@@ -77,17 +78,33 @@ jobs:
             print("❌ No payloads directory found")
             sys.exit(1)
         
-        payload_files = [f for f in os.listdir(payloads_dir) if f.endswith('.json')]
+        # Get only changed files in this PR
+        try:
+            result = subprocess.run(['git', 'diff', '--name-only', 'HEAD~1', 'HEAD'], 
+                                  capture_output=True, text=True, check=True)
+            changed_files = result.stdout.strip().split('\n')
+            payload_files = [f for f in changed_files 
+                           if f.startswith('.github/content-payloads/') and f.endswith('.json')]
+        except subprocess.CalledProcessError:
+            # Fallback: process all files if not in PR context
+            payload_files = [f for f in os.listdir(payloads_dir) if f.endswith('.json')]
+            payload_files = [os.path.join(payloads_dir, f) for f in payload_files]
         
         if not payload_files:
-            print("❌ No payload files found")
+            print("❌ No new payload files found in this PR")
             sys.exit(1)
         
-        print(f"📋 Found {len(payload_files)} payload file(s)")
+        print(f"📋 Found {len(payload_files)} new payload file(s) in this PR")
         
         for payload_file in payload_files:
             try:
-                with open(os.path.join(payloads_dir, payload_file), 'r') as f:
+                # Handle both relative and absolute paths
+                if payload_file.startswith(payloads_dir):
+                    file_path = payload_file
+                else:
+                    file_path = os.path.join(payloads_dir, payload_file)
+                
+                with open(file_path, 'r') as f:
                     payload = json.load(f)
                 
                 # Validate required fields
@@ -154,36 +171,69 @@ jobs:
         import requests
         import sys
         import os
+        import subprocess
         
         payloads_dir = '.github/content-payloads'
         
-        for payload_file in os.listdir(payloads_dir):
-            if payload_file.endswith('.json'):
-                with open(os.path.join(payloads_dir, payload_file), 'r') as f:
-                    payload = json.load(f)
+        # Get only changed files in this PR
+        try:
+            result = subprocess.run(['git', 'diff', '--name-only', 'HEAD~1', 'HEAD'], 
+                                  capture_output=True, text=True, check=True)
+            changed_files = result.stdout.strip().split('\n')
+            payload_files = [f for f in changed_files 
+                           if f.startswith('.github/content-payloads/') and f.endswith('.json')]
+        except subprocess.CalledProcessError:
+            # Fallback: process all files if not in PR context
+            payload_files = [f for f in os.listdir(payloads_dir) if f.endswith('.json')]
+            payload_files = [os.path.join(payloads_dir, f) for f in payload_files]
+        
+        for payload_file in payload_files:
+            # Handle both relative and absolute paths
+            if payload_file.startswith(payloads_dir):
+                file_path = payload_file
+            else:
+                file_path = os.path.join(payloads_dir, payload_file)
+                
+            with open(file_path, 'r') as f:
+                payload = json.load(f)
                 
                 if 'repo' in payload['content'] and 'path' in payload['content']:
                     repo = payload['content']['repo']
                     path = payload['content']['path']
                     
+                    # Skip validation if repo or path is empty
+                    if not repo or not path:
+                        print(f"⚠️  Skipping validation for {payload_file}: empty repo or path")
+                        continue
+                    
                     # Test GitHub API access
                     url = f"https://api.github.com/repos/{repo}"
-                    response = requests.get(url)
-                    
-                    if response.status_code == 200:
-                        print(f"✅ Repository accessible: {repo}")
-                    else:
-                        print(f"❌ Repository not accessible: {repo} (Status: {response.status_code})")
+                    try:
+                        response = requests.get(url, timeout=10)
+                        
+                        if response.status_code == 200:
+                            print(f"✅ Repository accessible: {repo}")
+                        else:
+                            print(f"❌ Repository not accessible: {repo} (Status: {response.status_code})")
+                            sys.exit(1)
+                    except requests.RequestException as e:
+                        print(f"❌ Error checking repository {repo}: {e}")
                         sys.exit(1)
                     
                     # Test file access
                     raw_url = f"https://raw.githubusercontent.com/{repo}/main/{path}"
-                    file_response = requests.head(raw_url)
-                    if file_response.status_code == 200:
-                        print(f"✅ File accessible: {repo}/{path}")
-                    else:
-                        print(f"❌ File not accessible: {repo}/{path} (Status: {file_response.status_code})")
+                    try:
+                        file_response = requests.head(raw_url, timeout=10)
+                        if file_response.status_code == 200:
+                            print(f"✅ File accessible: {repo}/{path}")
+                        else:
+                            print(f"❌ File not accessible: {repo}/{path} (Status: {file_response.status_code})")
+                            sys.exit(1)
+                    except requests.RequestException as e:
+                        print(f"❌ Error checking file {repo}/{path}: {e}")
                         sys.exit(1)
+                else:
+                    print(f"⚠️  Skipping repository validation for {payload_file}: no repo/path specified")
         EOF
 
     - name: Generate site preview
@@ -285,12 +335,21 @@ jobs:
             // Read the generated content config
             const config = JSON.parse(fs.readFileSync('content-config.json', 'utf8'));
             
-            // Count payloads
-            const payloadsDir = '.github/content-payloads';
+            // Count new payloads in this PR
+            const { execSync } = require('child_process');
             let payloadCount = 0;
-            if (fs.existsSync(payloadsDir)) {
-              const files = fs.readdirSync(payloadsDir);
-              payloadCount = files.filter(f => f.endsWith('.json')).length;
+            try {
+              const changedFiles = execSync('git diff --name-only HEAD~1 HEAD', { encoding: 'utf8' });
+              const payloadFiles = changedFiles.trim().split('\n')
+                .filter(file => file.startsWith('.github/content-payloads/') && file.endsWith('.json'));
+              payloadCount = payloadFiles.length;
+            } catch (error) {
+              // Fallback: count all payload files
+              const payloadsDir = '.github/content-payloads';
+              if (fs.existsSync(payloadsDir)) {
+                const files = fs.readdirSync(payloadsDir);
+                payloadCount = files.filter(f => f.endsWith('.json')).length;
+              }
             }
             
             // Generate statistics
