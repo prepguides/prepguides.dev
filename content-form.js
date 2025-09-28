@@ -383,6 +383,14 @@ class ContentForm {
             if (loginSection) loginSection.style.display = 'flex';
             if (userSection) userSection.style.display = 'none';
             if (showFormBtn) showFormBtn.style.display = 'none';
+            
+            // Ensure login button is enabled
+            const loginBtn = document.getElementById('github-login-btn');
+            if (loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.style.opacity = '1';
+                loginBtn.style.cursor = 'pointer';
+            }
         }
     }
 
