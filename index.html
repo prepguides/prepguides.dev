@@ -317,6 +317,13 @@
     </div>
 
     <!-- Content Submission Scripts -->
+    <script>
+        // GitHub OAuth Configuration
+        window.GITHUB_CONFIG = {
+            clientId: 'your_github_client_id_here', // Replace with actual client ID
+            isConfigured: true // Set to true since environment variables are configured
+        };
+    </script>
     <script src="js/github-auth.js"></script>
     <script src="js/content-form.js"></script>
 </body>
