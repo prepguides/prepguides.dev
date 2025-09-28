@@ -142,10 +142,12 @@ class GitHubAuth {
      * Check if GitHub OAuth is properly configured
      */
     async checkConfiguration() {
-        // For now, assume it's configured since environment variables are set
-        // This will be updated when the API endpoints are working
-        this.isConfigured = true;
-        this.clientId = 'your_github_client_id'; // This should be replaced with actual client ID
+        // Use the client ID from window configuration if available
+        if (window.GITHUB_CONFIG?.clientId && window.GITHUB_CONFIG?.isConfigured) {
+            this.clientId = window.GITHUB_CONFIG.clientId;
+            this.isConfigured = true;
+            return;
+        }
         
         // Try to get the actual client ID from the config endpoint
         try {
