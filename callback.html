@@ -1,17 +1,4 @@
-/**
- * OAuth Callback Handler
- * Serves the callback page with OAuth processing
- */
-
-export default async function handler(req, res) {
-    if (req.method !== 'GET') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
-
-    const { code, state, error } = req.query;
-
-    // Serve the callback HTML page
-    const html = `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -110,13 +97,12 @@ export default async function handler(req, res) {
     </div>
 
     <script>
-        // OAuth callback data
-        const oauthData = {
-            code: '${code || ''}',
-            state: '${state || ''}',
-            error: '${error || ''}',
-            error_description: '${req.query.error_description || ''}'
-        };
+        // Get OAuth parameters from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        const error = urlParams.get('error');
+        const errorDescription = urlParams.get('error_description');
 
         // Handle OAuth callback
         async function handleAuthCallback() {
@@ -127,13 +113,13 @@ export default async function handler(req, res) {
 
             try {
                 // Check for OAuth errors
-                if (oauthData.error) {
-                    showError(oauthData.error_description || oauthData.error);
+                if (error) {
+                    showError(errorDescription || error);
                     return;
                 }
 
                 // Check for missing authorization code
-                if (!oauthData.code) {
+                if (!code) {
                     showError('No authorization code received');
                     return;
                 }
@@ -145,8 +131,8 @@ export default async function handler(req, res) {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        code: oauthData.code,
-                        state: oauthData.state
+                        code: code,
+                        state: state
                     })
                 });
 
@@ -163,7 +149,7 @@ export default async function handler(req, res) {
                 // Get user info
                 const userResponse = await fetch('https://api.github.com/user', {
                     headers: {
-                        'Authorization': \`token \${tokenData.access_token}\`,
+                        'Authorization': `token ${tokenData.access_token}`,
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
@@ -204,8 +190,4 @@ export default async function handler(req, res) {
         document.addEventListener('DOMContentLoaded', handleAuthCallback);
     </script>
 </body>
-</html>`;
-
-    res.setHeader('Content-Type', 'text/html');
-    res.status(200).send(html);
-}
+</html>
