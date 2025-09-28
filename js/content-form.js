@@ -413,4 +413,11 @@ class ContentForm {
 // Initialize content form when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.contentForm = new ContentForm();
+    
+    // Update auth status after a short delay to ensure GitHub auth is initialized
+    setTimeout(() => {
+        if (window.contentForm) {
+            window.contentForm.updateAuthStatus();
+        }
+    }, 100);
 });

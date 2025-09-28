@@ -96,7 +96,8 @@ class GitHubAuth {
                 window.contentForm.updateAuthStatus();
             }
             
-            alert('Successfully authenticated with GitHub!');
+            // Force a page reload to ensure UI updates
+            window.location.reload();
             
         } catch (error) {
             console.error('OAuth processing error:', error);
@@ -512,5 +513,7 @@ This content was submitted via the PrepGuides.dev content submission form.`;
     }
 }
 
-// Initialize GitHub Auth
-window.githubAuth = new GitHubAuth();
+// Initialize GitHub Auth when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.githubAuth = new GitHubAuth();
+});
