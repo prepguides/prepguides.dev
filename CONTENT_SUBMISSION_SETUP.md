@@ -18,9 +18,18 @@ This document explains how to set up the GitHub-integrated content submission sy
 2. Click "New OAuth App"
 3. Fill in the details:
    - **Application name**: PrepGuides.dev Content Submission
-   - **Homepage URL**: `https://your-domain.com`
-   - **Authorization callback URL**: `https://your-domain.com/auth/callback`
+   - **Homepage URL**: `https://prepguides-dev.vercel.app`
+   - **Authorization callback URL**: `https://prepguides-dev.vercel.app/auth/callback`
 4. Note down the Client ID and generate a Client Secret
+
+**Important**: For development and preview deployments, you'll need to add additional callback URLs:
+- `http://localhost:3000/auth/callback` (for local development)
+- `https://*.vercel.app/auth/callback` (for all Vercel preview deployments)
+
+**Note**: GitHub doesn't support wildcard domains in OAuth callback URLs. For preview deployments, you have two options:
+1. **Add each preview URL manually** (not practical for frequent PRs)
+2. **Use a proxy service** or **configure multiple specific URLs**
+3. **Test primarily on production domain** and use preview for development only
 
 ### 2. Environment Variables
 

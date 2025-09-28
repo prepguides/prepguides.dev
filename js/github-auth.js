@@ -7,7 +7,7 @@ class GitHubAuth {
     constructor() {
         // Get configuration from window object
         this.clientId = window.GITHUB_CONFIG?.clientId || null;
-        this.redirectUri = window.location.origin + '/auth/callback';
+        this.redirectUri = this.getRedirectUri();
         this.scope = 'repo,user:email';
         this.accessToken = localStorage.getItem('github_access_token');
         this.user = JSON.parse(localStorage.getItem('github_user') || 'null');
@@ -15,6 +15,31 @@ class GitHubAuth {
         
         // Still try to check configuration for dynamic updates
         this.checkConfiguration();
+    }
+
+    /**
+     * Get the appropriate redirect URI based on the current environment
+     */
+    getRedirectUri() {
+        const currentOrigin = window.location.origin;
+        
+        // For production domain
+        if (currentOrigin === 'https://prepguides-dev.vercel.app') {
+            return 'https://prepguides-dev.vercel.app/auth/callback';
+        }
+        
+        // For any Vercel preview deployment (includes PR previews)
+        if (currentOrigin.includes('.vercel.app')) {
+            return currentOrigin + '/auth/callback';
+        }
+        
+        // For local development
+        if (currentOrigin.includes('localhost') || currentOrigin.includes('127.0.0.1')) {
+            return 'http://localhost:3000/auth/callback';
+        }
+        
+        // Fallback to current origin
+        return currentOrigin + '/auth/callback';
     }
 
     /**
@@ -71,13 +96,38 @@ class GitHubAuth {
             return;
         }
 
+        // Store the current URL to return to after authentication
+        const currentOrigin = window.location.origin;
+        if (currentOrigin !== 'https://prepguides-dev.vercel.app') {
+            localStorage.setItem('auth_return_url', currentOrigin);
+        }
+
+        // For preview deployments, use production callback URL and handle redirect
+        const callbackUri = this.getCallbackUri();
+        
         const authUrl = `https://github.com/login/oauth/authorize?` +
             `client_id=${this.clientId}&` +
-            `redirect_uri=${encodeURIComponent(this.redirectUri)}&` +
+            `redirect_uri=${encodeURIComponent(callbackUri)}&` +
             `scope=${this.scope}&` +
             `state=${this.generateState()}`;
         
         window.location.href = authUrl;
+    }
+
+    /**
+     * Get the callback URI for OAuth (handles preview deployment issue)
+     */
+    getCallbackUri() {
+        const currentOrigin = window.location.origin;
+        
+        // For production, use the current origin
+        if (currentOrigin === 'https://prepguides-dev.vercel.app') {
+            return currentOrigin + '/auth/callback';
+        }
+        
+        // For preview deployments, use production callback URL
+        // This works because the callback page can handle the redirect
+        return 'https://prepguides-dev.vercel.app/auth/callback';
     }
 
     /**

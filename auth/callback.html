@@ -124,6 +124,16 @@
                 const success = await window.githubAuth.handleCallback();
                 
                 if (success) {
+                    // Check if we need to redirect back to a different domain
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const returnUrl = urlParams.get('return_url') || localStorage.getItem('auth_return_url');
+                    
+                    if (returnUrl && returnUrl !== window.location.origin) {
+                        // Redirect back to the original domain
+                        window.location.href = returnUrl;
+                        return;
+                    }
+                    
                     loadingState.style.display = 'none';
                     successState.style.display = 'block';
                 } else {
