@@ -327,88 +327,41 @@ class GitHubAuth {
     }
 
     /**
-     * Create a pull request with submitted content
+     * Create a pull request with submitted content using bot API
      */
     async createPullRequest(contentData) {
         if (!this.isAuthenticated()) {
             throw new Error('User not authenticated');
         }
 
-        const branchName = `content-submission-${Date.now()}`;
-        
-        // Validate branch name (GitHub branch names must be valid ref names)
-        if (!/^[a-zA-Z0-9._-]+$/.test(branchName)) {
-            throw new Error('Invalid branch name format');
-        }
-
         try {
-            console.log('Starting PR creation process...');
+            console.log('🤖 Starting bot-based PR creation process...');
             
-            // First, ensure user has a fork of the repository
-            const forkRepo = await this.ensureFork();
-            console.log(`✅ Using fork repository: ${forkRepo.full_name}`);
-            
-            // Create a new branch in fork
-            console.log('Creating branch:', branchName);
-            await this.createBranch(branchName);
-            console.log('Branch created successfully');
-
-            // Create/update the content file in fork
-            console.log('Creating content submission file');
-            await this.createContentFile(branchName, contentData, forkRepo);
-            console.log('Content file created successfully');
-
-            // Create pull request from fork to main repository
-            const prData = {
-                title: `Content Submission: ${contentData.title}`,
-                body: this.generatePRDescription(contentData),
-                head: `${this.user.login}:${branchName}`, // From user's fork
-                base: 'main'
-            };
-            
-            console.log('Creating PR with data:', prData);
-
-            const response = await fetch('https://api.github.com/repos/prepguides/prepguides.dev/pulls', {
+            // Use the bot API to create the PR
+            const response = await fetch('/api/github/create-content-pr', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `token ${this.accessToken}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(prData)
+                body: JSON.stringify({
+                    contentData: contentData,
+                    userToken: this.accessToken
+                })
             });
 
-            console.log('PR creation response status:', response.status);
+            console.log('Bot API response status:', response.status);
             
             if (!response.ok) {
-                const errorText = await response.text();
-                console.error('PR creation failed:', errorText);
-                
-                // Parse the error to provide better messaging
-                let errorMessage = `Failed to create pull request: ${response.status}`;
-                try {
-                    const errorData = JSON.parse(errorText);
-                    if (errorData.message) {
-                        errorMessage = errorData.message;
-                        
-                        // Provide specific guidance for common errors
-                        if (errorData.message.includes('Validation Failed')) {
-                            errorMessage += '\n\nThis usually means the branch reference is invalid. Please ensure you have write access to the repository or try again.';
-                        }
-                    }
-                } catch (e) {
-                    // If we can't parse the error, use the raw text
-                    errorMessage = errorText;
-                }
-                
-                throw new Error(errorMessage);
+                const errorData = await response.json();
+                console.error('Bot PR creation failed:', errorData);
+                throw new Error(errorData.message || `Failed to create pull request: ${response.status}`);
             }
 
             const result = await response.json();
-            console.log('PR created successfully:', result);
-            return result;
+            console.log('✅ Bot PR created successfully:', result);
+            return result.pr;
         } catch (error) {
-            console.error('Failed to create pull request:', error);
+            console.error('Failed to create pull request via bot:', error);
             throw error;
         }
     }
