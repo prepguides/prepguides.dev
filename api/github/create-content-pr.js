@@ -7,150 +7,183 @@ import { Octokit } from '@octokit/rest';
 import { App } from '@octokit/app';
 
 export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
-
-    // Check if GitHub App is configured
-    if (!process.env.GITHUB_APP_ID || !process.env.GITHUB_APP_PRIVATE_KEY || !process.env.GITHUB_APP_INSTALLATION_ID) {
-        console.log('GitHub App not configured');
-        return res.status(503).json({ 
-            error: 'GitHub App not configured',
-            message: 'Please set up GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY, and GITHUB_APP_INSTALLATION_ID environment variables',
-            configured: false
-        });
-    }
-
-    const { contentData, userToken } = req.body;
-
-    if (!contentData || !userToken) {
-        return res.status(400).json({ 
-            error: 'Missing required fields',
-            message: 'contentData and userToken are required'
-        });
-    }
-
-    // Initialize GitHub App
-    const app = new App({
-        appId: process.env.GITHUB_APP_ID,
-        privateKey: process.env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n'),
-    });
-
-    // Get installation access token
-    const octokit = await app.getInstallationOctokit(process.env.GITHUB_APP_INSTALLATION_ID);
-
+    // Ensure we always return JSON responses
     try {
-        console.log('🤖 Bot creating content submission PR...');
-        
-        // 1. Verify user authentication
-        const userResponse = await fetch('https://api.github.com/user', {
-            headers: {
-                'Authorization': `token ${userToken}`,
-                'Accept': 'application/vnd.github.v3+json'
+        if (req.method !== 'POST') {
+            return res.status(405).json({ error: 'Method not allowed' });
+        }
+
+        // Check if GitHub App is configured
+        if (!process.env.GITHUB_APP_ID || !process.env.GITHUB_APP_PRIVATE_KEY || !process.env.GITHUB_APP_INSTALLATION_ID) {
+            console.log('GitHub App not configured');
+            return res.status(503).json({ 
+                error: 'GitHub App not configured',
+                message: 'Please set up GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY, and GITHUB_APP_INSTALLATION_ID environment variables',
+                configured: false
+            });
+        }
+
+        const { contentData, userToken } = req.body;
+
+        if (!contentData || !userToken) {
+            return res.status(400).json({ 
+                error: 'Missing required fields',
+                message: 'contentData and userToken are required'
+            });
+        }
+
+        // Validate contentData structure
+        if (!contentData.id || !contentData.title || !contentData.description || !contentData.category) {
+            return res.status(400).json({
+                error: 'Invalid content data',
+                message: 'contentData must include id, title, description, and category'
+            });
+        }
+
+        // Initialize GitHub App with proper error handling
+        let app, octokit;
+        try {
+            app = new App({
+                appId: process.env.GITHUB_APP_ID,
+                privateKey: process.env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            });
+
+            // Get installation access token
+            octokit = await app.getInstallationOctokit(process.env.GITHUB_APP_INSTALLATION_ID);
+        } catch (appError) {
+            console.error('GitHub App initialization error:', appError);
+            return res.status(500).json({
+                error: 'GitHub App initialization failed',
+                message: 'Failed to initialize GitHub App. Please check your environment variables.',
+                details: process.env.NODE_ENV === 'development' ? appError.message : undefined
+            });
+        }
+
+        // Main bot logic with proper error handling
+        let branchName = null;
+        try {
+            console.log('🤖 Bot creating content submission PR...');
+            
+            // 1. Verify user authentication
+            const userResponse = await fetch('https://api.github.com/user', {
+                headers: {
+                    'Authorization': `token ${userToken}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            if (!userResponse.ok) {
+                return res.status(401).json({ 
+                    error: 'Invalid user token',
+                    message: 'Please re-authenticate with GitHub'
+                });
             }
-        });
 
-        if (!userResponse.ok) {
-            return res.status(401).json({ 
-                error: 'Invalid user token',
-                message: 'Please re-authenticate with GitHub'
-            });
-        }
+            const user = await userResponse.json();
+            console.log(`✅ User authenticated: ${user.login}`);
 
-        const user = await userResponse.json();
-        console.log(`✅ User authenticated: ${user.login}`);
-
-        // 2. Generate unique branch name
-        const timestamp = Date.now();
-        const branchName = `content-submission-${user.login}-${timestamp}`;
-        
-        // 3. Get latest main branch SHA
-        const { data: mainRef } = await octokit.git.getRef({
-            owner: 'prepguides',
-            repo: 'prepguides.dev',
-            ref: 'heads/main'
-        });
-
-        // 4. Create new branch
-        console.log(`🌿 Creating branch: ${branchName}`);
-        await octokit.git.createRef({
-            owner: 'prepguides',
-            repo: 'prepguides.dev',
-            ref: `refs/heads/${branchName}`,
-            sha: mainRef.object.sha
-        });
-
-        // 5. Create content payload file
-        const payloadContent = generatePayloadContent(contentData, user);
-        const payloadPath = `.github/content-payloads/${contentData.id}-payload.json`;
-        
-        console.log(`📝 Creating payload file: ${payloadPath}`);
-        await octokit.repos.createOrUpdateFileContents({
-            owner: 'prepguides',
-            repo: 'prepguides.dev',
-            path: payloadPath,
-            message: `Add content submission: ${contentData.title}`,
-            content: Buffer.from(payloadContent).toString('base64'),
-            branch: branchName
-        });
-
-        // 6. Create pull request
-        console.log(`🔀 Creating pull request...`);
-        const { data: pr } = await octokit.pulls.create({
-            owner: 'prepguides',
-            repo: 'prepguides.dev',
-            title: `Content Submission: ${contentData.title}`,
-            head: branchName,
-            base: 'main',
-            body: generatePRDescription(contentData, user)
-        });
-
-        // 7. Add labels
-        try {
-            await octokit.issues.addLabels({
+            // 2. Generate unique branch name
+            const timestamp = Date.now();
+            branchName = `content-submission-${user.login}-${timestamp}`;
+            
+            // 3. Get latest main branch SHA
+            const { data: mainRef } = await octokit.git.getRef({
                 owner: 'prepguides',
                 repo: 'prepguides.dev',
-                issue_number: pr.number,
-                labels: ['content-submission', 'needs-review', 'bot-created']
+                ref: 'heads/main'
             });
-        } catch (labelError) {
-            console.warn('Failed to add labels:', labelError);
-        }
 
-        console.log(`✅ PR created successfully: #${pr.number}`);
-
-        return res.status(201).json({
-            success: true,
-            pr: {
-                number: pr.number,
-                html_url: pr.html_url,
-                title: pr.title,
-                state: pr.state,
-                created_at: pr.created_at
-            },
-            branch: branchName,
-            message: 'Content submission PR created successfully!'
-        });
-
-    } catch (error) {
-        console.error('Bot PR creation error:', error);
-        
-        // Clean up branch if PR creation failed
-        try {
-            await octokit.git.deleteRef({
+            // 4. Create new branch
+            console.log(`🌿 Creating branch: ${branchName}`);
+            await octokit.git.createRef({
                 owner: 'prepguides',
                 repo: 'prepguides.dev',
-                ref: `heads/${branchName}`
+                ref: `refs/heads/${branchName}`,
+                sha: mainRef.object.sha
             });
-            console.log('🧹 Cleaned up failed branch');
-        } catch (cleanupError) {
-            console.warn('Failed to cleanup branch:', cleanupError);
-        }
 
+            // 5. Create content payload file
+            const payloadContent = generatePayloadContent(contentData, user);
+            const payloadPath = `.github/content-payloads/${contentData.id}-payload.json`;
+            
+            console.log(`📝 Creating payload file: ${payloadPath}`);
+            await octokit.repos.createOrUpdateFileContents({
+                owner: 'prepguides',
+                repo: 'prepguides.dev',
+                path: payloadPath,
+                message: `Add content submission: ${contentData.title}`,
+                content: Buffer.from(payloadContent).toString('base64'),
+                branch: branchName
+            });
+
+            // 6. Create pull request
+            console.log(`🔀 Creating pull request...`);
+            const { data: pr } = await octokit.pulls.create({
+                owner: 'prepguides',
+                repo: 'prepguides.dev',
+                title: `Content Submission: ${contentData.title}`,
+                head: branchName,
+                base: 'main',
+                body: generatePRDescription(contentData, user)
+            });
+
+            // 7. Add labels
+            try {
+                await octokit.issues.addLabels({
+                    owner: 'prepguides',
+                    repo: 'prepguides.dev',
+                    issue_number: pr.number,
+                    labels: ['content-submission', 'needs-review', 'bot-created']
+                });
+            } catch (labelError) {
+                console.warn('Failed to add labels:', labelError);
+            }
+
+            console.log(`✅ PR created successfully: #${pr.number}`);
+
+            return res.status(201).json({
+                success: true,
+                pr: {
+                    number: pr.number,
+                    html_url: pr.html_url,
+                    title: pr.title,
+                    state: pr.state,
+                    created_at: pr.created_at
+                },
+                branch: branchName,
+                message: 'Content submission PR created successfully!'
+            });
+
+        } catch (error) {
+            console.error('Bot PR creation error:', error);
+            
+            // Clean up branch if PR creation failed and branch was created
+            if (branchName && octokit) {
+                try {
+                    await octokit.git.deleteRef({
+                        owner: 'prepguides',
+                        repo: 'prepguides.dev',
+                        ref: `heads/${branchName}`
+                    });
+                    console.log('🧹 Cleaned up failed branch');
+                } catch (cleanupError) {
+                    console.warn('Failed to cleanup branch:', cleanupError);
+                }
+            }
+
+            return res.status(500).json({
+                error: 'Failed to create content submission PR',
+                message: error.message,
+                details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            });
+        }
+    } catch (outerError) {
+        // Catch any errors outside the main try-catch
+        console.error('Outer error in bot API:', outerError);
         return res.status(500).json({
-            error: 'Failed to create content submission PR',
-            message: error.message,
-            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            error: 'Internal server error',
+            message: 'An unexpected error occurred',
+            details: process.env.NODE_ENV === 'development' ? outerError.message : undefined
         });
     }
 }
