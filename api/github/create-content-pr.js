@@ -4,18 +4,19 @@
  */
 
 import { Octokit } from '@octokit/rest';
+import { App } from '@octokit/app';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    // Check if environment variables are configured
-    if (!process.env.GITHUB_TOKEN) {
-        console.log('GitHub bot token not configured');
+    // Check if GitHub App is configured
+    if (!process.env.GITHUB_APP_ID || !process.env.GITHUB_APP_PRIVATE_KEY || !process.env.GITHUB_APP_INSTALLATION_ID) {
+        console.log('GitHub App not configured');
         return res.status(503).json({ 
-            error: 'GitHub bot not configured',
-            message: 'Please set up GITHUB_TOKEN environment variable for the bot',
+            error: 'GitHub App not configured',
+            message: 'Please set up GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY, and GITHUB_APP_INSTALLATION_ID environment variables',
             configured: false
         });
     }
@@ -29,10 +30,14 @@ export default async function handler(req, res) {
         });
     }
 
-    // Initialize GitHub client with bot token
-    const octokit = new Octokit({
-        auth: process.env.GITHUB_TOKEN
+    // Initialize GitHub App
+    const app = new App({
+        appId: process.env.GITHUB_APP_ID,
+        privateKey: process.env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n'),
     });
+
+    // Get installation access token
+    const octokit = await app.getInstallationOctokit(process.env.GITHUB_APP_INSTALLATION_ID);
 
     try {
         console.log('🤖 Bot creating content submission PR...');

@@ -77,17 +77,52 @@ User Form → Bot API → Origin Repository → GitHub Actions → Admin Review 
 ## Environment Variables Required
 
 ```bash
-GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx  # Bot token with repo access
-GITHUB_CLIENT_ID=your_client_id        # For user authentication
+# GitHub App Configuration
+GITHUB_APP_ID=123456                    # Your GitHub App ID
+GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\n..."  # App private key
+GITHUB_APP_INSTALLATION_ID=789012       # Installation ID after installing app
+
+# User Authentication (existing)
+GITHUB_CLIENT_ID=your_client_id         # For user authentication
 GITHUB_CLIENT_SECRET=your_client_secret # For user authentication
 ```
 
-## Bot Token Permissions
+## GitHub App Setup
 
-The bot token needs the following permissions:
-- `repo` (Full control of private repositories)
-- `workflow` (Update GitHub Action workflows)
-- `write:discussion` (Write team discussions)
+### Step 1: Create GitHub App
+1. Go to GitHub Settings → Developer settings → GitHub Apps
+2. Click "New GitHub App"
+3. Fill in details:
+   - **Name**: PrepGuides Content Bot
+   - **Homepage URL**: https://prepguides.dev
+   - **User authorization callback URL**: https://prepguides.dev/auth/callback
+   - **Webhook URL**: (leave blank)
+   - **Webhook secret**: (generate random string)
+
+### Step 2: Set Permissions
+- **Repository permissions:**
+  - Contents: Read & write
+  - Issues: Write
+  - Pull requests: Write
+  - Metadata: Read
+  - Actions: Write
+- **Organization permissions:**
+  - Members: Read (if needed)
+
+### Step 3: Subscribe to Events
+- Pull request
+- Issues
+- Push
+
+### Step 4: Install App
+1. After creating, click "Install App"
+2. Select repository: `prepguides/prepguides.dev`
+3. Install the app
+
+### Step 5: Get Credentials
+1. **App ID**: Found in app settings
+2. **Private Key**: Download the `.pem` file
+3. **Installation ID**: Found after installing the app
 
 ## Testing
 
