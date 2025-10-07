@@ -24,6 +24,12 @@
 .DS_Store
 *.pem
 
+# sensitive files - private keys and credentials
+*private-key*
+*private_key*
+github-app-private-key*
+*.key
+
 # debug
 npm-debug.log*
 yarn-debug.log*

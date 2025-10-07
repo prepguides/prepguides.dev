@@ -305,10 +305,15 @@ class GitHubAuth {
      * Logout user
      */
     logout() {
+        console.log('Logging out user...');
         this.accessToken = null;
         this.user = null;
         localStorage.removeItem('github_access_token');
         localStorage.removeItem('github_user');
+        
+        // Force page reload to update UI
+        console.log('Reloading page after logout...');
+        window.location.reload();
     }
 
     /**

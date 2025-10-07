@@ -150,8 +150,9 @@ class ContentForm {
         // Logout
         document.addEventListener('click', (e) => {
             if (e.target.id === 'logout-btn') {
+                console.log('Logout button clicked');
                 window.githubAuth.logout();
-                this.updateAuthStatus();
+                // Note: logout() now handles page reload, so updateAuthStatus() is not needed
             }
         });
 
