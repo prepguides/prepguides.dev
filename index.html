@@ -77,57 +77,221 @@
         }
 
         .github-login-btn-compact {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            color: #1f2937;
-            padding: 8px 16px;
-            border-radius: 6px;
+            background: #24292e;
+            border: 1px solid #24292e;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
+            gap: 10px;
+            transition: all 0.2s ease;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             position: relative;
-            z-index: 1000;
-            pointer-events: auto !important;
+            z-index: 1001;
+            pointer-events: auto;
+            text-decoration: none;
+            min-width: 120px;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
 
         .github-login-btn-compact:hover {
-            background: white;
-            border-color: white;
+            background: #1a1e22;
+            border-color: #1a1e22;
             transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .github-login-btn-compact:active {
-            background: rgba(255, 255, 255, 0.8);
-            transform: scale(0.98);
+            background: #0d1117;
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .github-login-btn-compact:focus {
-            outline: 2px solid rgba(255, 255, 255, 0.5);
+            outline: 2px solid #0969da;
             outline-offset: 2px;
+        }
+
+        .github-login-btn-compact svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
         }
 
         .user-info-compact {
             display: flex;
             align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .user-profile-trigger {
+            display: flex;
+            align-items: center;
             gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            z-index: 1001;
+        }
+
+        .user-profile-trigger:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .user-avatar-compact {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             border: 2px solid rgba(255, 255, 255, 0.3);
+            object-fit: cover;
         }
 
         .user-name-compact {
             font-weight: 500;
             font-size: 14px;
+            color: white;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 1002;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .user-dropdown-header {
+            padding: 16px;
+            border-bottom: 1px solid #e1e5e9;
+        }
+
+        .user-dropdown-name {
+            font-weight: 600;
+            color: #24292e;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .user-dropdown-email {
+            color: #656d76;
+            font-size: 12px;
+        }
+
+        .user-dropdown-actions {
+            padding: 8px 0;
+        }
+
+        .user-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            color: #24292e;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .user-dropdown-item:hover {
+            background: #f6f8fa;
+        }
+
+        .user-dropdown-item.logout {
+            color: #d73a49;
+            border-top: 1px solid #e1e5e9;
+            margin-top: 8px;
+        }
+
+        .user-dropdown-item.logout:hover {
+            background: #ffeef0;
+        }
+
+        .auth-loading {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .auth-loading::before {
+            content: '';
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .auth-success {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #28a745;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .auth-success::before {
+            content: '✓';
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .auth-error {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #dc3545;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .auth-error::before {
+            content: '✗';
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .logout-btn-compact {
@@ -391,10 +555,34 @@
                     </div>
                     <div id="user-section" class="user-section-compact" style="display: none;">
                         <div class="user-info-compact">
-                            <img id="user-avatar" src="" alt="User Avatar" class="user-avatar-compact">
-                            <span id="user-name" class="user-name-compact"></span>
+                            <div class="user-profile-trigger" id="user-profile-trigger">
+                                <img id="user-avatar" src="" alt="User Avatar" class="user-avatar-compact">
+                                <span id="user-name" class="user-name-compact"></span>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 4px;">
+                                    <path d="M7 10l5 5 5-5z"/>
+                                </svg>
+                            </div>
+                            <div class="user-dropdown" id="user-dropdown">
+                                <div class="user-dropdown-header">
+                                    <div class="user-dropdown-name" id="user-dropdown-name"></div>
+                                    <div class="user-dropdown-email" id="user-dropdown-email"></div>
+                                </div>
+                                <div class="user-dropdown-actions">
+                                    <button class="user-dropdown-item" id="profile-link">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        View Profile
+                                    </button>
+                                    <button class="user-dropdown-item logout" id="logout-btn">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                                        </svg>
+                                        Sign Out
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <button id="logout-btn" class="logout-btn-compact">Logout</button>
                     </div>
                 </div>
             </div>
