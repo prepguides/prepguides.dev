@@ -153,6 +153,14 @@ class ContentForm {
                 const dropdown = document.getElementById('user-dropdown');
                 if (dropdown) {
                     dropdown.classList.toggle('show');
+                    console.log('Dropdown toggled, show class:', dropdown.classList.contains('show'));
+                    // Debug: Check if logout button exists
+                    const logoutBtn = document.getElementById('logout-btn');
+                    console.log('Logout button found:', !!logoutBtn);
+                    if (logoutBtn) {
+                        console.log('Logout button display:', window.getComputedStyle(logoutBtn).display);
+                        console.log('Logout button visibility:', window.getComputedStyle(logoutBtn).visibility);
+                    }
                 }
             } else if (e.target.id === 'logout-btn') {
                 console.log('Logout button clicked');
