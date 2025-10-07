@@ -62,12 +62,18 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            position: relative;
+            z-index: 1001;
+            pointer-events: auto;
         }
 
         .auth-status-compact, .login-section-compact, .user-section-compact {
             display: flex;
             align-items: center;
             gap: 10px;
+            position: relative;
+            z-index: 1001;
+            pointer-events: auto;
         }
 
         .github-login-btn-compact {
@@ -128,15 +134,36 @@
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 12px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1001;
+            pointer-events: auto;
+            outline: none;
+            min-width: 80px;
+            text-align: center;
         }
 
         .logout-btn-compact:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .logout-btn-compact:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.8);
+            outline-offset: 2px;
             background: rgba(255, 255, 255, 0.2);
+        }
+
+        .logout-btn-compact:active {
+            transform: translateY(0);
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .content-submission-link {
