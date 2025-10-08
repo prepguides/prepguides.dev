@@ -147,12 +147,23 @@ class ContentForm {
             }
         });
 
-        // Logout button
+        // User info dropdown
         document.addEventListener('click', (e) => {
-            if (e.target.id === 'logout-btn') {
+            if (e.target.closest('#user-info-trigger')) {
+                const dropdown = document.getElementById('user-dropdown');
+                if (dropdown) {
+                    dropdown.classList.toggle('show');
+                }
+            } else if (e.target.id === 'logout-btn') {
                 console.log('Logout button clicked');
                 window.githubAuth.logout();
                 // Note: logout() now handles page reload, so updateAuthStatus() is not needed
+            } else {
+                // Close dropdown when clicking outside
+                const dropdown = document.getElementById('user-dropdown');
+                if (dropdown && dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
             }
         });
 
@@ -459,9 +470,17 @@ class ContentForm {
             const user = window.githubAuth.user;
             const userAvatar = document.getElementById('user-avatar');
             const userName = document.getElementById('user-name');
+            const userDropdownName = document.getElementById('user-dropdown-name');
+            const userDropdownUsername = document.getElementById('user-dropdown-username');
+            const userDropdownEmail = document.getElementById('user-dropdown-email');
+            const githubProfileLink = document.getElementById('github-profile-link');
             
             if (userAvatar) userAvatar.src = user.avatar_url;
             if (userName) userName.textContent = user.name || user.login;
+            if (userDropdownName) userDropdownName.textContent = user.name || user.login;
+            if (userDropdownUsername) userDropdownUsername.textContent = `@${user.login}`;
+            if (userDropdownEmail) userDropdownEmail.textContent = user.email || `${user.login}@github.com`;
+            if (githubProfileLink) githubProfileLink.href = user.html_url;
         } else {
             authStatus.innerHTML = '<div class="auth-error">❌ Not authenticated</div>';
             if (userSection) userSection.style.display = 'none';
