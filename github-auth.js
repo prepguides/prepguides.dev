@@ -216,11 +216,20 @@ class GitHubAuth {
 
         // For now, let's use a simple approach - redirect to GitHub and handle the callback manually
         const redirectUri = this.getCallbackUri();
-        const authUrl = `https://github.com/login/oauth/authorize?` +
-            `client_id=${this.clientId}&` +
-            `scope=${this.scope}&` +
-            `state=${this.generateState()}&` +
-            `redirect_uri=${encodeURIComponent(redirectUri)}`;
+        const state = this.generateState();
+        
+        // Build URL parameters properly
+        const params = new URLSearchParams({
+            client_id: this.clientId,
+            scope: this.scope,
+            state: state,
+            redirect_uri: redirectUri
+        });
+        
+        const authUrl = `https://github.com/login/oauth/authorize?${params.toString()}`;
+        
+        console.log('OAuth redirect URI:', redirectUri);
+        console.log('OAuth auth URL:', authUrl);
         
         // Store that we're in the middle of OAuth
         localStorage.setItem('oauth_in_progress', 'true');
