@@ -357,14 +357,21 @@ class GitHubAuth {
             console.log('Bot API response status:', response.status);
             
             if (!response.ok) {
+                // Clone the response to avoid "body stream already read" error
+                const responseClone = response.clone();
                 let errorData;
                 try {
                     errorData = await response.json();
                 } catch (jsonError) {
                     console.error('Failed to parse error response as JSON:', jsonError);
-                    const textResponse = await response.text();
-                    console.error('Raw error response:', textResponse);
-                    throw new Error(`Server error: ${response.status} - ${textResponse.substring(0, 100)}`);
+                    try {
+                        const textResponse = await responseClone.text();
+                        console.error('Raw error response:', textResponse);
+                        throw new Error(`Server error: ${response.status} - ${textResponse.substring(0, 100)}`);
+                    } catch (textError) {
+                        console.error('Failed to read response as text:', textError);
+                        throw new Error(`Server error: ${response.status} - Unable to read response body`);
+                    }
                 }
                 console.error('Bot PR creation failed:', errorData);
                 throw new Error(errorData.message || `Failed to create pull request: ${response.status}`);
