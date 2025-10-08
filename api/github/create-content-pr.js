@@ -4,7 +4,7 @@
  */
 
 import { Octokit } from '@octokit/rest';
-import { App } from '@octokit/app';
+import { createAppAuth } from '@octokit/auth-app';
 
 export default async function handler(req, res) {
     // Ensure we always return JSON responses
@@ -41,15 +41,15 @@ export default async function handler(req, res) {
         }
 
         // Initialize GitHub App with proper error handling
-        let app, octokit;
+        let octokit;
         try {
-            app = new App({
+            const auth = createAppAuth({
                 appId: process.env.GITHUB_APP_ID,
                 privateKey: process.env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n'),
+                installationId: process.env.GITHUB_APP_INSTALLATION_ID,
             });
 
-            // Get installation access token
-            octokit = await app.getInstallationOctokit(process.env.GITHUB_APP_INSTALLATION_ID);
+            octokit = new Octokit({ auth });
         } catch (appError) {
             console.error('GitHub App initialization error:', appError);
             return res.status(500).json({
