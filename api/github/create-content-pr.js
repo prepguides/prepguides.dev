@@ -195,15 +195,6 @@ export default async function handler(req, res) {
             details: process.env.NODE_ENV === 'development' ? outerError.message : undefined
         });
     }
-    } catch (finalError) {
-        // Final catch-all to prevent any HTML error pages
-        console.error('Final error in bot API:', finalError);
-        return res.status(500).json({
-            error: 'Server error',
-            message: 'An unexpected server error occurred',
-            details: 'Please try again later'
-        });
-    }
 }
 
 /**
