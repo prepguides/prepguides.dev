@@ -11,7 +11,7 @@
   "dependencies": {
     "@vercel/node": "^3.0.0",
     "@octokit/rest": "^20.0.0",
-    "@octokit/auth-app": "^6.0.0"
+    "@octokit/app": "^1.0.0"
   },
   "devDependencies": {
     "vercel": "^32.0.0"
