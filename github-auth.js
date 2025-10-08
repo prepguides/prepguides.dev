@@ -64,8 +64,6 @@ class GitHubAuth {
     async processOAuthCode(code, state) {
         try {
             console.log('Processing OAuth code:', code);
-            console.log('OAuth state:', state);
-            console.log('Current URL:', window.location.href);
             
             // Process the OAuth callback
             const response = await fetch('/api/auth/github', {
@@ -80,17 +78,10 @@ class GitHubAuth {
             });
 
             console.log('OAuth response status:', response.status);
-            console.log('OAuth response headers:', Object.fromEntries(response.headers.entries()));
 
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error('OAuth error response:', errorData);
-                
-                // Handle specific OAuth errors
-                if (errorData.message && errorData.message.includes('incorrect or expired')) {
-                    throw new Error('OAuth code has expired. Please try logging in again.');
-                }
-                
                 throw new Error(errorData.message || 'Authentication failed');
             }
 
@@ -215,21 +206,10 @@ class GitHubAuth {
         }
 
         // For now, let's use a simple approach - redirect to GitHub and handle the callback manually
-        const redirectUri = this.getCallbackUri();
-        const state = this.generateState();
-        
-        // Build URL parameters properly
-        const params = new URLSearchParams({
-            client_id: this.clientId,
-            scope: this.scope,
-            state: state,
-            redirect_uri: redirectUri
-        });
-        
-        const authUrl = `https://github.com/login/oauth/authorize?${params.toString()}`;
-        
-        console.log('OAuth redirect URI:', redirectUri);
-        console.log('OAuth auth URL:', authUrl);
+        const authUrl = `https://github.com/login/oauth/authorize?` +
+            `client_id=${this.clientId}&` +
+            `scope=${this.scope}&` +
+            `state=${this.generateState()}`;
         
         // Store that we're in the middle of OAuth
         localStorage.setItem('oauth_in_progress', 'true');
