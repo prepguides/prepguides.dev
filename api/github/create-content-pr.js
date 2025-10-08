@@ -17,16 +17,15 @@ export default async function handler(req, res) {
         }
 
         // Check if GitHub App is configured
-        if (!process.env.GITHUB_APP_ID || !process.env.GITHUB_APP_PRIVATE_KEY || !process.env.GITHUB_APP_INSTALLATION_ID) {
-            console.log('GitHub App not configured');
-            return res.status(503).json({ 
-                error: 'GitHub App not configured',
-                message: 'Please set up GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY, and GITHUB_APP_INSTALLATION_ID environment variables',
-                configured: false
-            });
-        }
-
+        const isGitHubAppConfigured = process.env.GITHUB_APP_ID && process.env.GITHUB_APP_PRIVATE_KEY && process.env.GITHUB_APP_INSTALLATION_ID;
+        
         const { contentData, userToken } = req.body;
+
+        if (!isGitHubAppConfigured) {
+            console.log('GitHub App not configured, using fallback method with user token');
+            // Fallback: Use user token directly to create PR
+            return await handleFallbackSubmission(req, res, contentData, userToken);
+        }
 
         if (!contentData || !userToken) {
             return res.status(400).json({ 
@@ -285,4 +284,170 @@ This content was submitted via the PrepGuides.dev content submission form and au
 
 **Bot Version:** 1.0.0
 **Submission ID:** ${contentData.id}`;
+}
+
+/**
+ * Fallback submission handler when GitHub App is not configured
+ * Uses user token directly to create PR via fork
+ */
+async function handleFallbackSubmission(req, res, contentData, userToken) {
+    try {
+        console.log('🔄 Using fallback submission method...');
+        
+        // 1. Verify user authentication
+        const userResponse = await fetch('https://api.github.com/user', {
+            headers: {
+                'Authorization': `token ${userToken}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+
+        if (!userResponse.ok) {
+            return res.status(401).json({ 
+                error: 'Invalid user token',
+                message: 'Please re-authenticate with GitHub'
+            });
+        }
+
+        const user = await userResponse.json();
+        console.log(`✅ User authenticated: ${user.login}`);
+
+        // 2. Check if user has a fork
+        const forkRepoName = `${user.login}/prepguides.dev`;
+        const forkResponse = await fetch(`https://api.github.com/repos/${forkRepoName}`, {
+            headers: {
+                'Authorization': `token ${userToken}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+
+        if (!forkResponse.ok) {
+            return res.status(400).json({
+                error: 'Fork not found',
+                message: `Please fork the repository https://github.com/prepguides/prepguides.dev first`,
+                forkUrl: 'https://github.com/prepguides/prepguides.dev/fork'
+            });
+        }
+
+        const forkRepo = await forkResponse.json();
+        console.log(`✅ Fork found: ${forkRepo.full_name}`);
+
+        // 3. Generate unique branch name
+        const timestamp = Date.now();
+        const branchName = `content-submission-${user.login}-${timestamp}`;
+        
+        // 4. Get latest main branch SHA from fork
+        const mainRefResponse = await fetch(`https://api.github.com/repos/${forkRepo.full_name}/git/refs/heads/main`, {
+            headers: {
+                'Authorization': `token ${userToken}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+
+        if (!mainRefResponse.ok) {
+            return res.status(500).json({
+                error: 'Failed to get main branch reference',
+                message: 'Could not access the main branch of your fork'
+            });
+        }
+
+        const mainRef = await mainRefResponse.json();
+        
+        // 5. Create new branch
+        console.log(`🌿 Creating branch: ${branchName}`);
+        const branchResponse = await fetch(`https://api.github.com/repos/${forkRepo.full_name}/git/refs`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `token ${userToken}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ref: `refs/heads/${branchName}`,
+                sha: mainRef.object.sha
+            })
+        });
+
+        if (!branchResponse.ok) {
+            return res.status(500).json({
+                error: 'Failed to create branch',
+                message: 'Could not create a new branch in your fork'
+            });
+        }
+
+        // 6. Create content payload file
+        const payloadContent = generatePayloadContent(contentData, user);
+        const payloadPath = `.github/content-payloads/${contentData.id}-payload.json`;
+        const encodedContent = Buffer.from(payloadContent).toString('base64');
+        
+        console.log(`📝 Creating payload file: ${payloadPath}`);
+        const fileResponse = await fetch(`https://api.github.com/repos/${forkRepo.full_name}/contents/${payloadPath}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${userToken}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `Add content submission: ${contentData.title}`,
+                content: encodedContent,
+                branch: branchName
+            })
+        });
+
+        if (!fileResponse.ok) {
+            return res.status(500).json({
+                error: 'Failed to create content file',
+                message: 'Could not create the content submission file'
+            });
+        }
+
+        // 7. Create pull request
+        console.log(`🔀 Creating pull request...`);
+        const prResponse = await fetch('https://api.github.com/repos/prepguides/prepguides.dev/pulls', {
+            method: 'POST',
+            headers: {
+                'Authorization': `token ${userToken}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: `Content Submission: ${contentData.title}`,
+                head: `${user.login}:${branchName}`,
+                base: 'main',
+                body: generatePRDescription(contentData, user)
+            })
+        });
+
+        if (!prResponse.ok) {
+            return res.status(500).json({
+                error: 'Failed to create pull request',
+                message: 'Could not create the pull request'
+            });
+        }
+
+        const pr = await prResponse.json();
+        console.log(`✅ PR created successfully: #${pr.number}`);
+
+        return res.status(201).json({
+            success: true,
+            pr: {
+                number: pr.number,
+                html_url: pr.html_url,
+                title: pr.title,
+                state: pr.state,
+                created_at: pr.created_at
+            },
+            branch: branchName,
+            message: 'Content submission PR created successfully using fallback method!'
+        });
+
+    } catch (error) {
+        console.error('Fallback submission error:', error);
+        return res.status(500).json({
+            error: 'Failed to create content submission PR',
+            message: error.message,
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
 }
