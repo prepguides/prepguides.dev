@@ -16,17 +16,9 @@ export default async function handler(req, res) {
             return res.status(405).json({ error: 'Method not allowed' });
         }
 
-        // Check if GitHub App is configured
-        const isGitHubAppConfigured = process.env.GITHUB_APP_ID && process.env.GITHUB_APP_PRIVATE_KEY;
-        
         const { contentData, userToken } = req.body;
 
-        if (!isGitHubAppConfigured) {
-            console.log('GitHub App not configured, using fallback method with user token');
-            // Fallback: Use user token directly to create PR
-            return await handleFallbackSubmission(req, res, contentData, userToken);
-        }
-
+        // Validate required fields first
         if (!contentData || !userToken) {
             return res.status(400).json({ 
                 error: 'Missing required fields',
@@ -42,12 +34,26 @@ export default async function handler(req, res) {
             });
         }
 
-        // Initialize GitHub App with proper error handling
+        // Check if GitHub App is configured
+        const isGitHubAppConfigured = process.env.GITHUB_APP_ID && process.env.GITHUB_APP_PRIVATE_KEY;
+        
+        if (!isGitHubAppConfigured) {
+            console.log('GitHub App not configured, using fallback method with user token');
+            // Fallback: Use user token directly to create PR
+            return await handleFallbackSubmission(req, res, contentData, userToken);
+        }
+
+        // Initialize GitHub App with comprehensive error handling
         let octokit;
         try {
             console.log('🔧 Initializing GitHub App...');
             console.log('App ID:', process.env.GITHUB_APP_ID);
             console.log('Private Key length:', process.env.GITHUB_APP_PRIVATE_KEY?.length);
+            
+            // Validate private key format
+            if (!process.env.GITHUB_APP_PRIVATE_KEY.includes('BEGIN RSA PRIVATE KEY')) {
+                throw new Error('Invalid private key format - must be a valid RSA private key');
+            }
             
             // First, create auth without installation ID to get app token
             const appAuth = createAppAuth({
@@ -55,10 +61,14 @@ export default async function handler(req, res) {
                 privateKey: process.env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n'),
             });
 
+            console.log('🔑 Getting app token...');
             // Get app token to find installations
             const appToken = await appAuth({ type: 'app' });
+            console.log('✅ App token obtained successfully');
+            
             const tempOctokit = new Octokit({ auth: appToken.token });
 
+            console.log('🔍 Finding installations...');
             // Find installation for the target repository
             const installations = await tempOctokit.apps.listInstallations();
             console.log('Found installations:', installations.data.length);
@@ -66,6 +76,7 @@ export default async function handler(req, res) {
             let installationId = process.env.GITHUB_APP_INSTALLATION_ID; // Use env var if available
             
             if (!installationId) {
+                console.log('🔍 Searching for prepguides installation...');
                 // Find installation for prepguides/prepguides.dev
                 const targetInstallation = installations.data.find(installation => 
                     installation.account.login === 'prepguides'
@@ -73,12 +84,16 @@ export default async function handler(req, res) {
                 
                 if (targetInstallation) {
                     installationId = targetInstallation.id;
-                    console.log('Found installation ID:', installationId);
+                    console.log('✅ Found installation ID:', installationId);
                 } else {
+                    console.log('❌ Available installations:', installations.data.map(i => i.account.login));
                     throw new Error('No installation found for prepguides organization');
                 }
+            } else {
+                console.log('✅ Using provided installation ID:', installationId);
             }
 
+            console.log('🔧 Creating authenticated Octokit instance...');
             // Create auth with installation ID
             const auth = createAppAuth({
                 appId: process.env.GITHUB_APP_ID,
@@ -87,22 +102,33 @@ export default async function handler(req, res) {
             });
 
             octokit = new Octokit({ auth });
+            
+            // Test the authentication by making a simple API call
+            console.log('🧪 Testing GitHub App authentication...');
+            const testResponse = await octokit.rest.apps.getAuthenticated();
+            console.log('✅ GitHub App authentication test successful:', testResponse.data.name);
+            
             console.log('✅ GitHub App initialized successfully with installation ID:', installationId);
         } catch (appError) {
             console.error('❌ GitHub App initialization error:', appError);
-            return res.status(500).json({
-                error: 'GitHub App initialization failed',
-                message: 'Failed to initialize GitHub App. Please check your environment variables and app installation.',
-                details: process.env.NODE_ENV === 'development' ? appError.message : undefined
+            console.error('Error details:', {
+                message: appError.message,
+                stack: appError.stack,
+                name: appError.name
             });
+            
+            // Fallback to user token method if GitHub App fails
+            console.log('🔄 Falling back to user token method due to GitHub App failure...');
+            return await handleFallbackSubmission(req, res, contentData, userToken);
         }
 
-        // Main bot logic with proper error handling
+        // Main bot logic with comprehensive error handling
         let branchName = null;
         try {
             console.log('🤖 Bot creating content submission PR...');
             
             // 1. Verify user authentication
+            console.log('🔐 Verifying user authentication...');
             const userResponse = await fetch('https://api.github.com/user', {
                 headers: {
                     'Authorization': `token ${userToken}`,
@@ -111,6 +137,7 @@ export default async function handler(req, res) {
             });
 
             if (!userResponse.ok) {
+                console.error('❌ User authentication failed:', userResponse.status, userResponse.statusText);
                 return res.status(401).json({ 
                     error: 'Invalid user token',
                     message: 'Please re-authenticate with GitHub'
@@ -123,13 +150,16 @@ export default async function handler(req, res) {
             // 2. Generate unique branch name
             const timestamp = Date.now();
             branchName = `content-submission-${user.login}-${timestamp}`;
+            console.log(`📝 Generated branch name: ${branchName}`);
             
             // 3. Get latest main branch SHA
+            console.log('🔍 Getting latest main branch SHA...');
             const { data: mainRef } = await octokit.git.getRef({
                 owner: 'prepguides',
                 repo: 'prepguides.dev',
                 ref: 'heads/main'
             });
+            console.log('✅ Got main branch SHA:', mainRef.object.sha);
 
             // 4. Create new branch
             console.log(`🌿 Creating branch: ${branchName}`);
@@ -139,6 +169,7 @@ export default async function handler(req, res) {
                 ref: `refs/heads/${branchName}`,
                 sha: mainRef.object.sha
             });
+            console.log('✅ Branch created successfully');
 
             // 5. Create content payload file
             const payloadContent = generatePayloadContent(contentData, user);
@@ -153,6 +184,7 @@ export default async function handler(req, res) {
                 content: Buffer.from(payloadContent).toString('base64'),
                 branch: branchName
             });
+            console.log('✅ Payload file created successfully');
 
             // 6. Create pull request
             console.log(`🔀 Creating pull request...`);
@@ -164,6 +196,7 @@ export default async function handler(req, res) {
                 base: 'main',
                 body: generatePRDescription(contentData, user)
             });
+            console.log('✅ Pull request created successfully:', pr.number);
 
             // 7. Add labels
             try {
@@ -193,31 +226,54 @@ export default async function handler(req, res) {
             });
 
         } catch (error) {
-            console.error('Bot PR creation error:', error);
+            console.error('❌ Bot PR creation error:', error);
+            console.error('Error details:', {
+                message: error.message,
+                stack: error.stack,
+                name: error.name,
+                status: error.status,
+                response: error.response?.data
+            });
             
             // Clean up branch if PR creation failed and branch was created
             if (branchName && octokit) {
                 try {
+                    console.log('🧹 Attempting to clean up failed branch:', branchName);
                     await octokit.git.deleteRef({
                         owner: 'prepguides',
                         repo: 'prepguides.dev',
                         ref: `heads/${branchName}`
                     });
-                    console.log('🧹 Cleaned up failed branch');
+                    console.log('✅ Cleaned up failed branch successfully');
                 } catch (cleanupError) {
-                    console.warn('Failed to cleanup branch:', cleanupError);
+                    console.warn('⚠️ Failed to cleanup branch:', cleanupError.message);
                 }
             }
 
-            return res.status(500).json({
-                error: 'Failed to create content submission PR',
-                message: error.message,
-                details: process.env.NODE_ENV === 'development' ? error.stack : undefined
-            });
+            // Fallback to user token method if bot method fails
+            console.log('🔄 Falling back to user token method due to bot failure...');
+            return await handleFallbackSubmission(req, res, contentData, userToken);
         }
     } catch (outerError) {
         // Catch any errors outside the main try-catch
-        console.error('Outer error in bot API:', outerError);
+        console.error('❌ Outer error in bot API:', outerError);
+        console.error('Outer error details:', {
+            message: outerError.message,
+            stack: outerError.stack,
+            name: outerError.name
+        });
+        
+        // Try to extract contentData and userToken for fallback
+        try {
+            const { contentData, userToken } = req.body;
+            if (contentData && userToken) {
+                console.log('🔄 Attempting fallback due to outer error...');
+                return await handleFallbackSubmission(req, res, contentData, userToken);
+            }
+        } catch (fallbackError) {
+            console.error('❌ Fallback also failed:', fallbackError);
+        }
+        
         return res.status(500).json({
             error: 'Internal server error',
             message: 'An unexpected error occurred',
@@ -226,7 +282,13 @@ export default async function handler(req, res) {
     }
 } catch (finalError) {
     // Final catch-all to prevent any HTML error pages
-    console.error('Final error in bot API:', finalError);
+    console.error('❌ Final error in bot API:', finalError);
+    console.error('Final error details:', {
+        message: finalError.message,
+        stack: finalError.stack,
+        name: finalError.name
+    });
+    
     return res.status(500).json({
         error: 'Server error',
         message: 'An unexpected server error occurred',
