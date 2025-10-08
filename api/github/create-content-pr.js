@@ -17,7 +17,7 @@ export default async function handler(req, res) {
         }
 
         // Check if GitHub App is configured
-        const isGitHubAppConfigured = process.env.GITHUB_APP_ID && process.env.GITHUB_APP_PRIVATE_KEY && process.env.GITHUB_APP_INSTALLATION_ID;
+        const isGitHubAppConfigured = process.env.GITHUB_APP_ID && process.env.GITHUB_APP_PRIVATE_KEY;
         
         const { contentData, userToken } = req.body;
 
@@ -47,22 +47,52 @@ export default async function handler(req, res) {
         try {
             console.log('🔧 Initializing GitHub App...');
             console.log('App ID:', process.env.GITHUB_APP_ID);
-            console.log('Installation ID:', process.env.GITHUB_APP_INSTALLATION_ID);
             console.log('Private Key length:', process.env.GITHUB_APP_PRIVATE_KEY?.length);
             
+            // First, create auth without installation ID to get app token
+            const appAuth = createAppAuth({
+                appId: process.env.GITHUB_APP_ID,
+                privateKey: process.env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            });
+
+            // Get app token to find installations
+            const appToken = await appAuth({ type: 'app' });
+            const tempOctokit = new Octokit({ auth: appToken.token });
+
+            // Find installation for the target repository
+            const installations = await tempOctokit.apps.listInstallations();
+            console.log('Found installations:', installations.data.length);
+            
+            let installationId = process.env.GITHUB_APP_INSTALLATION_ID; // Use env var if available
+            
+            if (!installationId) {
+                // Find installation for prepguides/prepguides.dev
+                const targetInstallation = installations.data.find(installation => 
+                    installation.account.login === 'prepguides'
+                );
+                
+                if (targetInstallation) {
+                    installationId = targetInstallation.id;
+                    console.log('Found installation ID:', installationId);
+                } else {
+                    throw new Error('No installation found for prepguides organization');
+                }
+            }
+
+            // Create auth with installation ID
             const auth = createAppAuth({
                 appId: process.env.GITHUB_APP_ID,
                 privateKey: process.env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n'),
-                installationId: process.env.GITHUB_APP_INSTALLATION_ID,
+                installationId: installationId,
             });
 
             octokit = new Octokit({ auth });
-            console.log('✅ GitHub App initialized successfully');
+            console.log('✅ GitHub App initialized successfully with installation ID:', installationId);
         } catch (appError) {
             console.error('❌ GitHub App initialization error:', appError);
             return res.status(500).json({
                 error: 'GitHub App initialization failed',
-                message: 'Failed to initialize GitHub App. Please check your environment variables.',
+                message: 'Failed to initialize GitHub App. Please check your environment variables and app installation.',
                 details: process.env.NODE_ENV === 'development' ? appError.message : undefined
             });
         }
