@@ -134,11 +134,25 @@
             transition: all 0.2s ease;
             cursor: pointer;
             position: relative;
+            outline: none;
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
         }
 
         .user-info-compact:hover {
             background: rgba(255, 255, 255, 0.12);
             border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .user-info-compact:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+        }
+
+        .user-info-compact:focus-visible {
+            outline: 2px solid rgba(255, 255, 255, 0.8);
+            outline-offset: 2px;
         }
 
         .user-avatar-compact {
@@ -161,7 +175,7 @@
 
         .user-dropdown {
             position: absolute;
-            top: 100%;
+            top: calc(100% + 8px);
             right: 0;
             background: white;
             border: 1px solid #e1e5e9;
@@ -173,13 +187,15 @@
             visibility: hidden;
             transform: translateY(-10px);
             transition: all 0.2s ease;
-            margin-top: 8px;
+            margin-top: 0;
+            pointer-events: none;
         }
 
         .user-dropdown.show {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
+            pointer-events: auto;
         }
 
         .user-dropdown-header {
@@ -187,6 +203,9 @@
             border-bottom: 1px solid #e1e5e9;
             background: #f8f9fa;
             border-radius: 8px 8px 0 0;
+            display: block;
+            visibility: visible;
+            opacity: 1;
         }
 
         .user-dropdown-name {
@@ -194,21 +213,33 @@
             color: #24292e;
             font-size: 16px;
             margin-bottom: 4px;
+            display: block;
+            visibility: visible;
+            opacity: 1;
         }
 
         .user-dropdown-username {
             color: #656d76;
             font-size: 14px;
             margin-bottom: 8px;
+            display: block;
+            visibility: visible;
+            opacity: 1;
         }
 
         .user-dropdown-email {
             color: #656d76;
             font-size: 12px;
+            display: block;
+            visibility: visible;
+            opacity: 1;
         }
 
         .user-dropdown-actions {
             padding: 8px 0;
+            display: block;
+            visibility: visible;
+            opacity: 1;
         }
 
         .user-dropdown-item {
@@ -225,6 +256,8 @@
             background: none;
             width: 100%;
             text-align: left;
+            visibility: visible;
+            opacity: 1;
         }
 
         .user-dropdown-item:hover {
@@ -604,13 +637,13 @@
                         </button>
                     </div>
                     <div id="user-section" class="user-section-compact" style="display: none;">
-                        <div class="user-info-compact" id="user-info-trigger">
+                        <button class="user-info-compact" id="user-info-trigger" type="button" aria-haspopup="true" aria-expanded="false">
                             <img id="user-avatar" src="" alt="User Avatar" class="user-avatar-compact">
                             <span id="user-name" class="user-name-compact"></span>
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 4px;">
                                 <path d="M7 10l5 5 5-5z"/>
                             </svg>
-                        </div>
+                        </button>
                         <div class="user-dropdown" id="user-dropdown">
                             <div class="user-dropdown-header">
                                 <div class="user-dropdown-name" id="user-dropdown-name"></div>
