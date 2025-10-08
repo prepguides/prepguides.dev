@@ -140,44 +140,44 @@ class ContentForm {
      * Attach event listeners
      */
     attachEventListeners() {
-        // GitHub login
+        // External GitHub login
         document.addEventListener('click', (e) => {
-            if (e.target.id === 'github-login-btn') {
+            if (e.target.id === 'github-login-btn-external') {
                 window.githubAuth.login();
             }
         });
 
-        // User info dropdown
+        // External user info dropdown
         document.addEventListener('click', (e) => {
-            if (e.target.closest('#user-info-trigger')) {
-                const dropdown = document.getElementById('user-dropdown');
-                const trigger = document.getElementById('user-info-trigger');
-                console.log('Dropdown clicked, elements found:', { dropdown, trigger });
+            if (e.target.closest('#user-info-trigger-external')) {
+                const dropdown = document.getElementById('user-dropdown-external');
+                const trigger = document.getElementById('user-info-trigger-external');
+                console.log('External dropdown clicked, elements found:', { dropdown, trigger });
                 if (dropdown && trigger) {
                     const isOpen = dropdown.classList.contains('show');
-                    console.log('Dropdown is currently open:', isOpen);
+                    console.log('External dropdown is currently open:', isOpen);
                     dropdown.classList.toggle('show');
                     trigger.setAttribute('aria-expanded', !isOpen);
-                    console.log('Dropdown toggled, new state:', !isOpen);
+                    console.log('External dropdown toggled, new state:', !isOpen);
                     
                     // Debug dropdown content visibility
-                    const dropdownName = document.getElementById('user-dropdown-name');
-                    const dropdownUsername = document.getElementById('user-dropdown-username');
-                    const dropdownEmail = document.getElementById('user-dropdown-email');
-                    console.log('Dropdown content elements:', {
+                    const dropdownName = document.getElementById('user-dropdown-name-external');
+                    const dropdownUsername = document.getElementById('user-dropdown-username-external');
+                    const dropdownEmail = document.getElementById('user-dropdown-email-external');
+                    console.log('External dropdown content elements:', {
                         name: dropdownName?.textContent,
                         username: dropdownUsername?.textContent,
                         email: dropdownEmail?.textContent
                     });
                 }
-            } else if (e.target.id === 'logout-btn') {
-                console.log('Logout button clicked');
+            } else if (e.target.id === 'logout-btn-external') {
+                console.log('External logout button clicked');
                 window.githubAuth.logout();
                 // Note: logout() now handles page reload, so updateAuthStatus() is not needed
             } else {
-                // Close dropdown when clicking outside
-                const dropdown = document.getElementById('user-dropdown');
-                const trigger = document.getElementById('user-info-trigger');
+                // Close external dropdown when clicking outside
+                const dropdown = document.getElementById('user-dropdown-external');
+                const trigger = document.getElementById('user-info-trigger-external');
                 if (dropdown && dropdown.classList.contains('show')) {
                     dropdown.classList.remove('show');
                     if (trigger) trigger.setAttribute('aria-expanded', 'false');
@@ -185,10 +185,10 @@ class ContentForm {
             }
         });
 
-        // Keyboard navigation for dropdown
+        // Keyboard navigation for external dropdown
         document.addEventListener('keydown', (e) => {
-            const trigger = document.getElementById('user-info-trigger');
-            const dropdown = document.getElementById('user-dropdown');
+            const trigger = document.getElementById('user-info-trigger-external');
+            const dropdown = document.getElementById('user-dropdown-external');
             
             if (e.target === trigger) {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -432,12 +432,12 @@ class ContentForm {
      */
     updateAuthStatus() {
         console.log('updateAuthStatus called');
-        const authStatus = document.getElementById('auth-status');
-        const loginSection = document.getElementById('login-section');
-        const userSection = document.getElementById('user-section');
+        const authStatus = document.getElementById('auth-status-external');
+        const loginSection = document.getElementById('login-section-external');
+        const userSection = document.getElementById('user-section-external');
         const showFormBtn = document.getElementById('show-content-form-btn');
 
-        console.log('Elements found:', { authStatus, loginSection, userSection, showFormBtn });
+        console.log('External elements found:', { authStatus, loginSection, userSection, showFormBtn });
         console.log('window.githubAuth:', window.githubAuth);
         console.log('isConfigured:', window.githubAuth?.isConfigured);
 
@@ -453,24 +453,24 @@ class ContentForm {
         }
 
         // Always show login button first, then check authentication
-        console.log('Setting login section display to flex');
+        console.log('Setting external login section display to flex');
         if (loginSection) {
             loginSection.style.display = 'flex';
-            console.log('Login section display set to:', loginSection.style.display);
+            console.log('External login section display set to:', loginSection.style.display);
         }
         
         // Ensure login button is always enabled and clickable
-        const loginBtn = document.getElementById('github-login-btn');
-        console.log('Login button found:', loginBtn);
+        const loginBtn = document.getElementById('github-login-btn-external');
+        console.log('External login button found:', loginBtn);
         if (loginBtn) {
-            console.log('Configuring login button...');
+            console.log('Configuring external login button...');
             loginBtn.disabled = false;
             loginBtn.style.opacity = '1';
             loginBtn.style.cursor = 'pointer';
             loginBtn.style.pointerEvents = 'auto';
             loginBtn.removeAttribute('disabled');
             
-            console.log('Login button configured:', {
+            console.log('External login button configured:', {
                 disabled: loginBtn.disabled,
                 opacity: loginBtn.style.opacity,
                 cursor: loginBtn.style.cursor,
@@ -479,7 +479,7 @@ class ContentForm {
             
             // Add click event listener directly
             loginBtn.onclick = function(e) {
-                console.log('Login button clicked!');
+                console.log('External login button clicked!');
                 e.preventDefault();
                 e.stopPropagation();
                 if (window.githubAuth && window.githubAuth.login) {
@@ -489,7 +489,7 @@ class ContentForm {
             
             // Also add event listener using addEventListener as backup
             loginBtn.addEventListener('click', function(e) {
-                console.log('Login button clicked via addEventListener!');
+                console.log('External login button clicked via addEventListener!');
                 e.preventDefault();
                 e.stopPropagation();
                 if (window.githubAuth && window.githubAuth.login) {
@@ -498,7 +498,7 @@ class ContentForm {
             });
             
         } else {
-            console.log('Login button NOT found!');
+            console.log('External login button NOT found!');
         }
 
         if (window.githubAuth.isAuthenticated()) {
@@ -507,44 +507,44 @@ class ContentForm {
             if (userSection) userSection.style.display = 'flex';
             if (showFormBtn) showFormBtn.style.display = 'inline-block';
             
-            // Update user info
+            // Update external user info
             const user = window.githubAuth.user;
-            const userAvatar = document.getElementById('user-avatar');
-            const userName = document.getElementById('user-name');
-            const userDropdownName = document.getElementById('user-dropdown-name');
-            const userDropdownUsername = document.getElementById('user-dropdown-username');
-            const userDropdownEmail = document.getElementById('user-dropdown-email');
-            const githubProfileLink = document.getElementById('github-profile-link');
+            const userAvatar = document.getElementById('user-avatar-external');
+            const userName = document.getElementById('user-name-external');
+            const userDropdownName = document.getElementById('user-dropdown-name-external');
+            const userDropdownUsername = document.getElementById('user-dropdown-username-external');
+            const userDropdownEmail = document.getElementById('user-dropdown-email-external');
+            const githubProfileLink = document.getElementById('github-profile-link-external');
             
-            console.log('Updating user info:', user);
-            console.log('Dropdown elements found:', {
+            console.log('Updating external user info:', user);
+            console.log('External dropdown elements found:', {
                 userAvatar, userName, userDropdownName, 
                 userDropdownUsername, userDropdownEmail, githubProfileLink
             });
             
             if (userAvatar) {
                 userAvatar.src = user.avatar_url;
-                console.log('Set avatar src:', user.avatar_url);
+                console.log('Set external avatar src:', user.avatar_url);
             }
             if (userName) {
                 userName.textContent = user.name || user.login;
-                console.log('Set user name:', user.name || user.login);
+                console.log('Set external user name:', user.name || user.login);
             }
             if (userDropdownName) {
                 userDropdownName.textContent = user.name || user.login;
-                console.log('Set dropdown name:', user.name || user.login);
+                console.log('Set external dropdown name:', user.name || user.login);
             }
             if (userDropdownUsername) {
                 userDropdownUsername.textContent = `@${user.login}`;
-                console.log('Set dropdown username:', `@${user.login}`);
+                console.log('Set external dropdown username:', `@${user.login}`);
             }
             if (userDropdownEmail) {
                 userDropdownEmail.textContent = user.email || `${user.login}@github.com`;
-                console.log('Set dropdown email:', user.email || `${user.login}@github.com`);
+                console.log('Set external dropdown email:', user.email || `${user.login}@github.com`);
             }
             if (githubProfileLink) {
                 githubProfileLink.href = user.html_url;
-                console.log('Set GitHub profile link:', user.html_url);
+                console.log('Set external GitHub profile link:', user.html_url);
             }
         } else {
             authStatus.innerHTML = '<div class="auth-error">❌ Not authenticated</div>';
