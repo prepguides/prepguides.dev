@@ -15,11 +15,22 @@ export default async function handler(req, res) {
 
         // Check if GitHub App is configured
         if (!process.env.GITHUB_APP_ID || !process.env.GITHUB_APP_PRIVATE_KEY || !process.env.GITHUB_APP_INSTALLATION_ID) {
-            console.log('GitHub App not configured');
+            console.log('GitHub App not configured - missing environment variables');
+            console.log('Missing variables:', {
+                GITHUB_APP_ID: !!process.env.GITHUB_APP_ID,
+                GITHUB_APP_PRIVATE_KEY: !!process.env.GITHUB_APP_PRIVATE_KEY,
+                GITHUB_APP_INSTALLATION_ID: !!process.env.GITHUB_APP_INSTALLATION_ID
+            });
             return res.status(503).json({ 
                 error: 'GitHub App not configured',
-                message: 'Please set up GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY, and GITHUB_APP_INSTALLATION_ID environment variables',
-                configured: false
+                message: 'Content submission requires GitHub App configuration. Please set up GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY, and GITHUB_APP_INSTALLATION_ID environment variables.',
+                configured: false,
+                missingVariables: {
+                    GITHUB_APP_ID: !process.env.GITHUB_APP_ID,
+                    GITHUB_APP_PRIVATE_KEY: !process.env.GITHUB_APP_PRIVATE_KEY,
+                    GITHUB_APP_INSTALLATION_ID: !process.env.GITHUB_APP_INSTALLATION_ID
+                },
+                setupInstructions: 'See BOT_APPROACH_README.md for setup instructions'
             });
         }
 

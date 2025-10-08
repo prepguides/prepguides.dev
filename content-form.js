@@ -810,7 +810,13 @@ class ContentForm {
             this.showSubmissionResult(true, result);
         } catch (error) {
             console.error('Submission failed:', error);
-            this.showSubmissionResult(false, error.message);
+            
+            // Check if it's a configuration error
+            if (error.message && error.message.includes('GitHub App not configured')) {
+                this.showSubmissionResult(false, 'Content submission is not yet configured. Please contact the administrator to set up the GitHub App integration.');
+            } else {
+                this.showSubmissionResult(false, error.message);
+            }
         } finally {
             this.isSubmitting = false;
             btnText.style.display = 'inline';

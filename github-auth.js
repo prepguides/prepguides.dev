@@ -359,7 +359,17 @@ class GitHubAuth {
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error('Bot PR creation failed:', errorData);
-                throw new Error(errorData.message || `Failed to create pull request: ${response.status}`);
+                
+                // Provide more specific error messages
+                if (errorData.configured === false) {
+                    throw new Error('GitHub App not configured - content submission is not available');
+                } else if (response.status === 401) {
+                    throw new Error('Authentication failed - please log in again');
+                } else if (response.status === 400) {
+                    throw new Error(errorData.message || 'Invalid content data provided');
+                } else {
+                    throw new Error(errorData.message || `Failed to create pull request: ${response.status}`);
+                }
             }
 
             const result = await response.json();
