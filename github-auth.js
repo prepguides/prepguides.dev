@@ -357,7 +357,15 @@ class GitHubAuth {
             console.log('Bot API response status:', response.status);
             
             if (!response.ok) {
-                const errorData = await response.json();
+                let errorData;
+                try {
+                    errorData = await response.json();
+                } catch (jsonError) {
+                    console.error('Failed to parse error response as JSON:', jsonError);
+                    const textResponse = await response.text();
+                    console.error('Raw error response:', textResponse);
+                    throw new Error(`Server error: ${response.status} - ${textResponse.substring(0, 100)}`);
+                }
                 console.error('Bot PR creation failed:', errorData);
                 throw new Error(errorData.message || `Failed to create pull request: ${response.status}`);
             }
