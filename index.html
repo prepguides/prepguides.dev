@@ -70,7 +70,7 @@
         .auth-status-compact, .login-section-compact, .user-section-compact {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
             position: relative;
             z-index: 1001;
             pointer-events: auto;
@@ -126,14 +126,24 @@
         .user-info-compact {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 6px 12px;
+            transition: all 0.2s ease;
+        }
+
+        .user-info-compact:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
         }
 
         .user-avatar-compact {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.4);
             object-fit: cover;
         }
 
@@ -141,7 +151,7 @@
             font-weight: 500;
             font-size: 14px;
             color: white;
-            max-width: 120px;
+            max-width: 100px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -202,8 +212,8 @@
         }
 
         .logout-btn-compact {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             padding: 8px 16px;
             border-radius: 6px;
@@ -220,17 +230,19 @@
         }
 
         .logout-btn-compact:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
         }
 
         .logout-btn-compact:focus {
-            outline: 2px solid rgba(255, 255, 255, 0.8);
+            outline: 2px solid rgba(255, 255, 255, 0.6);
             outline-offset: 2px;
         }
 
         .logout-btn-compact:active {
             background: rgba(255, 255, 255, 0.2);
+            transform: translateY(0);
         }
 
         .content-submission-link {
@@ -431,6 +443,51 @@
             
             .content {
                 padding: 20px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .header-left {
+                text-align: center;
+            }
+
+            .header-right {
+                justify-content: center;
+            }
+
+            .user-name-compact {
+                max-width: 80px;
+            }
+
+            .auth-status-compact, .login-section-compact, .user-section-compact {
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .user-info-compact {
+                padding: 4px 8px;
+                gap: 8px;
+            }
+
+            .user-avatar-compact {
+                width: 24px;
+                height: 24px;
+            }
+
+            .user-name-compact {
+                font-size: 13px;
+                max-width: 60px;
+            }
+
+            .logout-btn-compact {
+                padding: 6px 12px;
+                font-size: 13px;
+                min-width: 70px;
             }
         }
     </style>

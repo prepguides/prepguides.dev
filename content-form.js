@@ -450,7 +450,7 @@ class ContentForm {
         }
 
         if (window.githubAuth.isAuthenticated()) {
-            authStatus.innerHTML = '<div class="auth-success">✅ Authenticated with GitHub</div>';
+            authStatus.innerHTML = '<div class="auth-success">✅ Ready</div>';
             if (loginSection) loginSection.style.display = 'none';
             if (userSection) userSection.style.display = 'flex';
             if (showFormBtn) showFormBtn.style.display = 'inline-block';
