@@ -8,6 +8,9 @@ import { createAppAuth } from '@octokit/auth-app';
 
 export default async function handler(req, res) {
     // Ensure we always return JSON responses
+    res.setHeader('Content-Type', 'application/json');
+    
+    // Wrap everything in a try-catch to prevent HTML error pages
     try {
         if (req.method !== 'POST') {
             return res.status(405).json({ error: 'Method not allowed' });
@@ -43,6 +46,11 @@ export default async function handler(req, res) {
         // Initialize GitHub App with proper error handling
         let octokit;
         try {
+            console.log('🔧 Initializing GitHub App...');
+            console.log('App ID:', process.env.GITHUB_APP_ID);
+            console.log('Installation ID:', process.env.GITHUB_APP_INSTALLATION_ID);
+            console.log('Private Key length:', process.env.GITHUB_APP_PRIVATE_KEY?.length);
+            
             const auth = createAppAuth({
                 appId: process.env.GITHUB_APP_ID,
                 privateKey: process.env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n'),
@@ -50,8 +58,9 @@ export default async function handler(req, res) {
             });
 
             octokit = new Octokit({ auth });
+            console.log('✅ GitHub App initialized successfully');
         } catch (appError) {
-            console.error('GitHub App initialization error:', appError);
+            console.error('❌ GitHub App initialization error:', appError);
             return res.status(500).json({
                 error: 'GitHub App initialization failed',
                 message: 'Failed to initialize GitHub App. Please check your environment variables.',
@@ -184,6 +193,15 @@ export default async function handler(req, res) {
             error: 'Internal server error',
             message: 'An unexpected error occurred',
             details: process.env.NODE_ENV === 'development' ? outerError.message : undefined
+        });
+    }
+    } catch (finalError) {
+        // Final catch-all to prevent any HTML error pages
+        console.error('Final error in bot API:', finalError);
+        return res.status(500).json({
+            error: 'Server error',
+            message: 'An unexpected server error occurred',
+            details: 'Please try again later'
         });
     }
 }
