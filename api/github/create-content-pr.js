@@ -68,11 +68,19 @@ export default async function handler(req, res) {
                 '1. Please try again later',
                 '2. Contact support if the issue persists'
             ];
-        } else if (githubAppResult.error.includes('JSON web token')) {
+        } else if (githubAppResult.error.includes('JSON web token') || githubAppResult.error.includes('JWT') || githubAppResult.error.includes('token')) {
             errorMessage = 'Content submission is temporarily unavailable. GitHub App authentication failed.';
             userInstructions = [
-                '1. Please try again later',
-                '2. Contact support if the issue persists'
+                '1. The GitHub App credentials may need to be reconfigured',
+                '2. Please try again later',
+                '3. Contact support if the issue persists'
+            ];
+        } else if (githubAppResult.error.includes('private key')) {
+            errorMessage = 'Content submission is temporarily unavailable. GitHub App private key issue.';
+            userInstructions = [
+                '1. The GitHub App private key may need to be regenerated',
+                '2. Please try again later',
+                '3. Contact support if the issue persists'
             ];
         } else {
             errorMessage = 'Content submission failed. Please try again or contact support.';
@@ -116,22 +124,48 @@ async function tryGitHubAppApproach(contentData, userToken) {
         console.log('🔧 Attempting GitHub App approach...');
         console.log('GitHub App ID:', process.env.GITHUB_APP_ID);
         console.log('Private Key length:', process.env.GITHUB_APP_PRIVATE_KEY?.length);
-
+        
+        // Process and validate private key
+        let privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+        
+        // Handle different private key formats
+        if (privateKey.includes('\\n')) {
+            console.log('🔧 Processing private key with escaped newlines');
+            privateKey = privateKey.replace(/\\n/g, '\n');
+        }
+        
         // Validate private key format
-        if (!process.env.GITHUB_APP_PRIVATE_KEY.includes('BEGIN RSA PRIVATE KEY')) {
+        if (!privateKey.includes('BEGIN RSA PRIVATE KEY') && !privateKey.includes('BEGIN PRIVATE KEY')) {
+            console.error('❌ Invalid private key format - missing BEGIN marker');
             return { success: false, error: 'Invalid private key format - must be a valid RSA private key' };
         }
+        
+        console.log('✅ Private key format validated');
+        console.log('Private key first 50 chars:', privateKey.substring(0, 50));
 
-        // Initialize GitHub App
-        const appAuth = createAppAuth({
-            appId: process.env.GITHUB_APP_ID,
-            privateKey: process.env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n'),
-        });
+        // Initialize GitHub App with comprehensive error handling
+        let appAuth;
+        try {
+            appAuth = createAppAuth({
+                appId: process.env.GITHUB_APP_ID,
+                privateKey: privateKey,
+            });
+            console.log('✅ GitHub App auth created successfully');
+        } catch (authError) {
+            console.error('❌ Failed to create GitHub App auth:', authError.message);
+            return { success: false, error: `Failed to create GitHub App auth: ${authError.message}` };
+        }
 
         console.log('🔑 Getting app token...');
-        // Get app token
-        const appToken = await appAuth({ type: 'app' });
-        console.log('✅ App token obtained successfully');
+        // Get app token with error handling
+        let appToken;
+        try {
+            appToken = await appAuth({ type: 'app' });
+            console.log('✅ App token obtained successfully');
+        } catch (tokenError) {
+            console.error('❌ Failed to obtain app token:', tokenError.message);
+            return { success: false, error: `Failed to obtain app token: ${tokenError.message}. Check your GitHub App ID and private key.` };
+        }
         
         const tempOctokit = new Octokit({ auth: appToken.token });
 
