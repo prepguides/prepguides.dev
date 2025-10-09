@@ -38,6 +38,8 @@ export default async function handler(req, res) {
         console.log('🚀 Starting content submission process...');
         console.log('Content ID:', contentData.id);
         console.log('Content Title:', contentData.title);
+        console.log('Content Category:', contentData.category);
+        console.log('User Token present:', !!userToken);
 
         // Try GitHub App approach first, but with simplified error handling
         const githubAppResult = await tryGitHubAppApproach(contentData, userToken);
@@ -48,6 +50,7 @@ export default async function handler(req, res) {
 
         console.log('⚠️ GitHub App approach failed, trying user token approach...');
         console.log('GitHub App error:', githubAppResult.error);
+        console.log('GitHub App configured:', !!(process.env.GITHUB_APP_ID && process.env.GITHUB_APP_PRIVATE_KEY));
 
         // Fallback to user token approach
         const userTokenResult = await tryUserTokenApproach(contentData, userToken);
@@ -57,12 +60,38 @@ export default async function handler(req, res) {
         }
 
         console.log('❌ Both approaches failed');
+        
+        // Provide helpful error message based on the specific failures
+        let errorMessage = 'Content submission failed';
+        let userInstructions = [];
+        
+        if (githubAppResult.error && userTokenResult.error) {
+            if (userTokenResult.error.includes('Fork not found')) {
+                errorMessage = 'Content submission failed. Please fork the repository first.';
+                userInstructions = [
+                    '1. Go to https://github.com/prepguides/prepguides.dev',
+                    '2. Click the "Fork" button in the top right',
+                    '3. Wait for the fork to be created',
+                    '4. Try submitting your content again'
+                ];
+            } else {
+                errorMessage = 'Content submission failed. Please try again or contact support.';
+                userInstructions = [
+                    '1. Check your internet connection',
+                    '2. Try refreshing the page',
+                    '3. If the problem persists, contact support'
+                ];
+            }
+        }
+        
         return res.status(500).json({
             error: 'Content submission failed',
-            message: 'Both GitHub App and user token approaches failed',
+            message: errorMessage,
+            instructions: userInstructions,
             details: {
                 githubAppError: githubAppResult.error,
-                userTokenError: userTokenResult.error
+                userTokenError: userTokenResult.error,
+                forkUrl: userTokenResult.forkUrl || 'https://github.com/prepguides/prepguides.dev/fork'
             }
         });
 
@@ -161,6 +190,7 @@ async function tryUserTokenApproach(contentData, userToken) {
         }
 
         const user = await userResponse.json();
+        console.log(`✅ User authenticated: ${user.login}`);
 
         // Check if user has a fork
         const forkRepoName = `${user.login}/prepguides.dev`;
@@ -172,13 +202,21 @@ async function tryUserTokenApproach(contentData, userToken) {
         });
 
         if (!forkResponse.ok) {
+            console.log('⚠️ User fork not found, providing fork creation guidance');
             return { 
                 success: false, 
                 error: 'Fork not found. Please fork the repository first.',
-                forkUrl: 'https://github.com/prepguides/prepguides.dev/fork'
+                message: 'To submit content, you need to fork the repository first.',
+                forkUrl: 'https://github.com/prepguides/prepguides.dev/fork',
+                instructions: [
+                    '1. Click the "Fork" button on the repository page',
+                    '2. Wait for the fork to be created',
+                    '3. Try submitting your content again'
+                ]
             };
         }
 
+        console.log('✅ User fork found, creating PR via fork');
         // Create PR using user token
         const result = await createPRWithUserToken(userToken, contentData, user);
         return { success: true, data: result };
