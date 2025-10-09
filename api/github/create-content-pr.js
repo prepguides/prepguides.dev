@@ -41,47 +41,46 @@ export default async function handler(req, res) {
         console.log('Content Category:', contentData.category);
         console.log('User Token present:', !!userToken);
 
-        // Try GitHub App approach first, but with simplified error handling
+        // Try GitHub App approach - this should work without requiring user fork
         const githubAppResult = await tryGitHubAppApproach(contentData, userToken);
         if (githubAppResult.success) {
             console.log('✅ GitHub App approach succeeded');
             return res.status(201).json(githubAppResult.data);
         }
 
-        console.log('⚠️ GitHub App approach failed, trying user token approach...');
+        console.log('❌ GitHub App approach failed');
         console.log('GitHub App error:', githubAppResult.error);
         console.log('GitHub App configured:', !!(process.env.GITHUB_APP_ID && process.env.GITHUB_APP_PRIVATE_KEY));
-
-        // Fallback to user token approach
-        const userTokenResult = await tryUserTokenApproach(contentData, userToken);
-        if (userTokenResult.success) {
-            console.log('✅ User token approach succeeded');
-            return res.status(201).json(userTokenResult.data);
-        }
-
-        console.log('❌ Both approaches failed');
         
-        // Provide helpful error message based on the specific failures
+        // Provide helpful error message for GitHub App failure
         let errorMessage = 'Content submission failed';
         let userInstructions = [];
         
-        if (githubAppResult.error && userTokenResult.error) {
-            if (userTokenResult.error.includes('Fork not found')) {
-                errorMessage = 'Content submission failed. Please fork the repository first.';
-                userInstructions = [
-                    '1. Go to https://github.com/prepguides/prepguides.dev',
-                    '2. Click the "Fork" button in the top right',
-                    '3. Wait for the fork to be created',
-                    '4. Try submitting your content again'
-                ];
-            } else {
-                errorMessage = 'Content submission failed. Please try again or contact support.';
-                userInstructions = [
-                    '1. Check your internet connection',
-                    '2. Try refreshing the page',
-                    '3. If the problem persists, contact support'
-                ];
-            }
+        if (githubAppResult.error.includes('GitHub App not configured')) {
+            errorMessage = 'Content submission is temporarily unavailable. GitHub App is not configured.';
+            userInstructions = [
+                '1. Please try again later',
+                '2. Contact support if the issue persists'
+            ];
+        } else if (githubAppResult.error.includes('No installation found')) {
+            errorMessage = 'Content submission is temporarily unavailable. GitHub App is not properly installed.';
+            userInstructions = [
+                '1. Please try again later',
+                '2. Contact support if the issue persists'
+            ];
+        } else if (githubAppResult.error.includes('JSON web token')) {
+            errorMessage = 'Content submission is temporarily unavailable. GitHub App authentication failed.';
+            userInstructions = [
+                '1. Please try again later',
+                '2. Contact support if the issue persists'
+            ];
+        } else {
+            errorMessage = 'Content submission failed. Please try again or contact support.';
+            userInstructions = [
+                '1. Check your internet connection',
+                '2. Try refreshing the page',
+                '3. If the problem persists, contact support'
+            ];
         }
         
         return res.status(500).json({
@@ -90,8 +89,7 @@ export default async function handler(req, res) {
             instructions: userInstructions,
             details: {
                 githubAppError: githubAppResult.error,
-                userTokenError: userTokenResult.error,
-                forkUrl: userTokenResult.forkUrl || 'https://github.com/prepguides/prepguides.dev/fork'
+                githubAppConfigured: !!(process.env.GITHUB_APP_ID && process.env.GITHUB_APP_PRIVATE_KEY)
             }
         });
 
@@ -116,6 +114,13 @@ async function tryGitHubAppApproach(contentData, userToken) {
         }
 
         console.log('🔧 Attempting GitHub App approach...');
+        console.log('GitHub App ID:', process.env.GITHUB_APP_ID);
+        console.log('Private Key length:', process.env.GITHUB_APP_PRIVATE_KEY?.length);
+
+        // Validate private key format
+        if (!process.env.GITHUB_APP_PRIVATE_KEY.includes('BEGIN RSA PRIVATE KEY')) {
+            return { success: false, error: 'Invalid private key format - must be a valid RSA private key' };
+        }
 
         // Initialize GitHub App
         const appAuth = createAppAuth({
@@ -123,12 +128,19 @@ async function tryGitHubAppApproach(contentData, userToken) {
             privateKey: process.env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n'),
         });
 
+        console.log('🔑 Getting app token...');
         // Get app token
         const appToken = await appAuth({ type: 'app' });
+        console.log('✅ App token obtained successfully');
+        
         const tempOctokit = new Octokit({ auth: appToken.token });
 
         // Find installation
+        console.log('🔍 Finding installations...');
         const installations = await tempOctokit.apps.listInstallations();
+        console.log('Found installations:', installations.data.length);
+        console.log('Available installations:', installations.data.map(i => i.account.login));
+        
         const targetInstallation = installations.data.find(installation => 
             installation.account.login === 'prepguides'
         );
@@ -136,6 +148,8 @@ async function tryGitHubAppApproach(contentData, userToken) {
         if (!targetInstallation) {
             return { success: false, error: 'No installation found for prepguides organization' };
         }
+        
+        console.log('✅ Found prepguides installation:', targetInstallation.id);
 
         // Create authenticated Octokit
         const auth = createAppAuth({
