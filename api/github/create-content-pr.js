@@ -219,11 +219,36 @@ async function tryGitHubAppApproach(contentData, userToken) {
             console.log('✅ App token obtained successfully');
             console.log('  - Token length:', appToken.token ? appToken.token.length : 'null');
             console.log('  - Token type:', appToken.type);
+            console.log('  - Token starts with:', appToken.token ? appToken.token.substring(0, 20) + '...' : 'null');
         } catch (tokenError) {
             console.error('❌ Failed to obtain app token:', tokenError.message);
             console.error('❌ Token error details:', tokenError);
             console.error('❌ Token error stack:', tokenError.stack);
-            return { success: false, error: `Failed to obtain app token: ${tokenError.message}. Check your GitHub App ID and private key.` };
+            
+            // Try the exact same approach as diagnostic endpoint
+            console.log('🔄 Trying diagnostic endpoint approach...');
+            try {
+                const { createAppAuth: createAppAuthDiag } = await import('@octokit/auth-app');
+                let diagPrivateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+                if (diagPrivateKey.includes('\\n')) {
+                    diagPrivateKey = diagPrivateKey.replace(/\\n/g, '\n');
+                }
+                
+                const diagAppAuth = createAppAuthDiag({
+                    appId: process.env.GITHUB_APP_ID,
+                    privateKey: diagPrivateKey,
+                });
+                
+                const diagAppToken = await diagAppAuth({ type: 'app' });
+                console.log('✅ Diagnostic approach succeeded!');
+                console.log('  - Diag token length:', diagAppToken.token ? diagAppToken.token.length : 'null');
+                
+                // Use the diagnostic approach
+                appToken = diagAppToken;
+            } catch (diagError) {
+                console.error('❌ Diagnostic approach also failed:', diagError.message);
+                return { success: false, error: `Failed to obtain app token: ${tokenError.message}. Diagnostic approach also failed: ${diagError.message}` };
+            }
         }
         
         const tempOctokit = new Octokit({ auth: appToken.token });
@@ -247,7 +272,7 @@ async function tryGitHubAppApproach(contentData, userToken) {
         // Create authenticated Octokit
         const auth = createAppAuth({
             appId: process.env.GITHUB_APP_ID,
-            privateKey: process.env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            privateKey: privateKey,
             installationId: targetInstallation.id,
         });
 
