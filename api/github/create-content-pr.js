@@ -132,8 +132,8 @@ async function tryGitHubAppApproach(contentData, userToken) {
 
         console.log('🔧 Attempting GitHub App approach...');
         console.log('GitHub App ID:', process.env.GITHUB_APP_ID);
-        console.log('Private Key length:', process.env.GITHUB_APP_PRIVATE_KEY?.length);
-        
+            console.log('Private Key length:', process.env.GITHUB_APP_PRIVATE_KEY?.length);
+            
         // Use the exact same approach as the diagnostic endpoint
         console.log('🔧 Using diagnostic endpoint approach for private key processing...');
         let privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
@@ -215,31 +215,54 @@ async function tryGitHubAppApproach(contentData, userToken) {
         console.log('  - Installation ID:', targetInstallation.id);
         console.log('  - Private key length:', privateKey.length);
         
-        let auth;
+        // Get installation token directly
+        console.log('🔑 Getting installation token...');
+        let installationToken;
         try {
-            auth = createAppAuth({
-                appId: process.env.GITHUB_APP_ID,
-                privateKey: privateKey,
-                installationId: targetInstallation.id,
+            const installationTokenResponse = await fetch(`https://api.github.com/app/installations/${targetInstallation.id}/access_tokens`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${appToken.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
             });
-            console.log('✅ Installation auth created successfully');
-        } catch (authError) {
-            console.error('❌ Failed to create installation auth:', authError.message);
-            console.error('Installation auth error details:', authError);
-            return { success: false, error: `Failed to create installation auth: ${authError.message}` };
+            
+            if (!installationTokenResponse.ok) {
+                throw new Error(`Failed to create installation token: ${installationTokenResponse.status}`);
+            }
+            
+            const installationTokenData = await installationTokenResponse.json();
+            installationToken = installationTokenData.token;
+            console.log('✅ Installation token obtained successfully');
+            console.log('  - Token length:', installationToken ? installationToken.length : 'null');
+        } catch (tokenError) {
+            console.error('❌ Failed to get installation token:', tokenError.message);
+            console.error('Installation token error details:', tokenError);
+            return { success: false, error: `Failed to get installation token: ${tokenError.message}` };
         }
 
-        const octokit = new Octokit({ auth });
+        const octokit = new Octokit({
+            auth: installationToken,
+        });
 
         // Test installation token by making a simple API call
         console.log('🧪 Testing installation token with simple API call...');
         try {
-            const testResponse = await octokit.rest.apps.getInstallation({
-                installation_id: targetInstallation.id
+            const testResponse = await fetch('https://api.github.com/repos/prepguides/prepguides.dev', {
+                headers: {
+                    'Authorization': `Bearer ${installationToken}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
             });
+            
+            if (!testResponse.ok) {
+                throw new Error(`Repository access failed: ${testResponse.status}`);
+            }
+            
+            const repoData = await testResponse.json();
             console.log('✅ Installation token test successful');
-            console.log('  - Installation ID:', testResponse.data.id);
-            console.log('  - Account:', testResponse.data.account.login);
+            console.log('  - Repository:', repoData.full_name);
+            console.log('  - Default branch:', repoData.default_branch);
         } catch (testError) {
             console.error('❌ Installation token test failed:', testError.message);
             console.error('Test error details:', testError);
