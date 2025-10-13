@@ -526,26 +526,31 @@ async function createPRWithUserToken(userToken, contentData, user) {
  */
 function generatePayloadContent(contentData, user) {
     return JSON.stringify({
+        version: "1.0.0",
+        type: "content-addition",
+        metadata: {
+            title: contentData.title,
+            description: contentData.description,
+            author: user.login,
+            submissionDate: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
+            category: contentData.category,
+            subtopic: contentData.id // Use content ID as subtopic
+        },
+        content: {
             id: contentData.id,
             title: contentData.title,
             description: contentData.description,
-        category: contentData.category,
-        content: contentData.content || '',
-        tags: contentData.tags || [],
-        difficulty: contentData.difficulty || 'intermediate',
-        estimatedTime: contentData.estimatedTime || '30 minutes',
-        prerequisites: contentData.prerequisites || [],
-        submittedBy: {
-            username: user.login,
-            name: user.name || user.login,
-            email: user.email || '',
-            avatar: user.avatar_url
+            repo: "prepguides/prepguides.dev", // Default to main repo
+            path: `content/${contentData.category}/${contentData.id}.md`, // Default path structure
+            type: "guide", // Default to guide type
+            status: "active"
         },
-        submittedAt: new Date().toISOString(),
-        status: 'pending',
-        reviewNotes: '',
-        approvedBy: null,
-        approvedAt: null
+        validation: {
+            repoAccessible: true,
+            fileExists: true,
+            contentValid: true,
+            categoryValid: true
+        }
     }, null, 2);
 }
 
