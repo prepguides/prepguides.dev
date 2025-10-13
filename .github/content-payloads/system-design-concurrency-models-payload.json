@@ -1,0 +1,22 @@
+{
+  "id": "system-design-concurrency-models",
+  "title": "Concurrency Models",
+  "description": "Concurrency Models",
+  "category": "system-design",
+  "content": "Concurrency Models",
+  "tags": [],
+  "difficulty": "intermediate",
+  "estimatedTime": "30 minutes",
+  "prerequisites": [],
+  "submittedBy": {
+    "username": "ishaileshpant",
+    "name": "Shailesh Pant",
+    "email": "ishaileshpant@gmail.com",
+    "avatar": "https://avatars.githubusercontent.com/u/178990379?v=4"
+  },
+  "submittedAt": "2025-10-13T17:52:06.503Z",
+  "status": "pending",
+  "reviewNotes": "",
+  "approvedBy": null,
+  "approvedAt": null
+}
