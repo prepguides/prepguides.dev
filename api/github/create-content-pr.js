@@ -99,12 +99,12 @@ export default async function handler(req, res) {
                 `4. Check diagnostic info: ${diagnosticUrl}`
             ];
         } else if (userTokenResult.error.includes('Fork not found')) {
-            errorMessage = 'Content submission requires a repository fork.';
+            errorMessage = 'Content submission created as issue for review.';
             userInstructions = [
-                '1. Click the "Fork" button on the repository page',
-                '2. Wait for the fork to be created',
-                '3. Try submitting your content again',
-                '4. If you continue to have issues, contact support'
+                '1. Your content has been submitted as a GitHub issue',
+                '2. The team will review and convert it to a PR',
+                '3. You can track progress in the issue',
+                '4. Thank you for your contribution!'
             ];
         } else {
             errorMessage = 'Content submission failed. Please try again or contact support.';
@@ -277,18 +277,10 @@ async function tryUserTokenApproach(contentData, userToken) {
         });
 
         if (!forkResponse.ok) {
-            console.log('⚠️ User fork not found, providing fork creation guidance');
-            return { 
-                success: false, 
-                error: 'Fork not found. Please fork the repository first.',
-                message: 'To submit content, you need to fork the repository first.',
-                forkUrl: 'https://github.com/prepguides/prepguides.dev/fork',
-                instructions: [
-                    '1. Click the "Fork" button on the repository page',
-                    '2. Wait for the fork to be created',
-                    '3. Try submitting your content again'
-                ]
-            };
+            console.log('⚠️ User fork not found, creating issue instead');
+            // Create an issue as fallback when fork is not available
+            const result = await createIssueWithUserToken(userToken, contentData, user);
+            return { success: true, data: result };
         }
 
         console.log('✅ User fork found, creating PR via fork');
@@ -544,4 +536,123 @@ This content was submitted via the PrepGuides.dev content submission form and au
 
 **Bot Version:** 2.0.0
 **Submission ID:** ${contentData.id}`;
+}
+
+/**
+ * Create issue using user token (fallback when fork is not available)
+ */
+async function createIssueWithUserToken(userToken, contentData, user) {
+    try {
+        console.log('🔧 Creating issue as fallback...');
+
+        // Create issue in the main repository
+        const issueResponse = await fetch('https://api.github.com/repos/prepguides/prepguides.dev/issues', {
+            method: 'POST',
+            headers: {
+                'Authorization': `token ${userToken}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: `Content Submission: ${contentData.title}`,
+                body: generateIssueDescription(contentData, user),
+                labels: ['content-submission', 'user-submitted', 'needs-review']
+            })
+        });
+
+        if (!issueResponse.ok) {
+            const errorData = await issueResponse.json();
+            throw new Error(`Failed to create issue: ${errorData.message || issueResponse.statusText}`);
+        }
+
+        const issue = await issueResponse.json();
+
+        return {
+            success: true,
+            issue: {
+                number: issue.number,
+                html_url: issue.html_url,
+                title: issue.title,
+                state: issue.state,
+                created_at: issue.created_at
+            },
+            message: 'Content submission created as issue! The team will review and convert it to a PR.',
+            type: 'issue'
+        };
+
+    } catch (error) {
+        console.error('Issue creation error:', error.message);
+        throw error;
+    }
+}
+
+/**
+ * Generate issue description for content submission
+ */
+function generateIssueDescription(contentData, user) {
+    return `## 📝 Content Submission: ${contentData.title}
+
+### 📋 Content Details
+- **Title**: ${contentData.title}
+- **Category**: ${contentData.category}
+- **Difficulty**: ${contentData.difficulty || 'intermediate'}
+- **Estimated Time**: ${contentData.estimatedTime || '30 minutes'}
+
+### 📖 Description
+${contentData.description}
+
+### 👤 Submitted By
+- **Username**: @${user.login}
+- **Name**: ${user.name || user.login}
+- **Avatar**: ![${user.login}](https://github.com/${user.login}.png?size=32)
+
+### 🏷️ Tags
+${(contentData.tags || []).map(tag => `- ${tag}`).join('\n')}
+
+### 📚 Prerequisites
+${(contentData.prerequisites || []).map(prereq => `- ${prereq}`).join('\n')}
+
+### 📄 Content
+\`\`\`
+${contentData.content || 'No content provided'}
+\`\`\`
+
+### 📋 Content Payload
+\`\`\`json
+${JSON.stringify({
+    id: contentData.id,
+    title: contentData.title,
+    description: contentData.description,
+    category: contentData.category,
+    content: contentData.content || '',
+    tags: contentData.tags || [],
+    difficulty: contentData.difficulty || 'intermediate',
+    estimatedTime: contentData.estimatedTime || '30 minutes',
+    prerequisites: contentData.prerequisites || [],
+    submittedBy: {
+        username: user.login,
+        name: user.name || user.login,
+        email: user.email || '',
+        avatar: user.avatar_url
+    },
+    submittedAt: new Date().toISOString(),
+    status: 'pending'
+}, null, 2)}
+\`\`\`
+
+### ✅ Review Checklist
+- [ ] Content is accurate and well-structured
+- [ ] Description is clear and informative
+- [ ] Tags are appropriate and relevant
+- [ ] Difficulty level is appropriate
+- [ ] Prerequisites are clearly listed
+- [ ] Content follows project guidelines
+- [ ] Convert to PR when approved
+
+### Notes
+This content was submitted via the PrepGuides.dev content submission form. Since the automated PR creation failed, it was created as an issue for manual review and processing.
+
+**Submission Method:** Issue (Fallback)
+**Submission ID:** ${contentData.id}
+**Submitted At:** ${new Date().toISOString()}`;
 }
