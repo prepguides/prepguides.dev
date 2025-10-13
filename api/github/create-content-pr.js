@@ -134,121 +134,47 @@ async function tryGitHubAppApproach(contentData, userToken) {
         console.log('GitHub App ID:', process.env.GITHUB_APP_ID);
         console.log('Private Key length:', process.env.GITHUB_APP_PRIVATE_KEY?.length);
         
-        // Process and validate private key
+        // Use the exact same approach as the diagnostic endpoint
+        console.log('🔧 Using diagnostic endpoint approach for private key processing...');
         let privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
-        
-        // Handle different private key formats
         if (privateKey.includes('\\n')) {
-            console.log('🔧 Processing private key with escaped newlines');
+            console.log('🔧 Processing private key with escaped newlines (diagnostic approach)');
             privateKey = privateKey.replace(/\\n/g, '\n');
         }
         
-        // Additional private key processing for Vercel environment
-        if (privateKey.includes('-----BEGIN')) {
-            // Private key is already properly formatted
-            console.log('✅ Private key appears to be properly formatted');
-        } else {
-            // Try to reconstruct the private key if it's missing headers
-            console.log('🔧 Attempting to reconstruct private key format');
-            if (!privateKey.startsWith('-----BEGIN')) {
-                privateKey = '-----BEGIN RSA PRIVATE KEY-----\n' + privateKey;
-            }
-            if (!privateKey.endsWith('-----END RSA PRIVATE KEY-----')) {
-                privateKey = privateKey + '\n-----END RSA PRIVATE KEY-----';
-            }
-        }
-        
-        // Validate private key format
-        if (!privateKey.includes('BEGIN RSA PRIVATE KEY') && !privateKey.includes('BEGIN PRIVATE KEY')) {
-            console.error('❌ Invalid private key format - missing BEGIN marker');
-            return { success: false, error: 'Invalid private key format - must be a valid RSA private key' };
-        }
-        
-        console.log('✅ Private key format validated');
-        console.log('Private key first 50 chars:', privateKey.substring(0, 50));
+        console.log('✅ Private key processed using diagnostic approach');
+        console.log('Private key length:', privateKey.length);
+        console.log('Private key starts with:', privateKey.substring(0, 50));
 
-        // Initialize GitHub App with comprehensive error handling
+        // Use the exact same approach as the diagnostic endpoint
+        console.log('🔧 Creating GitHub App auth using diagnostic approach...');
+        const { createAppAuth: createAppAuthDiag } = await import('@octokit/auth-app');
+        
         let appAuth;
         try {
-            console.log('🔧 Creating GitHub App auth with:');
-            console.log('  - App ID:', process.env.GITHUB_APP_ID);
-            console.log('  - Private key length:', privateKey.length);
-            console.log('  - Private key starts with:', privateKey.substring(0, 50));
-            console.log('  - Private key ends with:', privateKey.substring(privateKey.length - 50));
-            
-            appAuth = createAppAuth({
+            appAuth = createAppAuthDiag({
                 appId: process.env.GITHUB_APP_ID,
                 privateKey: privateKey,
             });
-            console.log('✅ GitHub App auth created successfully');
+            console.log('✅ GitHub App auth created successfully using diagnostic approach');
         } catch (authError) {
             console.error('❌ Failed to create GitHub App auth:', authError.message);
             console.error('❌ Auth error details:', authError);
-            
-            // Try alternative private key format
-            try {
-                console.log('🔄 Trying alternative private key format...');
-                let altPrivateKey = process.env.GITHUB_APP_PRIVATE_KEY;
-                
-                // Try with different line ending handling
-                if (altPrivateKey.includes('\\n')) {
-                    altPrivateKey = altPrivateKey.replace(/\\n/g, '\n');
-                } else if (altPrivateKey.includes('\n')) {
-                    // Already has newlines, try as-is
-                } else {
-                    // No newlines, try adding them
-                    altPrivateKey = altPrivateKey.replace(/(.{64})/g, '$1\n');
-                }
-                
-                appAuth = createAppAuth({
-                    appId: process.env.GITHUB_APP_ID,
-                    privateKey: altPrivateKey,
-                });
-                console.log('✅ GitHub App auth created with alternative format');
-            } catch (altAuthError) {
-                console.error('❌ Alternative auth creation also failed:', altAuthError.message);
-                return { success: false, error: `Failed to create GitHub App auth: ${authError.message}. Alternative format also failed: ${altAuthError.message}` };
-            }
+            return { success: false, error: `Failed to create GitHub App auth: ${authError.message}` };
         }
 
-        console.log('🔑 Getting app token...');
+        console.log('🔑 Getting app token using diagnostic approach...');
         // Get app token with error handling
         let appToken;
         try {
             appToken = await appAuth({ type: 'app' });
-            console.log('✅ App token obtained successfully');
+            console.log('✅ App token obtained successfully using diagnostic approach');
             console.log('  - Token length:', appToken.token ? appToken.token.length : 'null');
             console.log('  - Token type:', appToken.type);
-            console.log('  - Token starts with:', appToken.token ? appToken.token.substring(0, 20) + '...' : 'null');
         } catch (tokenError) {
             console.error('❌ Failed to obtain app token:', tokenError.message);
             console.error('❌ Token error details:', tokenError);
-            console.error('❌ Token error stack:', tokenError.stack);
-            
-            // Try the exact same approach as diagnostic endpoint
-            console.log('🔄 Trying diagnostic endpoint approach...');
-            try {
-                const { createAppAuth: createAppAuthDiag } = await import('@octokit/auth-app');
-                let diagPrivateKey = process.env.GITHUB_APP_PRIVATE_KEY;
-                if (diagPrivateKey.includes('\\n')) {
-                    diagPrivateKey = diagPrivateKey.replace(/\\n/g, '\n');
-                }
-                
-                const diagAppAuth = createAppAuthDiag({
-                    appId: process.env.GITHUB_APP_ID,
-                    privateKey: diagPrivateKey,
-                });
-                
-                const diagAppToken = await diagAppAuth({ type: 'app' });
-                console.log('✅ Diagnostic approach succeeded!');
-                console.log('  - Diag token length:', diagAppToken.token ? diagAppToken.token.length : 'null');
-                
-                // Use the diagnostic approach
-                appToken = diagAppToken;
-            } catch (diagError) {
-                console.error('❌ Diagnostic approach also failed:', diagError.message);
-                return { success: false, error: `Failed to obtain app token: ${tokenError.message}. Diagnostic approach also failed: ${diagError.message}` };
-            }
+            return { success: false, error: `Failed to obtain app token: ${tokenError.message}` };
         }
         
         const tempOctokit = new Octokit({ auth: appToken.token });
