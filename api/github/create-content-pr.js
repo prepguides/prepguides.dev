@@ -57,6 +57,7 @@ export default async function handler(req, res) {
         const userTokenResult = await tryUserTokenApproach(contentData, userToken);
         if (userTokenResult.success) {
             console.log('✅ User token fallback succeeded');
+            console.log('Submission method:', userTokenResult.data.type || 'PR');
             return res.status(201).json(userTokenResult.data);
         }
 
@@ -130,9 +131,33 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('❌ Unexpected error in bot API:', error);
+        
+        // Last resort: try to create an issue directly
+        try {
+            console.log('🆘 Last resort: attempting direct issue creation...');
+            const { userToken, contentData } = req.body;
+            if (userToken && contentData) {
+                const userResponse = await fetch('https://api.github.com/user', {
+                    headers: {
+                        'Authorization': `token ${userToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (userResponse.ok) {
+                    const user = await userResponse.json();
+                    const result = await createIssueWithUserToken(userToken, contentData, user);
+                    console.log('✅ Last resort issue creation succeeded');
+                    return res.status(201).json(result.data);
+                }
+            }
+        } catch (lastResortError) {
+            console.error('❌ Last resort issue creation also failed:', lastResortError.message);
+        }
+        
         return res.status(500).json({
             error: 'Internal server error',
-            message: 'An unexpected error occurred',
+            message: 'An unexpected error occurred. Please try again or contact support.',
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
@@ -294,10 +319,17 @@ async function tryUserTokenApproach(contentData, userToken) {
             return { success: true, data: result };
         }
 
-        console.log('✅ User fork found, creating PR via fork');
-        // Create PR using user token
-        const result = await createPRWithUserToken(userToken, contentData, user);
-        return { success: true, data: result };
+        console.log('✅ User fork found, attempting to create PR via fork');
+        try {
+            // Create PR using user token
+            const result = await createPRWithUserToken(userToken, contentData, user);
+            return { success: true, data: result };
+        } catch (forkError) {
+            console.log('⚠️ Fork PR creation failed, falling back to issue creation:', forkError.message);
+            // If fork PR creation fails, fall back to issue creation
+            const result = await createIssueWithUserToken(userToken, contentData, user);
+            return { success: true, data: result };
+        }
 
     } catch (error) {
         console.error('User token approach error:', error.message);
