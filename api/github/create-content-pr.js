@@ -229,7 +229,9 @@ async function tryGitHubAppApproach(contentData, userToken) {
             return { success: false, error: `Failed to create installation auth: ${authError.message}` };
         }
 
-        const octokit = new Octokit({ auth });
+        const octokit = new Octokit({
+            authStrategy: auth,
+        });
 
         // Test installation token by making a simple API call
         console.log('🧪 Testing installation token with simple API call...');
