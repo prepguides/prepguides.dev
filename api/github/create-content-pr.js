@@ -181,12 +181,13 @@ async function tryGitHubAppApproach(contentData, userToken) {
 
         // Find installation
         console.log('🔍 Finding installations...');
+        let targetInstallation;
         try {
             const installations = await tempOctokit.apps.listInstallations();
             console.log('Found installations:', installations.data.length);
             console.log('Available installations:', installations.data.map(i => i.account.login));
             
-            const targetInstallation = installations.data.find(installation => 
+            targetInstallation = installations.data.find(installation => 
                 installation.account.login === 'prepguides'
             );
 
