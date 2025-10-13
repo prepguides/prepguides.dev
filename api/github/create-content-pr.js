@@ -173,6 +173,12 @@ async function tryGitHubAppApproach(contentData, userToken) {
         // Initialize GitHub App with comprehensive error handling
         let appAuth;
         try {
+            console.log('🔧 Creating GitHub App auth with:');
+            console.log('  - App ID:', process.env.GITHUB_APP_ID);
+            console.log('  - Private key length:', privateKey.length);
+            console.log('  - Private key starts with:', privateKey.substring(0, 50));
+            console.log('  - Private key ends with:', privateKey.substring(privateKey.length - 50));
+            
             appAuth = createAppAuth({
                 appId: process.env.GITHUB_APP_ID,
                 privateKey: privateKey,
@@ -180,6 +186,7 @@ async function tryGitHubAppApproach(contentData, userToken) {
             console.log('✅ GitHub App auth created successfully');
         } catch (authError) {
             console.error('❌ Failed to create GitHub App auth:', authError.message);
+            console.error('❌ Auth error details:', authError);
             return { success: false, error: `Failed to create GitHub App auth: ${authError.message}` };
         }
 
@@ -189,8 +196,12 @@ async function tryGitHubAppApproach(contentData, userToken) {
         try {
             appToken = await appAuth({ type: 'app' });
             console.log('✅ App token obtained successfully');
+            console.log('  - Token length:', appToken.token ? appToken.token.length : 'null');
+            console.log('  - Token type:', appToken.type);
         } catch (tokenError) {
             console.error('❌ Failed to obtain app token:', tokenError.message);
+            console.error('❌ Token error details:', tokenError);
+            console.error('❌ Token error stack:', tokenError.stack);
             return { success: false, error: `Failed to obtain app token: ${tokenError.message}. Check your GitHub App ID and private key.` };
         }
         
