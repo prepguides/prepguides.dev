@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "type": "content-addition",
+  "metadata": {
+    "title": "Concurrency Model",
+    "description": "Concurrency Model",
+    "author": "ishaileshpant",
+    "submissionDate": "2025-10-13",
+    "category": "system-design",
+    "subtopic": "system-design-concurrency-model"
+  },
+  "content": {
+    "id": "system-design-concurrency-model",
+    "title": "Concurrency Model",
+    "description": "Concurrency Model",
+    "repo": "prepguides/prepguides.dev",
+    "path": "content/system-design/system-design-concurrency-model.md",
+    "type": "guide",
+    "status": "active"
+  },
+  "validation": {
+    "repoAccessible": true,
+    "fileExists": true,
+    "contentValid": true,
+    "categoryValid": true
+  }
+}
