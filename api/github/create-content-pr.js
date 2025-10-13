@@ -52,42 +52,67 @@ export default async function handler(req, res) {
         console.log('GitHub App error:', githubAppResult.error);
         console.log('GitHub App configured:', !!(process.env.GITHUB_APP_ID && process.env.GITHUB_APP_PRIVATE_KEY));
         
-        // Provide helpful error message for GitHub App failure
+        // Try user token fallback approach
+        console.log('🔄 Attempting user token fallback...');
+        const userTokenResult = await tryUserTokenApproach(contentData, userToken);
+        if (userTokenResult.success) {
+            console.log('✅ User token fallback succeeded');
+            return res.status(201).json(userTokenResult.data);
+        }
+
+        console.log('❌ User token fallback also failed');
+        console.log('User token error:', userTokenResult.error);
+        
+        // Provide helpful error message for both approaches failing
         let errorMessage = 'Content submission failed';
         let userInstructions = [];
+        let diagnosticUrl = 'https://prepguides.dev/api/diagnostic/github-app';
         
         if (githubAppResult.error.includes('GitHub App not configured')) {
             errorMessage = 'Content submission is temporarily unavailable. GitHub App is not configured.';
             userInstructions = [
                 '1. Please try again later',
-                '2. Contact support if the issue persists'
+                '2. Contact support if the issue persists',
+                `3. Check diagnostic info: ${diagnosticUrl}`
             ];
         } else if (githubAppResult.error.includes('No installation found')) {
             errorMessage = 'Content submission is temporarily unavailable. GitHub App is not properly installed.';
             userInstructions = [
                 '1. Please try again later',
-                '2. Contact support if the issue persists'
+                '2. Contact support if the issue persists',
+                `3. Check diagnostic info: ${diagnosticUrl}`
             ];
         } else if (githubAppResult.error.includes('JSON web token') || githubAppResult.error.includes('JWT') || githubAppResult.error.includes('token')) {
             errorMessage = 'Content submission is temporarily unavailable. GitHub App authentication failed.';
             userInstructions = [
                 '1. The GitHub App credentials may need to be reconfigured',
                 '2. Please try again later',
-                '3. Contact support if the issue persists'
+                '3. Contact support if the issue persists',
+                `4. Check diagnostic info: ${diagnosticUrl}`
             ];
         } else if (githubAppResult.error.includes('private key')) {
             errorMessage = 'Content submission is temporarily unavailable. GitHub App private key issue.';
             userInstructions = [
                 '1. The GitHub App private key may need to be regenerated',
                 '2. Please try again later',
-                '3. Contact support if the issue persists'
+                '3. Contact support if the issue persists',
+                `4. Check diagnostic info: ${diagnosticUrl}`
+            ];
+        } else if (userTokenResult.error.includes('Fork not found')) {
+            errorMessage = 'Content submission requires a repository fork.';
+            userInstructions = [
+                '1. Click the "Fork" button on the repository page',
+                '2. Wait for the fork to be created',
+                '3. Try submitting your content again',
+                '4. If you continue to have issues, contact support'
             ];
         } else {
             errorMessage = 'Content submission failed. Please try again or contact support.';
             userInstructions = [
                 '1. Check your internet connection',
                 '2. Try refreshing the page',
-                '3. If the problem persists, contact support'
+                '3. If the problem persists, contact support',
+                `4. Check diagnostic info: ${diagnosticUrl}`
             ];
         }
         
@@ -97,7 +122,9 @@ export default async function handler(req, res) {
             instructions: userInstructions,
             details: {
                 githubAppError: githubAppResult.error,
-                githubAppConfigured: !!(process.env.GITHUB_APP_ID && process.env.GITHUB_APP_PRIVATE_KEY)
+                userTokenError: userTokenResult.error,
+                githubAppConfigured: !!(process.env.GITHUB_APP_ID && process.env.GITHUB_APP_PRIVATE_KEY),
+                diagnosticUrl: diagnosticUrl
             }
         });
 
