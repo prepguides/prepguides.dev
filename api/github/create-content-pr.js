@@ -39,6 +39,9 @@ export default async function handler(req, res) {
         console.log('Content ID:', contentData.id);
         console.log('Content Title:', contentData.title);
         console.log('Content Category:', contentData.category);
+        console.log('Content Repo:', contentData.repo);
+        console.log('Content Path:', contentData.path);
+        console.log('Content Type:', contentData.type);
         console.log('User Token present:', !!userToken);
 
         // Try GitHub App approach - this should work without requiring user fork
@@ -540,9 +543,9 @@ function generatePayloadContent(contentData, user) {
             id: contentData.id,
             title: contentData.title,
             description: contentData.description,
-            repo: "prepguides/prepguides.dev", // Default to main repo
-            path: `content/${contentData.category}/${contentData.id}.md`, // Default path structure
-            type: "guide", // Default to guide type
+            repo: contentData.repo || "prepguides/prepguides.dev", // Use form data or default
+            path: contentData.path || `content/${contentData.category}/${contentData.id}.md`, // Use form data or default
+            type: contentData.type || "guide", // Use form data or default
             status: "active"
         },
         validation: {
