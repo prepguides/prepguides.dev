@@ -52,20 +52,11 @@ export default async function handler(req, res) {
         console.log('GitHub App error:', githubAppResult.error);
         console.log('GitHub App configured:', !!(process.env.GITHUB_APP_ID && process.env.GITHUB_APP_PRIVATE_KEY));
         
-        // Try user token fallback approach
-        console.log('🔄 Attempting user token fallback...');
-        const userTokenResult = await tryUserTokenApproach(contentData, userToken);
-        if (userTokenResult.success) {
-            console.log('✅ User token fallback succeeded');
-            console.log('Submission method:', userTokenResult.data.type || 'PR');
-            return res.status(201).json(userTokenResult.data);
-        }
-
-        console.log('❌ User token fallback also failed');
-        console.log('User token error:', userTokenResult.error);
+        // No fallback - bot API must work for content submission
+        console.log('❌ GitHub App approach failed - no fallback available');
         
-        // Provide helpful error message for both approaches failing
-        let errorMessage = 'Content submission failed';
+        // Provide helpful error message for GitHub App failure
+        let errorMessage = 'Content submission is temporarily unavailable.';
         let userInstructions = [];
         let diagnosticUrl = 'https://prepguides.dev/api/diagnostic/github-app';
         
@@ -99,21 +90,12 @@ export default async function handler(req, res) {
                 '3. Contact support if the issue persists',
                 `4. Check diagnostic info: ${diagnosticUrl}`
             ];
-        } else if (userTokenResult.error.includes('Fork not found')) {
-            errorMessage = 'Content submission created as issue for review.';
-            userInstructions = [
-                '1. Your content has been submitted as a GitHub issue',
-                '2. The team will review and convert it to a PR',
-                '3. You can track progress in the issue',
-                '4. Thank you for your contribution!'
-            ];
         } else {
-            errorMessage = 'Content submission failed. Please try again or contact support.';
+            errorMessage = 'Content submission is temporarily unavailable. GitHub App error.';
             userInstructions = [
-                '1. Check your internet connection',
-                '2. Try refreshing the page',
-                '3. If the problem persists, contact support',
-                `4. Check diagnostic info: ${diagnosticUrl}`
+                '1. Please try again later',
+                '2. Contact support if the issue persists',
+                `3. Check diagnostic info: ${diagnosticUrl}`
             ];
         }
         
@@ -123,7 +105,6 @@ export default async function handler(req, res) {
             instructions: userInstructions,
             details: {
                 githubAppError: githubAppResult.error,
-                userTokenError: userTokenResult.error,
                 githubAppConfigured: !!(process.env.GITHUB_APP_ID && process.env.GITHUB_APP_PRIVATE_KEY),
                 diagnosticUrl: diagnosticUrl
             }
@@ -131,30 +112,6 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('❌ Unexpected error in bot API:', error);
-        
-        // Last resort: try to create an issue directly
-        try {
-            console.log('🆘 Last resort: attempting direct issue creation...');
-            const { userToken, contentData } = req.body;
-            if (userToken && contentData) {
-                const userResponse = await fetch('https://api.github.com/user', {
-                    headers: {
-                        'Authorization': `token ${userToken}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-                
-                if (userResponse.ok) {
-                    const user = await userResponse.json();
-                    const result = await createIssueWithUserToken(userToken, contentData, user);
-                    console.log('✅ Last resort issue creation succeeded');
-                    return res.status(201).json(result.data);
-                }
-            }
-        } catch (lastResortError) {
-            console.error('❌ Last resort issue creation also failed:', lastResortError.message);
-        }
-        
         return res.status(500).json({
             error: 'Internal server error',
             message: 'An unexpected error occurred. Please try again or contact support.',
@@ -186,6 +143,21 @@ async function tryGitHubAppApproach(contentData, userToken) {
             privateKey = privateKey.replace(/\\n/g, '\n');
         }
         
+        // Additional private key processing for Vercel environment
+        if (privateKey.includes('-----BEGIN')) {
+            // Private key is already properly formatted
+            console.log('✅ Private key appears to be properly formatted');
+        } else {
+            // Try to reconstruct the private key if it's missing headers
+            console.log('🔧 Attempting to reconstruct private key format');
+            if (!privateKey.startsWith('-----BEGIN')) {
+                privateKey = '-----BEGIN RSA PRIVATE KEY-----\n' + privateKey;
+            }
+            if (!privateKey.endsWith('-----END RSA PRIVATE KEY-----')) {
+                privateKey = privateKey + '\n-----END RSA PRIVATE KEY-----';
+            }
+        }
+        
         // Validate private key format
         if (!privateKey.includes('BEGIN RSA PRIVATE KEY') && !privateKey.includes('BEGIN PRIVATE KEY')) {
             console.error('❌ Invalid private key format - missing BEGIN marker');
@@ -212,7 +184,31 @@ async function tryGitHubAppApproach(contentData, userToken) {
         } catch (authError) {
             console.error('❌ Failed to create GitHub App auth:', authError.message);
             console.error('❌ Auth error details:', authError);
-            return { success: false, error: `Failed to create GitHub App auth: ${authError.message}` };
+            
+            // Try alternative private key format
+            try {
+                console.log('🔄 Trying alternative private key format...');
+                let altPrivateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+                
+                // Try with different line ending handling
+                if (altPrivateKey.includes('\\n')) {
+                    altPrivateKey = altPrivateKey.replace(/\\n/g, '\n');
+                } else if (altPrivateKey.includes('\n')) {
+                    // Already has newlines, try as-is
+                } else {
+                    // No newlines, try adding them
+                    altPrivateKey = altPrivateKey.replace(/(.{64})/g, '$1\n');
+                }
+                
+                appAuth = createAppAuth({
+                    appId: process.env.GITHUB_APP_ID,
+                    privateKey: altPrivateKey,
+                });
+                console.log('✅ GitHub App auth created with alternative format');
+            } catch (altAuthError) {
+                console.error('❌ Alternative auth creation also failed:', altAuthError.message);
+                return { success: false, error: `Failed to create GitHub App auth: ${authError.message}. Alternative format also failed: ${altAuthError.message}` };
+            }
         }
 
         console.log('🔑 Getting app token...');
