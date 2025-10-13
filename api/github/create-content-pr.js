@@ -229,22 +229,7 @@ async function tryGitHubAppApproach(contentData, userToken) {
             return { success: false, error: `Failed to create installation auth: ${authError.message}` };
         }
 
-        // Get the installation token
-        console.log('🔑 Getting installation token...');
-        let installationToken;
-        try {
-            const tokenResult = await auth({ type: 'installation' });
-            installationToken = tokenResult.token;
-            console.log('✅ Installation token obtained successfully');
-            console.log('  - Token length:', installationToken ? installationToken.length : 'null');
-            console.log('  - Token type:', tokenResult.type);
-        } catch (tokenError) {
-            console.error('❌ Failed to get installation token:', tokenError.message);
-            console.error('Installation token error details:', tokenError);
-            return { success: false, error: `Failed to get installation token: ${tokenError.message}` };
-        }
-
-        const octokit = new Octokit({ auth: installationToken });
+        const octokit = new Octokit({ auth });
 
         // Test installation token by making a simple API call
         console.log('🧪 Testing installation token with simple API call...');
