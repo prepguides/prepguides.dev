@@ -61,6 +61,9 @@ export default async function handler(req, res) {
             if (privateKey.includes('\\n')) {
                 diagnostic.githubApp.errors.push('Private key contains escaped newlines (\\n) - should be actual newlines');
                 diagnostic.recommendations.push('Replace \\n with actual newlines in GITHUB_APP_PRIVATE_KEY');
+            } else if (privateKey.includes('\n')) {
+                // Private key has actual newlines, which is correct
+                diagnostic.recommendations.push('✅ Private key has correct newline format');
             }
 
             if (!privateKey.includes('END')) {
