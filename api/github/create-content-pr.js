@@ -255,42 +255,86 @@ async function tryGitHubAppApproach(contentData, userToken) {
 
         // Find installation
         console.log('🔍 Finding installations...');
-        const installations = await tempOctokit.apps.listInstallations();
-        console.log('Found installations:', installations.data.length);
-        console.log('Available installations:', installations.data.map(i => i.account.login));
-        
-        const targetInstallation = installations.data.find(installation => 
-            installation.account.login === 'prepguides'
-        );
+        try {
+            const installations = await tempOctokit.apps.listInstallations();
+            console.log('Found installations:', installations.data.length);
+            console.log('Available installations:', installations.data.map(i => i.account.login));
+            
+            const targetInstallation = installations.data.find(installation => 
+                installation.account.login === 'prepguides'
+            );
 
-        if (!targetInstallation) {
-            return { success: false, error: 'No installation found for prepguides organization' };
+            if (!targetInstallation) {
+                console.error('❌ No installation found for prepguides organization');
+                console.log('Available accounts:', installations.data.map(i => ({ login: i.account.login, id: i.id })));
+                return { success: false, error: 'No installation found for prepguides organization' };
+            }
+            
+            console.log('✅ Found prepguides installation:', targetInstallation.id);
+            console.log('Installation details:', {
+                id: targetInstallation.id,
+                account: targetInstallation.account.login,
+                permissions: targetInstallation.permissions
+            });
+        } catch (installError) {
+            console.error('❌ Failed to list installations:', installError.message);
+            console.error('Install error details:', installError);
+            return { success: false, error: `Failed to list installations: ${installError.message}` };
         }
-        
-        console.log('✅ Found prepguides installation:', targetInstallation.id);
 
         // Create authenticated Octokit
-        const auth = createAppAuth({
-            appId: process.env.GITHUB_APP_ID,
-            privateKey: privateKey,
-            installationId: targetInstallation.id,
-        });
+        console.log('🔧 Creating authenticated Octokit with installation...');
+        console.log('  - App ID:', process.env.GITHUB_APP_ID);
+        console.log('  - Installation ID:', targetInstallation.id);
+        console.log('  - Private key length:', privateKey.length);
+        
+        let auth;
+        try {
+            auth = createAppAuth({
+                appId: process.env.GITHUB_APP_ID,
+                privateKey: privateKey,
+                installationId: targetInstallation.id,
+            });
+            console.log('✅ Installation auth created successfully');
+        } catch (authError) {
+            console.error('❌ Failed to create installation auth:', authError.message);
+            console.error('Installation auth error details:', authError);
+            return { success: false, error: `Failed to create installation auth: ${authError.message}` };
+        }
 
         const octokit = new Octokit({ auth });
 
-        // Verify user authentication
-        const userResponse = await fetch('https://api.github.com/user', {
-            headers: {
-                'Authorization': `token ${userToken}`,
-                'Accept': 'application/vnd.github.v3+json'
-            }
-        });
+        // Test installation token by making a simple API call
+        console.log('🧪 Testing installation token with simple API call...');
+        try {
+            const testResponse = await octokit.rest.apps.getInstallation({
+                installation_id: targetInstallation.id
+            });
+            console.log('✅ Installation token test successful');
+            console.log('  - Installation ID:', testResponse.data.id);
+            console.log('  - Account:', testResponse.data.account.login);
+        } catch (testError) {
+            console.error('❌ Installation token test failed:', testError.message);
+            console.error('Test error details:', testError);
+            return { success: false, error: `Installation token test failed: ${testError.message}` };
+        }
 
-        if (!userResponse.ok) {
+        // Verify user authentication
+        console.log('🔍 Verifying user authentication...');
+            const userResponse = await fetch('https://api.github.com/user', {
+                headers: {
+                    'Authorization': `token ${userToken}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            if (!userResponse.ok) {
+            console.error('❌ User authentication failed:', userResponse.status, userResponse.statusText);
             return { success: false, error: 'Invalid user token' };
         }
 
         const user = await userResponse.json();
+        console.log('✅ User authenticated:', user.login);
 
         // Create PR using bot
         const result = await createPRWithBot(octokit, contentData, user);
@@ -319,10 +363,10 @@ async function tryUserTokenApproach(contentData, userToken) {
 
         if (!userResponse.ok) {
             return { success: false, error: 'Invalid user token' };
-        }
+            }
 
-        const user = await userResponse.json();
-        console.log(`✅ User authenticated: ${user.login}`);
+            const user = await userResponse.json();
+            console.log(`✅ User authenticated: ${user.login}`);
 
         // Check if user has a fork
         const forkRepoName = `${user.login}/prepguides.dev`;
@@ -362,69 +406,69 @@ async function tryUserTokenApproach(contentData, userToken) {
  * Create PR using bot (GitHub App)
  */
 async function createPRWithBot(octokit, contentData, user) {
-    const timestamp = Date.now();
+            const timestamp = Date.now();
     const branchName = `content-submission-${user.login}-${timestamp}`;
-
+            
     // Get latest main branch SHA
-    const { data: mainRef } = await octokit.git.getRef({
-        owner: 'prepguides',
-        repo: 'prepguides.dev',
-        ref: 'heads/main'
-    });
+            const { data: mainRef } = await octokit.git.getRef({
+                owner: 'prepguides',
+                repo: 'prepguides.dev',
+                ref: 'heads/main'
+            });
 
     // Create new branch
-    await octokit.git.createRef({
-        owner: 'prepguides',
-        repo: 'prepguides.dev',
-        ref: `refs/heads/${branchName}`,
-        sha: mainRef.object.sha
-    });
+            await octokit.git.createRef({
+                owner: 'prepguides',
+                repo: 'prepguides.dev',
+                ref: `refs/heads/${branchName}`,
+                sha: mainRef.object.sha
+            });
 
     // Create content payload file
-    const payloadContent = generatePayloadContent(contentData, user);
-    const payloadPath = `.github/content-payloads/${contentData.id}-payload.json`;
-    
-    await octokit.repos.createOrUpdateFileContents({
-        owner: 'prepguides',
-        repo: 'prepguides.dev',
-        path: payloadPath,
-        message: `Add content submission: ${contentData.title}`,
-        content: Buffer.from(payloadContent).toString('base64'),
-        branch: branchName
-    });
+            const payloadContent = generatePayloadContent(contentData, user);
+            const payloadPath = `.github/content-payloads/${contentData.id}-payload.json`;
+            
+            await octokit.repos.createOrUpdateFileContents({
+                owner: 'prepguides',
+                repo: 'prepguides.dev',
+                path: payloadPath,
+                message: `Add content submission: ${contentData.title}`,
+                content: Buffer.from(payloadContent).toString('base64'),
+                branch: branchName
+            });
 
     // Create pull request
-    const { data: pr } = await octokit.pulls.create({
-        owner: 'prepguides',
-        repo: 'prepguides.dev',
-        title: `Content Submission: ${contentData.title}`,
-        head: branchName,
-        base: 'main',
-        body: generatePRDescription(contentData, user)
-    });
+            const { data: pr } = await octokit.pulls.create({
+                owner: 'prepguides',
+                repo: 'prepguides.dev',
+                title: `Content Submission: ${contentData.title}`,
+                head: branchName,
+                base: 'main',
+                body: generatePRDescription(contentData, user)
+            });
 
     // Add labels
-    try {
-        await octokit.issues.addLabels({
-            owner: 'prepguides',
-            repo: 'prepguides.dev',
-            issue_number: pr.number,
+            try {
+                await octokit.issues.addLabels({
+                    owner: 'prepguides',
+                    repo: 'prepguides.dev',
+                    issue_number: pr.number,
             labels: ['content-submission', 'bot-created']
-        });
-    } catch (labelError) {
+                });
+            } catch (labelError) {
         console.warn('Failed to add labels:', labelError.message);
-    }
+            }
 
     return {
-        success: true,
-        pr: {
-            number: pr.number,
-            html_url: pr.html_url,
-            title: pr.title,
-            state: pr.state,
-            created_at: pr.created_at
-        },
-        branch: branchName,
+                success: true,
+                pr: {
+                    number: pr.number,
+                    html_url: pr.html_url,
+                    title: pr.title,
+                    state: pr.state,
+                    created_at: pr.created_at
+                },
+                branch: branchName,
         message: 'Content submission PR created successfully using bot!'
     };
 }
@@ -532,9 +576,9 @@ async function createPRWithUserToken(userToken, contentData, user) {
  */
 function generatePayloadContent(contentData, user) {
     return JSON.stringify({
-        id: contentData.id,
-        title: contentData.title,
-        description: contentData.description,
+            id: contentData.id,
+            title: contentData.title,
+            description: contentData.description,
         category: contentData.category,
         content: contentData.content || '',
         tags: contentData.tags || [],
