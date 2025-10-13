@@ -24,12 +24,25 @@ export default async function handler(req, res) {
 
         // Use the same approach as the bot API
         let privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+        console.log('🔍 Raw private key analysis:');
+        console.log('  - Length:', privateKey.length);
+        console.log('  - Contains \\n:', privateKey.includes('\\n'));
+        console.log('  - Contains actual newlines:', privateKey.includes('\n'));
+        console.log('  - Starts with:', privateKey.substring(0, 50));
+        console.log('  - Ends with:', privateKey.substring(privateKey.length - 50));
+        
         if (privateKey.includes('\\n')) {
             console.log('🔧 Processing private key with escaped newlines');
             privateKey = privateKey.replace(/\\n/g, '\n');
+            console.log('  - After processing, contains actual newlines:', privateKey.includes('\n'));
         }
 
         console.log('🔧 Creating GitHub App auth...');
+        console.log('  - App ID:', process.env.GITHUB_APP_ID);
+        console.log('  - App ID type:', typeof process.env.GITHUB_APP_ID);
+        console.log('  - App ID is numeric:', /^\d+$/.test(process.env.GITHUB_APP_ID));
+        console.log('  - Private key length after processing:', privateKey.length);
+        
         const appAuth = createAppAuth({
             appId: process.env.GITHUB_APP_ID,
             privateKey: privateKey,
