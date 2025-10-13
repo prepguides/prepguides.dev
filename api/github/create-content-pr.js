@@ -132,8 +132,8 @@ async function tryGitHubAppApproach(contentData, userToken) {
 
         console.log('🔧 Attempting GitHub App approach...');
         console.log('GitHub App ID:', process.env.GITHUB_APP_ID);
-        console.log('Private Key length:', process.env.GITHUB_APP_PRIVATE_KEY?.length);
-        
+            console.log('Private Key length:', process.env.GITHUB_APP_PRIVATE_KEY?.length);
+            
         // Use the exact same approach as the diagnostic endpoint
         console.log('🔧 Using diagnostic endpoint approach for private key processing...');
         let privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
@@ -229,7 +229,22 @@ async function tryGitHubAppApproach(contentData, userToken) {
             return { success: false, error: `Failed to create installation auth: ${authError.message}` };
         }
 
-        const octokit = new Octokit({ auth });
+        // Get the installation token
+        console.log('🔑 Getting installation token...');
+        let installationToken;
+        try {
+            const tokenResult = await auth({ type: 'installation' });
+            installationToken = tokenResult.token;
+            console.log('✅ Installation token obtained successfully');
+            console.log('  - Token length:', installationToken ? installationToken.length : 'null');
+            console.log('  - Token type:', tokenResult.type);
+        } catch (tokenError) {
+            console.error('❌ Failed to get installation token:', tokenError.message);
+            console.error('Installation token error details:', tokenError);
+            return { success: false, error: `Failed to get installation token: ${tokenError.message}` };
+        }
+
+        const octokit = new Octokit({ auth: installationToken });
 
         // Test installation token by making a simple API call
         console.log('🧪 Testing installation token with simple API call...');
