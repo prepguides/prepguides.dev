@@ -1,0 +1,28 @@
+{
+  "id": "test-content-2025-10-13T16-34-05-107Z",
+  "title": "Test E2E Content Submission",
+  "description": "This is a test content submission to verify end-to-end functionality.",
+  "category": "algorithms",
+  "content": "This is test content for the E2E test.",
+  "tags": [
+    "test",
+    "e2e",
+    "verification"
+  ],
+  "difficulty": "beginner",
+  "estimatedTime": "15 minutes",
+  "prerequisites": [
+    "Basic programming knowledge"
+  ],
+  "submittedBy": {
+    "username": "ishaileshpant",
+    "name": "Shailesh Pant",
+    "email": "ishaileshpant@gmail.com",
+    "avatar": "https://github.com/ishaileshpant.png"
+  },
+  "submittedAt": "2025-10-13T16:34:06.064Z",
+  "status": "pending",
+  "reviewNotes": "",
+  "approvedBy": null,
+  "approvedAt": null
+}
