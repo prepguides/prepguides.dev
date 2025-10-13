@@ -230,7 +230,7 @@ async function tryGitHubAppApproach(contentData, userToken) {
         }
 
         const octokit = new Octokit({
-            authStrategy: auth,
+            auth: auth,
         });
 
         // Test installation token by making a simple API call
