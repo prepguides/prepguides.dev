@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "type": "content-addition",
+  "metadata": {
+    "title": "Concurrency Patterns",
+    "description": "Concurrency patterns using Go",
+    "author": "pshail",
+    "submissionDate": "2025-10-14",
+    "category": "system-design",
+    "subtopic": "system-design-concurrency-patterns"
+  },
+  "content": {
+    "id": "system-design-concurrency-patterns",
+    "title": "Concurrency Patterns",
+    "description": "Concurrency patterns using Go",
+    "repo": "prepguides/go-interviews",
+    "path": "patterns/README.md",
+    "type": "guide",
+    "status": "active"
+  },
+  "validation": {
+    "repoAccessible": true,
+    "fileExists": true,
+    "contentValid": true,
+    "categoryValid": true
+  }
+}
