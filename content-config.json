@@ -285,14 +285,31 @@
         "primary": "#6366f1",
         "secondary": "#4f46e5"
       },
-      "subtopics": {}
+      "subtopics": {
+        "system-design-concurrency-pattern": {
+          "name": "System Design Concurrency Pattern",
+          "description": "Concurrency patterns in Go",
+          "content": [
+            {
+              "id": "system-design-concurrency-pattern",
+              "title": "Concurrency Pattern",
+              "description": "Concurrency patterns in Go",
+              "repo": "prepguides/go-interviews",
+              "path": "patterns/README.md",
+              "type": "guide",
+              "status": "active",
+              "addedDate": "2025-10-16"
+            }
+          ]
+        }
+      }
     }
   },
   "statistics": {
-    "totalContent": 11,
+    "totalContent": 12,
     "totalVisualizations": 10,
-    "totalGuides": 1,
-    "categoriesWithContent": 3,
-    "lastContentAdded": "2025-01-27"
+    "totalGuides": 2,
+    "categoriesWithContent": 4,
+    "lastContentAdded": "2025-10-16"
   }
 }
